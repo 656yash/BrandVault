@@ -1,0 +1,27 @@
+{
+  "name": "brandvault",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BrandVault - Intelligent Brand Governance & Compliance Platform",
+  "workspaces": [
+    "apps/*",
+    "workers/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "dev:worker": "npm run dev --workspace=workers/api",
+    "build": "npm run build --workspaces",
+    "test": "node tests/compliance.test.js"
+  },
+  "keywords": [
+    "brand-governance",
+    "brand-safety",
+    "content-moderation",
+    "cloudflare-workers",
+    "groq-ai",
+    "brandvault"
+  ],
+  "author": "BrandVault Team",
+  "license": "MIT"
+}
