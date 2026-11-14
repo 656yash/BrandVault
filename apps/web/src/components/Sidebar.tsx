@@ -5,10 +5,9 @@ import {
   Layers, 
   BookOpen, 
   BarChart3, 
-  FileCode2, 
-  ShieldAlert,
-  Sparkles
+  ShieldAlert
 } from 'lucide-react';
+import { ChromePaperPlane, ChromeShield } from './ChromeIcons';
 
 export type NavTab = 'dashboard' | 'studio' | 'reviews' | 'knowledge' | 'analytics' | 'audit';
 
@@ -31,14 +30,14 @@ export const Sidebar: React.FC<Props> = ({ currentTab, onTabChange, pendingRevie
       label: 'Content Inspection',
       icon: FileCheck2,
       badge: 'BrandVault AI',
-      badgeColor: 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30',
+      badgeColor: 'bg-amber-500/15 text-amber-300 border border-amber-500/30',
     },
     {
       id: 'reviews' as NavTab,
       label: 'Review & Approvals',
       icon: Layers,
       badge: pendingReviewsCount > 0 ? `${pendingReviewsCount}` : null,
-      badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+      badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
     },
     {
       id: 'knowledge' as NavTab,
@@ -54,17 +53,17 @@ export const Sidebar: React.FC<Props> = ({ currentTab, onTabChange, pendingRevie
     },
     {
       id: 'audit' as NavTab,
-      label: 'Audit & AI Transparency',
+      label: 'Audit & AI Disclosure',
       icon: ShieldAlert,
       badge: null,
     },
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-800 bg-slate-900/50 flex flex-col justify-between p-4 shrink-0">
-      <div className="space-y-1">
+    <aside className="w-64 border-r border-white/[0.06] bg-[#09090c]/90 flex flex-col justify-between p-4 shrink-0 backdrop-blur-md">
+      <div className="space-y-1.5">
         <div className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
-          Brand Governance OS
+          Workspace Navigation
         </div>
 
         {items.map((item) => {
@@ -74,18 +73,18 @@ export const Sidebar: React.FC<Props> = ({ currentTab, onTabChange, pendingRevie
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-[#181822] text-white border border-white/15 shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-500'}`} />
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold ${item.badgeColor || 'bg-slate-800 text-slate-300'}`}>
+                <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-bold ${item.badgeColor || 'bg-slate-800 text-slate-300'}`}>
                   {item.badge}
                 </span>
               )}
@@ -95,18 +94,18 @@ export const Sidebar: React.FC<Props> = ({ currentTab, onTabChange, pendingRevie
       </div>
 
       {/* Cloudflare & Groq Architecture Banner */}
-      <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-[11px] space-y-2">
-        <div className="flex items-center gap-1.5 text-indigo-400 font-semibold">
-          <Sparkles className="w-3.5 h-3.5" />
+      <div className="p-4 rounded-3xl bg-[#0e0e14] border border-white/[0.06] text-[11px] space-y-2 shadow-inner">
+        <div className="flex items-center gap-2 text-amber-400 font-bold font-mono text-xs">
+          <ChromePaperPlane className="w-4 h-4" />
           <span>Active Pipeline</span>
         </div>
         <p className="text-slate-400 leading-relaxed text-[10px]">
-          Multi-agent inspection powered by <strong>Groq API</strong> (<code className="text-indigo-300">openai/gpt-oss-120b</code>) with Cloudflare edge persistence.
+          Multi-agent inspection powered by <strong>Groq API</strong> (<code className="text-amber-300 font-mono">openai/gpt-oss-120b</code>) with Cloudflare edge persistence.
         </p>
-        <div className="pt-1 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+        <div className="pt-2 flex items-center justify-between text-[10px] text-slate-500 font-mono border-t border-white/5">
           <span>Latency: ~340ms</span>
-          <span className="text-emerald-400 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live
+          <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live
           </span>
         </div>
       </div>

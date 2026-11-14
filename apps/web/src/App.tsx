@@ -220,11 +220,14 @@ export function App() {
   const pendingReviewsCount = contentItems.filter(c => c.status === 'ready_for_review' || c.status === 'changes_requested').length;
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-100">
+    <div className="min-h-screen bg-[#08080a] flex flex-col font-sans text-slate-100 selection:bg-amber-500 selection:text-black">
       <Navbar
         currentRole={currentRole}
         onRoleChange={setCurrentRole}
         brandName={brand?.name || 'Nexus Enterprise AI'}
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+        pendingReviewsCount={pendingReviewsCount}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -234,7 +237,7 @@ export function App() {
           pendingReviewsCount={pendingReviewsCount}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto px-6 py-8 max-w-7xl mx-auto w-full">
           {currentTab === 'dashboard' && metrics && (
             <Dashboard
               contentItems={contentItems}
@@ -296,8 +299,8 @@ export function App() {
 
       {/* Floating Toast */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-indigo-500/50 text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-bottom-3 duration-200">
-          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+        <div className="fixed bottom-6 right-6 z-50 bg-[#121217] border border-amber-500/40 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
           <span>{toastMessage}</span>
         </div>
       )}

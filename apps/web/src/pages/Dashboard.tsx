@@ -1,16 +1,28 @@
 import React from 'react';
 import { 
-  ShieldCheck, 
   FileText, 
   CheckCircle2, 
-  AlertTriangle, 
   ArrowUpRight, 
   Clock, 
   Sparkles,
   TrendingUp,
-  Cpu
+  Cpu,
+  Layers,
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 import type { ContentItem, GovernanceMetrics } from '@brandvault/shared';
+import { 
+  ChromeShield, 
+  ChromePaperPlane, 
+  ChromeAvatar, 
+  TiltedSticker, 
+  CircularToolBadge,
+  OutlinePenTool,
+  OutlineBezierNodes,
+  OutlineEyedropper,
+  OutlineMagicWand
+} from '../components/ChromeIcons';
 
 interface Props {
   contentItems: ContentItem[];
@@ -26,254 +38,272 @@ export const Dashboard: React.FC<Props> = ({
   onNewScan 
 }) => {
   return (
-    <div className="space-y-6">
-      {/* Hero Welcome & Quick Action */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              Automated Brand Compliance Officer
+    <div className="relative space-y-10 pb-16">
+      {/* Decorative dot matrix pattern in upper corners */}
+      <div className="absolute top-0 right-0 w-80 h-64 dot-pattern opacity-40 pointer-events-none rounded-2xl" />
+      <div className="absolute top-40 left-0 w-64 h-64 dot-pattern opacity-25 pointer-events-none rounded-2xl" />
+
+      {/* Hero Header matching the reference typography & chrome emblem */}
+      <div className="relative pt-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <ChromeShield className="w-10 h-10 filter drop-shadow-xl" />
+              <div>
+                <div className="text-xs font-mono uppercase tracking-widest text-slate-500 font-semibold">
+                  Pre-Flight Intelligence
+                </div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight font-sans">
+                  Brand Governance OS
+                </h1>
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
-              Enterprise Governance & Asset Pre-Flight
-            </h1>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              BrandVault safeguards brand credibility by intercepting unverified claims, banned terminology, tone drift, and visual inconsistencies before publication.
+            <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+              Automated Brand Compliance Officer inspecting marketing copy, press releases, social ads, and visual creatives before publication. Powered by sub-second Groq AI inference and Cloudflare edge persistence.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <TiltedSticker text="100% Brand Safe" subtext="SOC 2 Type II Verified" />
             <button
               onClick={onNewScan}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02]"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 font-bold text-xs shadow-xl shadow-amber-500/20 hover:scale-105 transition-all cursor-pointer"
             >
-              <FileText className="w-4 h-4" />
+              <ChromePaperPlane className="w-4 h-4 text-slate-950" />
               <span>Inspect New Content</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Overall Health Score */}
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Brand Health Score</span>
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white tracking-tight">
-              {metrics.overallComplianceHealth}
-            </span>
-            <span className="text-xs text-slate-400">/ 100</span>
-            <span className="text-[11px] font-semibold text-emerald-400 flex items-center ml-auto">
-              <TrendingUp className="w-3 h-3 mr-0.5" /> +4.2%
-            </span>
-          </div>
-          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full rounded-full transition-all duration-500" 
-              style={{ width: `${metrics.overallComplianceHealth}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Total Assets Scanned */}
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Pre-Flight Scans</span>
-            <FileText className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white tracking-tight">
-              {metrics.totalScanned}
-            </span>
-            <span className="text-xs text-slate-400">assets</span>
-            <span className="text-[10px] text-indigo-400 font-mono ml-auto">Multi-agent</span>
-          </div>
-          <p className="text-[11px] text-slate-500">Text, Social Creatives, Documents</p>
-        </div>
-
-        {/* Certified Compliant */}
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Approved & Sealed</span>
-            <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white tracking-tight">
-              {metrics.approvedCount}
-            </span>
-            <span className="text-xs text-slate-400">approved</span>
-            <span className="text-[11px] font-semibold text-cyan-400 ml-auto">Cryptographic Seal</span>
-          </div>
-          <p className="text-[11px] text-slate-500">Zero brand risk publication readiness</p>
-        </div>
-
-        {/* Revisions & Feedback */}
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Corrections Applied</span>
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white tracking-tight">
-              {metrics.changesRequestedCount}
-            </span>
-            <span className="text-xs text-slate-400">revisions</span>
-            <span className="text-[11px] font-semibold text-amber-400 ml-auto">1.8h avg</span>
-          </div>
-          <p className="text-[11px] text-slate-500">Fast contextual human-in-the-loop fixes</p>
-        </div>
-      </div>
-
-      {/* Multi-Agent Inspection Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-5">
-          <div className="flex items-center justify-between">
+      {/* Multi-Agent Compliance Pillars with Circular Progress Rings (as seen in Image 2 "Design Tools") */}
+      <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-6 shadow-2xl relative overflow-hidden">
+        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+          <div className="flex items-center gap-2.5">
+            <ChromePaperPlane className="w-6 h-6" />
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-indigo-400" />
-                Multi-Agent Compliance Pillars
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">Real-time breakdown of brand safety dimensions</p>
+              <div className="text-sm font-bold text-white tracking-tight">Active Compliance Agents</div>
+              <div className="text-[11px] text-slate-400">Sub-second multi-agent inspection powered by Groq (openai/gpt-oss-120b)</div>
             </div>
-            <span className="text-[10px] px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-mono">
-              Groq openai/gpt-oss-120b
-            </span>
           </div>
-
-          <div className="space-y-3.5">
-            {[
-              { name: 'Tone & Brand Voice Agent', score: 92, desc: 'Authoritative, precise, empathetic tone adherence' },
-              { name: 'Terminology & Dictionary Agent', score: 85, desc: 'Detects banned, competitor, and devaluing words' },
-              { name: 'Fact Verification Agent', score: 96, desc: 'Cross-references company facts against verified sources' },
-              { name: 'Claims Substantiation Agent', score: 79, desc: 'Requires audit proof for superlatives and SLA guarantees' },
-              { name: 'Visual & Accessibility Agent', score: 91, desc: 'Color palette contrast, logo padding, WCAG 2.1 AA' },
-            ].map((agent, i) => (
-              <div key={i} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-200">{agent.name}</span>
-                  <span className="font-mono font-bold text-slate-300">{agent.score}%</span>
-                </div>
-                <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      agent.score >= 90 ? 'bg-emerald-500' : agent.score >= 80 ? 'bg-indigo-500' : 'bg-amber-500'
-                    }`}
-                    style={{ width: `${agent.score}%` }}
-                  />
-                </div>
-                <p className="text-[10px] text-slate-500">{agent.desc}</p>
-              </div>
-            ))}
-          </div>
+          <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-[#181822] text-amber-400 border border-amber-500/30 font-semibold">
+            Latency ~340ms • Zero-Retention
+          </span>
         </div>
 
-        {/* Top Violations Box */}
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+        {/* 5 Circular Tool Badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 pt-2">
+          <CircularToolBadge
+            title="Tone & Voice"
+            label="Persona Adherence"
+            percentage={92}
+            iconBgColor="#161622"
+            iconContent={<span className="text-xs font-mono font-bold text-amber-400">92%</span>}
+          />
+          <CircularToolBadge
+            title="Terminology"
+            label="Dictionary Purity"
+            percentage={85}
+            iconBgColor="#161622"
+            iconContent={<span className="text-xs font-mono font-bold text-amber-400">85%</span>}
+          />
+          <CircularToolBadge
+            title="Fact Verification"
+            label="Corporate Source"
+            percentage={96}
+            iconBgColor="#161622"
+            iconContent={<span className="text-xs font-mono font-bold text-emerald-400">96%</span>}
+          />
+          <CircularToolBadge
+            title="Claims Legality"
+            label="Audit Proof"
+            percentage={79}
+            iconBgColor="#161622"
+            iconContent={<span className="text-xs font-mono font-bold text-amber-400">79%</span>}
+          />
+          <CircularToolBadge
+            title="Visual & A11y"
+            label="WCAG 2.1 AA"
+            percentage={91}
+            iconBgColor="#161622"
+            iconContent={<span className="text-xs font-mono font-bold text-cyan-400">91%</span>}
+          />
+        </div>
+      </div>
+
+      {/* KPI Section with Vertical Amber/Gold Bars (as seen in Image 3 "Why me") */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1 */}
+        <div className="p-5 rounded-2xl bg-[#0e0e13] border border-white/[0.07] space-y-2">
+          <div className="gold-bar">
+            <div className="text-sm font-bold text-amber-400">Overall Brand Health</div>
+            <div className="text-2xl font-black text-white mt-1 font-mono">
+              {metrics.overallComplianceHealth} <span className="text-xs text-slate-500 font-sans font-normal">/ 100</span>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed pt-1">
+            Aggregated cross-departmental compliance score reflecting zero critical unverified claims.
+          </p>
+        </div>
+
+        {/* Metric 2 */}
+        <div className="p-5 rounded-2xl bg-[#0e0e13] border border-white/[0.07] space-y-2">
+          <div className="gold-bar">
+            <div className="text-sm font-bold text-amber-400">Pre-Flight Scans</div>
+            <div className="text-2xl font-black text-white mt-1 font-mono">
+              {metrics.totalScanned} <span className="text-xs text-slate-500 font-sans font-normal">assets</span>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed pt-1">
+            Marketing copy, social ad creatives, and press releases evaluated prior to public release.
+          </p>
+        </div>
+
+        {/* Metric 3 */}
+        <div className="p-5 rounded-2xl bg-[#0e0e13] border border-white/[0.07] space-y-2">
+          <div className="gold-bar">
+            <div className="text-sm font-bold text-amber-400">Approved &amp; Sealed</div>
+            <div className="text-2xl font-black text-white mt-1 font-mono">
+              {metrics.approvedCount} <span className="text-xs text-slate-500 font-sans font-normal">assets</span>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed pt-1">
+            Collateral stamped with cryptographic publication seals authorized by human reviewers.
+          </p>
+        </div>
+
+        {/* Metric 4 */}
+        <div className="p-5 rounded-2xl bg-[#0e0e13] border border-white/[0.07] space-y-2">
+          <div className="gold-bar">
+            <div className="text-sm font-bold text-amber-400">Average Turnaround</div>
+            <div className="text-2xl font-black text-white mt-1 font-mono">
+              {metrics.avgResolutionTimeHours} <span className="text-xs text-slate-500 font-sans font-normal">hours</span>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed pt-1">
+            65% reduction in compliance turnaround through one-click context-preserving corrections.
+          </p>
+        </div>
+      </div>
+
+      {/* Featured Projects Bento Showcase (as seen in Image 4, 5, 6 "Brand Logo Design") */}
+      <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-5 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
-              Frequent Violation Patterns
+            <div className="text-xs text-slate-500 uppercase tracking-widest font-mono">Verified Creative Collateral</div>
+            <h2 className="text-lg font-bold text-white tracking-tight mt-0.5">
+              Multimodal Brand Assets &amp; Campaigns
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">Most common mistakes flagged across teams</p>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">
+            Active Workspace: Nexus Enterprise AI
+          </span>
+        </div>
+
+        {/* Bento Collage Card Layout (inspired by Image 4, 5, 6) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* Main Visual Showcase (8 cols) */}
+          <div className="lg:col-span-8 p-4 rounded-2xl bg-[#14141c] border border-white/[0.06] flex flex-col justify-between">
+            <div className="grid grid-cols-3 gap-3">
+              {/* Asset 1: Digital Ad */}
+              <div className="p-3 rounded-xl bg-[#1a1a24] border border-white/5 space-y-2">
+                <div className="h-28 rounded-lg bg-gradient-to-tr from-[#4F46E5] to-[#06B6D4] flex flex-col justify-end p-2.5 text-white">
+                  <span className="text-[9px] uppercase font-mono tracking-wider opacity-80">Campaign Ad</span>
+                  <span className="text-xs font-bold leading-tight">Modern Governance Moat</span>
+                </div>
+                <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                  <span>LinkedIn Single Ad</span>
+                  <span className="text-emerald-400 font-mono font-bold">96/100</span>
+                </div>
+              </div>
+
+              {/* Asset 2: Brand Identity Card */}
+              <div className="p-3 rounded-xl bg-[#1a1a24] border border-white/5 space-y-2">
+                <div className="h-28 rounded-lg bg-[#0e0e14] border border-amber-500/20 flex flex-col items-center justify-center p-2 text-center">
+                  <ChromeShield className="w-8 h-8 mb-1" />
+                  <span className="text-[11px] font-bold text-white">Nexus Cloud</span>
+                  <span className="text-[8px] text-amber-400 font-mono">24px Clear-Space</span>
+                </div>
+                <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                  <span>Logo Mark</span>
+                  <span className="text-emerald-400 font-mono font-bold">100/100</span>
+                </div>
+              </div>
+
+              {/* Asset 3: Swatch Palettes */}
+              <div className="p-3 rounded-xl bg-[#1a1a24] border border-white/5 space-y-2">
+                <div className="h-28 rounded-lg bg-[#14141c] p-2 flex flex-col justify-between">
+                  <div className="h-5 rounded bg-[#4F46E5] text-[9px] text-white flex items-center px-2 font-mono font-bold">#4F46E5</div>
+                  <div className="h-5 rounded bg-[#06B6D4] text-[9px] text-slate-950 flex items-center px-2 font-mono font-bold">#06B6D4</div>
+                  <div className="h-5 rounded bg-[#10B981] text-[9px] text-white flex items-center px-2 font-mono font-bold">#10B981</div>
+                </div>
+                <div className="text-[10px] text-slate-400 flex items-center justify-between">
+                  <span>Color Tokens</span>
+                  <span className="text-emerald-400 font-mono font-bold">Verified</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Metadata Footer as seen in Image 4, 5, 6 */}
+            <div className="pt-4 mt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
+              <div>
+                <span className="text-slate-500">Company Name: </span>
+                <strong className="text-white">Nexus Enterprise AI</strong>
+              </div>
+              <div>
+                <span className="text-slate-500">Industry: </span>
+                <strong className="text-white">Enterprise Cloud Intelligence &amp; Brand Automation</strong>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {metrics.topViolations.map((v, i) => (
-              <div key={i} className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-200">{v.category}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono font-bold">
-                    {v.count} flags
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-500 truncate">{v.guideline}</p>
+          {/* Right Summary Column: Recent Pre-Flight Status (4 cols) */}
+          <div className="lg:col-span-4 p-5 rounded-2xl bg-[#14141c] border border-white/[0.06] flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-bold text-white tracking-tight mb-3">Recent Content Items</div>
+              <div className="space-y-2.5">
+                {contentItems.slice(0, 3).map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => onOpenContent(item.id)}
+                    className="p-3 rounded-xl bg-[#1a1a24] border border-white/5 hover:border-amber-500/30 transition-all cursor-pointer group space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white group-hover:text-amber-300 transition-colors truncate max-w-[180px]">
+                        {item.title}
+                      </span>
+                      <span className={`text-[10px] font-mono font-bold ${
+                        (item.complianceScore || 0) >= 90 ? 'text-emerald-400' : 'text-amber-400'
+                      }`}>
+                        {item.complianceScore ?? '--'}/100
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500">
+                      <span className="capitalize">{item.contentType.replace('_', ' ')} • V{item.currentVersion}</span>
+                      <span className="capitalize text-slate-400">{item.status.replace('_', ' ')}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <button
+              onClick={() => onOpenContent(contentItems[0]?.id || 'cnt_01')}
+              className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1e1e27] hover:bg-[#252532] text-xs font-bold text-white border border-white/10 transition-colors"
+            >
+              <span>Open Studio Workbench</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Recent Content Review Pipeline */}
-      <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-bold text-white">Recent Content Pipeline</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Latest copy, press releases, and campaign assets</p>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950/50 text-slate-400 text-[10px] uppercase font-mono border-b border-slate-800">
-              <tr>
-                <th className="py-3 px-4">Title & Format</th>
-                <th className="py-3 px-4">Author</th>
-                <th className="py-3 px-4">Compliance Score</th>
-                <th className="py-3 px-4">Review Status</th>
-                <th className="py-3 px-4">Reviewer</th>
-                <th className="py-3 px-4 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {contentItems.map((item) => {
-                const isApproved = item.status === 'approved';
-                const isChanges = item.status === 'changes_requested';
-                return (
-                  <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-white">{item.title}</div>
-                      <div className="text-[10px] text-slate-500 capitalize">{item.contentType.replace('_', ' ')} • V{item.currentVersion}</div>
-                    </td>
-                    <td className="py-3.5 px-4 text-slate-300">
-                      {item.authorName}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      {item.complianceScore !== undefined ? (
-                        <div className="flex items-center gap-2">
-                          <span className={`font-mono font-bold ${
-                            item.complianceScore >= 90 ? 'text-emerald-400' :
-                            item.complianceScore >= 70 ? 'text-indigo-400' : 'text-amber-400'
-                          }`}>
-                            {item.complianceScore}/100
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-500">Unscanned</span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold capitalize ${
-                        isApproved ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                        isChanges ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30' :
-                        'bg-slate-800 text-slate-300'
-                      }`}>
-                        {isApproved ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                        {item.status.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-slate-400">
-                      {item.assignedReviewerName || 'Unassigned'}
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => onOpenContent(item.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white transition-colors font-medium text-[11px]"
-                      >
-                        <span>Inspect</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      {/* Decorative Line-Art Design Icons at the Bottom (as seen in Image 2 & 7) */}
+      <div className="pt-6 border-t border-white/[0.05] flex items-center justify-between opacity-35 px-4">
+        <OutlinePenTool />
+        <OutlineBezierNodes />
+        <OutlineEyedropper />
+        <OutlineMagicWand />
       </div>
     </div>
   );
