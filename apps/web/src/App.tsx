@@ -102,13 +102,15 @@ export function App() {
     try {
       const b = await api.setActiveBrand(brandId);
       setBrand(b);
-      const [g, f, t, c, a, items] = await Promise.all([
+      const [g, f, t, c, a, items, m, logs] = await Promise.all([
         api.getGuidelines(brandId),
         api.getFacts(brandId),
         api.getTerminology(brandId),
         api.getClaims(brandId),
         api.getAssets(brandId),
         api.getContentItems(brandId),
+        api.getAnalytics(brandId),
+        api.getAuditLogs(brandId),
       ]);
       setGuidelines(g);
       setFacts(f);
@@ -116,6 +118,8 @@ export function App() {
       setClaims(c);
       setAssets(a);
       setContentItems(items);
+      setMetrics(m);
+      setAuditLogs(logs);
       if (items.length > 0) {
         setSelectedContentId(items[0].id);
       }
@@ -396,6 +400,7 @@ export function App() {
 
           {currentTab === 'studio' && (
             <ContentStudio
+              brand={brand}
               contentItems={contentItems}
               selectedContentId={selectedContentId}
               onSelectContent={setSelectedContentId}
@@ -412,6 +417,7 @@ export function App() {
 
           {currentTab === 'reviews' && (
             <ReviewWorkspace
+              brand={brand}
               contentItems={contentItems}
               currentRole={currentRole}
               onApprove={handleApprove}
@@ -441,11 +447,11 @@ export function App() {
           )}
 
           {currentTab === 'analytics' && metrics && (
-            <GovernanceAnalytics metrics={metrics} />
+            <GovernanceAnalytics brand={brand} metrics={metrics} />
           )}
 
           {currentTab === 'audit' && (
-            <AuditTransparency auditLogs={auditLogs} />
+            <AuditTransparency brand={brand} auditLogs={auditLogs} />
           )}
         </main>
       </div>

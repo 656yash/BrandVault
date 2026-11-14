@@ -9,10 +9,11 @@ import {
   UserCheck,
   Trash2
 } from 'lucide-react';
-import type { ContentItem, ReviewComment, UserRole } from '@brandvault/shared';
+import type { ContentItem, ReviewComment, UserRole, BrandWorkspace } from '@brandvault/shared';
 import { ChromeAvatar, ChromeShield, TiltedSticker } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   contentItems: ContentItem[];
   currentRole: UserRole;
   onApprove: (contentId: string, feedback?: string) => Promise<any>;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export const ReviewWorkspace: React.FC<Props> = ({
+  brand,
   contentItems,
   currentRole,
   onApprove,
@@ -34,6 +36,16 @@ export const ReviewWorkspace: React.FC<Props> = ({
   const [reviewFeedback, setReviewFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastSeal, setLastSeal] = useState<string | null>(null);
+
+  // Sync selectedId when brand or contentItems change
+  React.useEffect(() => {
+    if (contentItems.length > 0) {
+      const exists = contentItems.some(c => c.id === selectedId);
+      if (!exists) {
+        setSelectedId(contentItems[0].id);
+      }
+    }
+  }, [contentItems, selectedId]);
 
   const currentItem = contentItems.find(c => c.id === selectedId) || contentItems[0];
   const comments = currentItem?.comments || [];
@@ -85,7 +97,7 @@ export const ReviewWorkspace: React.FC<Props> = ({
                 Authorised Sign-Off &amp; Approvals
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Human-in-the-loop control: BrandVault AI flags issues, but authorized directors and managers retain approval authority.
+                Human-in-the-loop control for <span className="font-bold text-slate-800">{brand?.name || 'Brand Workspace'}</span>: BrandVault AI flags issues, but authorized directors retain approval authority.
               </p>
             </div>
           </div>
@@ -153,7 +165,7 @@ export const ReviewWorkspace: React.FC<Props> = ({
                     This content has passed all multi-agent compliance checks and is verified for enterprise distribution.
                   </p>
                   <div className="text-[10px] font-mono text-emerald-700 pt-1 font-bold">
-                    Seal: {lastSeal || `BV-SEAL-NX9-2026-${currentItem.id.toUpperCase()}`}
+                    Seal: {lastSeal || `BV-SEAL-${brand?.name?.substring(0, 3)?.toUpperCase() || 'BV'}-2026-${currentItem.id.toUpperCase()}`}
                   </div>
                 </div>
               </div>

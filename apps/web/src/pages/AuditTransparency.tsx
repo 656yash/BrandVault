@@ -5,14 +5,15 @@ import {
   Server, 
   Cpu
 } from 'lucide-react';
-import type { AuditLog } from '@brandvault/shared';
+import type { AuditLog, BrandWorkspace } from '@brandvault/shared';
 import { ChromeShield, ChromePaperPlane } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   auditLogs: AuditLog[];
 }
 
-export const AuditTransparency: React.FC<Props> = ({ auditLogs }) => {
+export const AuditTransparency: React.FC<Props> = ({ brand, auditLogs }) => {
   return (
     <div className="relative space-y-8 pb-16">
       {/* Header */}
@@ -25,7 +26,7 @@ export const AuditTransparency: React.FC<Props> = ({ auditLogs }) => {
                 Audit Trail &amp; AI Disclosure
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Immutable tracking of every guideline update, scan execution, human review decision, and data protection boundary.
+                Immutable tracking of every guideline update, scan execution, and human review decision for <span className="font-bold text-slate-800">{brand?.name || 'Active Brand'}</span>.
               </p>
             </div>
           </div>
@@ -65,7 +66,7 @@ export const AuditTransparency: React.FC<Props> = ({ auditLogs }) => {
             <span className="text-[10px] text-blue-700 font-mono font-bold">Multi-Tenant Boundary</span>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed pt-1 font-medium">
-            Multi-tenant brand workspaces and D1 relational databases are encrypted at rest with strict tenant boundary enforcement.
+            Multi-tenant brand workspace for <strong className="text-slate-800">{brand?.name || 'this brand'}</strong> and D1 relational databases are encrypted at rest with strict tenant boundary enforcement.
           </p>
         </div>
       </div>
@@ -75,7 +76,7 @@ export const AuditTransparency: React.FC<Props> = ({ auditLogs }) => {
         <div className="flex items-center justify-between pb-3 border-b border-white/40">
           <div className="adwise-bar">
             <h3 className="text-sm font-bold text-slate-800">System &amp; User Action Logs</h3>
-            <p className="text-xs text-slate-500">Chronological history of compliance actions and approvals</p>
+            <p className="text-xs text-slate-500">Chronological history of compliance actions and approvals for {brand?.name || 'organization'}</p>
           </div>
           <span className="text-xs font-mono font-bold text-slate-600">{auditLogs.length} events recorded</span>
         </div>

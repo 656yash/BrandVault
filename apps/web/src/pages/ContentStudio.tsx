@@ -21,7 +21,8 @@ import type {
   ContentItem, 
   ComplianceFinding, 
   AnalysisReport, 
-  UserRole 
+  UserRole,
+  BrandWorkspace
 } from '@brandvault/shared';
 import { 
   ChromePaperPlane, 
@@ -32,6 +33,7 @@ import {
 } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   contentItems: ContentItem[];
   selectedContentId: string;
   onSelectContent: (id: string) => void;
@@ -46,6 +48,7 @@ interface Props {
 }
 
 export const ContentStudio: React.FC<Props> = ({
+  brand,
   contentItems,
   selectedContentId,
   onSelectContent,
@@ -94,14 +97,17 @@ export const ContentStudio: React.FC<Props> = ({
 
   const handleInjectTestViolations = () => {
     let violationCopy = '';
-    if (currentItem?.brandId === 'brand_easya1') {
+    const activeBrand = brand?.id || currentItem?.brandId;
+    if (activeBrand === 'brand_easya1') {
       violationCopy = "Planning to study abroad? Easy-A1 is India's No. 1 agency with 100% visa guarantee! Avoid competitor X who is obsolete and try our cheap package with revolutionary magic.";
-    } else if (currentItem?.brandId === 'brand_assetsgenius') {
+    } else if (activeBrand === 'brand_assetsgenius') {
       violationCopy = "Assets Genius Escrow provides risk-free escrow for high-value transactions! We are India's No. 1 custody vault, proving competitor X is obsolete with our cheap settlement rates and revolutionary magic.";
-    } else if (currentItem?.brandId === 'brand_shotnest') {
+    } else if (activeBrand === 'brand_shotnest') {
       violationCopy = "ShotNest Media produces the world's best cinematography! We guarantee 100% flawless results, proving competitor X is obsolete with our cheap production packages and revolutionary magic.";
+    } else if (activeBrand === 'brand_flkdesigns') {
+      violationCopy = "FLK Designs is the world's best design agency with 100% satisfaction guarantee! Competitor X is obsolete and our cheap brand identity package works like magic.";
     } else {
-      violationCopy = `${currentItem?.title || 'Our platform'} is officially India's No. 1 generative platform! It guarantees 100% uptime without failure, proving competitor X is obsolete. Switch today to our cheap starter tier and unleash revolutionary magic for every end-user.`;
+      violationCopy = `${brand?.name || currentItem?.title || 'Our platform'} is officially India's No. 1 generative platform! It guarantees 100% uptime without failure, proving competitor X is obsolete. Switch today to our cheap starter tier and unleash revolutionary magic for every end-user.`;
     }
     setEditorText(violationCopy);
     // Also trigger scan automatically so the user immediately sees the multi-agent findings!
@@ -168,7 +174,7 @@ export const ContentStudio: React.FC<Props> = ({
                 Content Inspection Studio
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Multi-agent pre-flight analysis across voice, terminology, facts, and legal claims.
+                Multi-agent pre-flight analysis for <span className="font-bold text-slate-800">{brand?.name || 'Workspace'}</span> across voice, terminology, facts, and legal claims.
               </p>
             </div>
           </div>
@@ -306,7 +312,7 @@ export const ContentStudio: React.FC<Props> = ({
                     <span className="text-[8px] text-blue-600">LinkedIn Ad</span>
                   </div>
                   <div className="space-y-1 text-[11px]">
-                    <div className="text-slate-800 font-semibold">Palette Match: <span className="text-purple-600 font-mono font-bold">#CDB4DB &amp; #A2D2FF</span></div>
+                    <div className="text-slate-800 font-semibold">Palette Match: <span className="text-purple-600 font-mono font-bold">{brand?.primaryColor || '#CDB4DB'} &amp; {brand?.secondaryColor || '#A2D2FF'}</span></div>
                     <div className="text-slate-600">Logo Clear Space: <span className="text-emerald-700 font-bold">28px (&gt; 24px requirement)</span></div>
                   </div>
                 </div>

@@ -19,10 +19,11 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import type { GovernanceMetrics } from '@brandvault/shared';
+import type { GovernanceMetrics, BrandWorkspace } from '@brandvault/shared';
 import { ChromePaperPlane, ChromeShield, TiltedSticker } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   metrics: GovernanceMetrics;
 }
 
@@ -34,7 +35,7 @@ const trendData = [
   { month: 'Feb', score: 88, violations: 18 },
 ];
 
-export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
+export const GovernanceAnalytics: React.FC<Props> = ({ brand, metrics }) => {
   return (
     <div className="relative space-y-8 pb-16">
       {/* Header */}
@@ -47,7 +48,7 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
                 Governance Analytics &amp; Ambiguity
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Identify recurring brand drift, departmental compliance health, and guidelines that creators frequently contest.
+                Identify recurring brand drift, departmental compliance health, and guidelines for <span className="font-bold text-slate-800">{brand?.name || 'Active Brand'}</span>.
               </p>
             </div>
           </div>

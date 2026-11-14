@@ -163,7 +163,7 @@ export const BrandKnowledge: React.FC<Props> = ({
                 Brand Knowledge Base
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Guidelines, substantiated claims, terminology dictionaries, and verified corporate facts.
+                Guidelines, substantiated claims, terminology dictionaries, and verified corporate facts for <span className="font-bold text-slate-800">{brand?.name || 'Brand Workspace'}</span>.
               </p>
             </div>
           </div>
