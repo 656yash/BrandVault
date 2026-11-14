@@ -149,31 +149,25 @@ export const BrandKnowledge: React.FC<Props> = ({
 
   return (
     <div className="relative space-y-8 pb-16">
-      {/* Decorative dot matrix in background */}
-      <div className="absolute top-0 right-0 w-80 h-72 dot-pattern opacity-30 pointer-events-none rounded-3xl" />
-
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
-        <div className="space-y-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
+        <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <ChromeShield className="w-8 h-8 filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.15)]" />
+            <ChromeShield className="w-8 h-8 filter drop-shadow-[0_4px_10px_rgba(205,180,219,0.5)]" />
             <div>
-              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
-                Single Source of Truth
-              </div>
-              <h1 className="text-3xl font-extrabold text-white tracking-tight font-sans">
+              <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight font-sans">
                 Brand Knowledge Base
               </h1>
+              <p className="text-xs text-slate-600 font-medium">
+                Guidelines, substantiated claims, terminology dictionaries, and verified corporate facts.
+              </p>
             </div>
           </div>
-          <p className="text-xs text-zinc-400 max-w-xl">
-            Authoritative guidelines, substantiated claims, terminology dictionaries, and verified corporate facts that calibrate all BrandVault AI inspections.
-          </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black font-bold text-xs hover:bg-zinc-200 transition-all cursor-pointer shadow-lg shadow-white/5"
+          className="glass-button flex items-center gap-2 px-6 py-3 rounded-full text-slate-900 font-bold text-xs shadow-lg hover:scale-105 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>
@@ -185,14 +179,14 @@ export const BrandKnowledge: React.FC<Props> = ({
         </button>
       </div>
 
-      {/* Glassmorphic Tabs Capsule */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl w-fit">
+      {/* Adwise Capsule Tabs */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-full glass-capsule w-fit overflow-x-auto max-w-full">
         <button
           onClick={() => setActiveTab('guidelines')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'guidelines'
-              ? 'bg-white/15 text-white border border-white/20 shadow-sm'
-              : 'text-zinc-400 hover:text-white'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
@@ -201,10 +195,10 @@ export const BrandKnowledge: React.FC<Props> = ({
 
         <button
           onClick={() => setActiveTab('terminology')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'terminology'
-              ? 'bg-white/15 text-white border border-white/20 shadow-sm'
-              : 'text-zinc-400 hover:text-white'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <SpellCheck className="w-3.5 h-3.5" />
@@ -213,10 +207,10 @@ export const BrandKnowledge: React.FC<Props> = ({
 
         <button
           onClick={() => setActiveTab('facts')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'facts'
-              ? 'bg-white/15 text-white border border-white/20 shadow-sm'
-              : 'text-zinc-400 hover:text-white'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <FileCheck className="w-3.5 h-3.5" />
@@ -225,10 +219,10 @@ export const BrandKnowledge: React.FC<Props> = ({
 
         <button
           onClick={() => setActiveTab('claims')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'claims'
-              ? 'bg-white/15 text-white border border-white/20 shadow-sm'
-              : 'text-zinc-400 hover:text-white'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <ShieldCheck className="w-3.5 h-3.5" />
@@ -237,10 +231,10 @@ export const BrandKnowledge: React.FC<Props> = ({
 
         <button
           onClick={() => setActiveTab('assets')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'assets'
-              ? 'bg-white/15 text-white border border-white/20 shadow-sm'
-              : 'text-zinc-400 hover:text-white'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <Palette className="w-3.5 h-3.5" />
@@ -248,24 +242,24 @@ export const BrandKnowledge: React.FC<Props> = ({
         </button>
       </div>
 
-      {/* Tab 1: Guidelines List */}
+      {/* Tab 1: Guidelines List in Adwise Glass Panels */}
       {activeTab === 'guidelines' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {guidelines.map((g) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {guidelines.map((g, idx) => (
             <div
               key={g.id}
-              className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl flex flex-col justify-between space-y-4 hover:border-white/20 transition-all shadow-xl group"
+              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 hover:scale-[1.01] transition-transform duration-300 shadow-md group`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-zinc-300 border border-white/15">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-purple-100 text-purple-700 font-bold border border-purple-200">
                     {g.category}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-zinc-500">V{g.version}</span>
+                    <span className="text-[10px] font-mono text-slate-500 font-bold">V{g.version}</span>
                     <button
                       onClick={() => onDeleteGuideline(g.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-white/5 transition-all cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
                       title="Delete Guideline"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -273,15 +267,15 @@ export const BrandKnowledge: React.FC<Props> = ({
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-white tracking-tight">{g.title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{g.description}</p>
+                <h3 className="text-base font-bold text-slate-800 tracking-tight">{g.title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{g.description}</p>
 
-                <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">Rules:</span>
+                <div className="pt-2 border-t border-white/50 space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Rules:</span>
                   <ul className="space-y-1">
-                    {g.rules.map((rule, idx) => (
-                      <li key={idx} className="text-[11px] text-zinc-300 flex items-start gap-2">
-                        <span className="text-white/40 mt-1">•</span>
+                    {g.rules.map((rule, rIdx) => (
+                      <li key={rIdx} className="text-[11px] text-slate-700 flex items-start gap-2 font-medium">
+                        <span className="text-pink-500 mt-1 font-bold">•</span>
                         <span>{rule}</span>
                       </li>
                     ))}
@@ -289,62 +283,62 @@ export const BrandKnowledge: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
                 <span>Effective: {g.effectiveDate}</span>
-                <span className="text-emerald-400 uppercase font-bold tracking-wider">{g.status}</span>
+                <span className="text-emerald-700 uppercase font-bold tracking-wider">{g.status}</span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Tab 2: Terminology Rules */}
+      {/* Tab 2: Terminology Rules Table (Adwise Table style) */}
       {activeTab === 'terminology' && (
-        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-5 shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+        <div className="glass-panel p-6 space-y-5 shadow-lg">
+          <div className="flex items-center justify-between pb-3 border-b border-white/40">
             <div>
-              <h3 className="text-base font-bold text-white">Active Terminology Dictionary</h3>
-              <p className="text-xs text-zinc-400">Deterministic string and semantic pattern matching for prohibited words.</p>
+              <h3 className="text-base font-bold text-slate-800">Active Terminology Dictionary</h3>
+              <p className="text-xs text-slate-600">Deterministic string and semantic pattern matching for prohibited words.</p>
             </div>
-            <span className="text-xs font-mono text-zinc-400">{terminology.length} rules loaded</span>
+            <span className="text-xs font-mono font-bold text-slate-600">{terminology.length} rules loaded</span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-zinc-300">
-              <thead className="bg-white/[0.02] text-zinc-400 text-[10px] uppercase font-mono border-b border-white/10">
-                <tr>
-                  <th className="py-3 px-4">Prohibited Phrase</th>
-                  <th className="py-3 px-4">Preferred Alternative</th>
-                  <th className="py-3 px-4">Severity</th>
-                  <th className="py-3 px-4">Policy Rationale</th>
-                  <th className="py-3 px-4 text-right">Action</th>
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-white/40 text-slate-500 uppercase text-[10px] font-mono font-bold tracking-wider">
+                  <th className="p-4 font-bold">Prohibited Phrase</th>
+                  <th className="p-4 font-bold">Preferred Alternative</th>
+                  <th className="p-4 font-bold">Severity</th>
+                  <th className="p-4 font-bold">Policy Rationale</th>
+                  <th className="p-4 font-bold text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {terminology.map((t) => (
-                  <tr key={t.id} className="hover:bg-white/[0.02] transition-colors group">
-                    <td className="py-3.5 px-4 font-mono font-bold text-rose-300">
+                  <tr key={t.id} className="border-b border-white/20 hover:bg-white/40 transition-colors group">
+                    <td className="p-4 font-mono font-bold text-rose-700">
                       "{t.prohibitedTerm}"
                     </td>
-                    <td className="py-3.5 px-4 font-semibold text-emerald-300">
+                    <td className="p-4 font-semibold text-emerald-800">
                       "{t.preferredTerm}"
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
-                        t.severity === 'critical' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30' :
-                        t.severity === 'warning' ? 'bg-zinc-700 text-zinc-200 border border-zinc-600' :
-                        'bg-white/10 text-zinc-300 border border-white/15'
+                    <td className="p-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
+                        t.severity === 'critical' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                        t.severity === 'warning' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
+                        'bg-blue-100 text-blue-700 border border-blue-300'
                       }`}>
                         {t.severity}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-zinc-400 text-xs max-w-md">
+                    <td className="p-4 text-slate-600 text-xs max-w-md font-medium">
                       {t.reason}
                     </td>
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="p-4 text-right">
                       <button
                         onClick={() => onDeleteTerminology(t.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-white/5 transition-all cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
                         title="Delete Rule"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -360,22 +354,22 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Tab 3: Corporate Facts */}
       {activeTab === 'facts' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {facts.map((f) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {facts.map((f, idx) => (
             <div
               key={f.id}
-              className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl flex flex-col justify-between space-y-4 shadow-xl hover:border-white/20 transition-all group"
+              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-zinc-300 border border-white/15">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-blue-100 text-blue-700 font-bold border border-blue-200">
                     {f.category}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-zinc-500">{f.factKey}</span>
+                    <span className="text-[10px] font-mono text-slate-500 font-bold">{f.factKey}</span>
                     <button
                       onClick={() => onDeleteFact(f.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-white/5 transition-all cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
                       title="Delete Fact"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -383,21 +377,21 @@ export const BrandKnowledge: React.FC<Props> = ({
                   </div>
                 </div>
 
-                <p className="text-sm font-semibold text-white leading-relaxed">
+                <p className="text-sm font-bold text-slate-800 leading-relaxed">
                   "{f.statement}"
                 </p>
 
-                <div className="pt-2 border-t border-white/[0.06] space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Verified Source:</span>
-                  <div className="text-xs text-zinc-300 font-mono bg-white/[0.03] p-2 rounded-xl border border-white/5">
+                <div className="pt-2 border-t border-white/50 space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Verified Source:</span>
+                  <div className="text-xs text-slate-700 font-mono bg-white/60 p-2.5 rounded-xl border border-white font-medium">
                     {f.verifiedSource}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
                 <span>Verified: {f.verifiedDate}</span>
-                <span className="text-emerald-400 font-bold">SOC 2 Grounded</span>
+                <span className="text-emerald-700 font-bold">SOC 2 Grounded</span>
               </div>
             </div>
           ))}
@@ -406,39 +400,39 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Tab 4: Approved Claims */}
       {activeTab === 'claims' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {claims.map((c) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {claims.map((c, idx) => (
             <div
               key={c.id}
-              className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl flex flex-col justify-between space-y-4 shadow-xl hover:border-white/20 transition-all group"
+              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/10 text-zinc-300 border border-white/15">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-pink-100 text-pink-700 font-bold border border-pink-200">
                     Substantiated Claim
                   </span>
                   <button
                     onClick={() => onDeleteClaim(c.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-white/5 transition-all cursor-pointer"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
                     title="Delete Claim"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <p className="text-base font-bold text-white leading-relaxed">
+                <p className="text-base font-bold text-slate-800 leading-relaxed">
                   "{c.claimText}"
                 </p>
 
-                <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">Documented Evidence:</span>
-                  <p className="text-xs text-zinc-300 leading-relaxed">
+                <div className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Documented Evidence:</span>
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
                     {c.substantiationEvidence}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
                 <span>Approved By: {c.approvedBy}</span>
                 <span>Expires: {c.expiresAt}</span>
               </div>
@@ -449,22 +443,22 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Tab 5: Brand Assets */}
       {activeTab === 'assets' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {assets.map((a) => (
             <div
               key={a.id}
-              className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-xl"
+              className="glass-panel p-6 space-y-4 shadow-md"
             >
-              <div className="h-40 rounded-2xl bg-[#09090d] border border-white/10 flex items-center justify-center p-4">
-                <ChromeShield className="w-20 h-20 filter drop-shadow-[0_4px_16px_rgba(255,255,255,0.2)]" />
+              <div className="h-40 rounded-2xl bg-white/70 border border-white flex items-center justify-center p-4 shadow-inner">
+                <ChromeShield className="w-20 h-20 filter drop-shadow-[0_4px_12px_rgba(205,180,219,0.5)]" />
               </div>
               <div className="space-y-1">
-                <div className="text-xs font-mono uppercase tracking-wider text-zinc-400">{a.type}</div>
-                <h3 className="text-sm font-bold text-white">{a.name}</h3>
+                <div className="text-xs font-mono uppercase tracking-wider text-purple-700 font-bold">{a.type}</div>
+                <h3 className="text-sm font-bold text-slate-800">{a.name}</h3>
               </div>
-              <div className="pt-2 border-t border-white/[0.06] text-[11px] text-zinc-400 space-y-1 font-mono">
-                <div>Clear space requirement: <span className="text-white">{a.metadata?.minimumClearSpacePx}px</span></div>
-                <div>Format: <span className="text-white">{a.metadata?.mimeType}</span></div>
+              <div className="pt-2 border-t border-white/50 text-[11px] text-slate-600 space-y-1 font-mono font-semibold">
+                <div>Clear space requirement: <span className="text-slate-800">{a.metadata?.minimumClearSpacePx}px</span></div>
+                <div>Format: <span className="text-slate-800">{a.metadata?.mimeType}</span></div>
               </div>
             </div>
           ))}
@@ -473,20 +467,20 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-          <div className="relative w-full max-w-xl bg-[#09090d]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-7 shadow-2xl text-slate-200 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl glass-panel bg-white/95 p-7 shadow-2xl text-slate-800 space-y-5 border border-white">
             <button
               onClick={() => setShowAddModal(false)}
-              className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors p-1 cursor-pointer"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-800 transition-colors p-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
+              <div className="text-xs uppercase font-mono tracking-widest text-pink-600 font-bold">
                 Governance Rule Registry
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight mt-1">
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight mt-1">
                 {activeTab === 'guidelines' ? 'Register New Brand Guideline' :
                  activeTab === 'terminology' ? 'Add Prohibited Term & Suggestion' :
                  activeTab === 'facts' ? 'Register Verified Corporate Fact' : 'Register Approved Claim'}
@@ -497,24 +491,24 @@ export const BrandKnowledge: React.FC<Props> = ({
             {activeTab === 'guidelines' && (
               <form onSubmit={handleCreateGuideline} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Guideline Title</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Guideline Title</label>
                   <input
                     type="text"
                     required
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder="e.g. Tone of Voice & Technical Empathy"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-zinc-400 mb-1 font-semibold">Compliance Category</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Compliance Category</label>
                     <select
                       value={newCategory}
                       onChange={(e) => setNewCategory(e.target.value as any)}
-                      className="w-full bg-[#121218] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                      className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     >
                       <option value="tone">Brand Tone & Voice</option>
                       <option value="claims">Promotional Claims</option>
@@ -526,24 +520,24 @@ export const BrandKnowledge: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Policy Description</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Policy Description</label>
                   <textarea
                     rows={2}
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     placeholder="Explain the brand context and governing principle..."
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Actionable Rules (One per line)</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Actionable Rules (One per line)</label>
                   <textarea
                     rows={3}
                     value={newRules}
                     onChange={(e) => setNewRules(e.target.value)}
                     placeholder="Always write in active voice&#10;Never use unsubstantiated superlative claims"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
@@ -551,13 +545,13 @@ export const BrandKnowledge: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/5 cursor-pointer"
+                    className="px-5 py-2.5 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-white text-black font-bold hover:bg-zinc-200 transition-all cursor-pointer shadow-lg"
+                    className="glass-button px-6 py-2.5 rounded-full text-slate-900 font-bold shadow-lg hover:scale-105 transition-all cursor-pointer"
                   >
                     Register Guideline
                   </button>
@@ -570,35 +564,35 @@ export const BrandKnowledge: React.FC<Props> = ({
               <form onSubmit={handleCreateTerminology} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-zinc-400 mb-1 font-semibold">Prohibited Term / Phrase</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Prohibited Term / Phrase</label>
                     <input
                       type="text"
                       required
                       value={newProhibited}
                       onChange={(e) => setNewProhibited(e.target.value)}
                       placeholder="e.g. cheap, 100% uptime"
-                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                      className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-zinc-400 mb-1 font-semibold">Preferred Alternative</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Preferred Alternative</label>
                     <input
                       type="text"
                       required
                       value={newPreferred}
                       onChange={(e) => setNewPreferred(e.target.value)}
                       placeholder="e.g. cost-effective, 99.99% availability"
-                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                      className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Severity</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Severity</label>
                   <select
                     value={newSeverity}
                     onChange={(e) => setNewSeverity(e.target.value as any)}
-                    className="w-full bg-[#121218] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                   >
                     <option value="critical">Critical (Blocks Publication)</option>
                     <option value="warning">Warning (Review Recommended)</option>
@@ -607,13 +601,13 @@ export const BrandKnowledge: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Why is this prohibited?</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Why is this prohibited?</label>
                   <textarea
                     rows={2}
                     value={newReason}
                     onChange={(e) => setNewReason(e.target.value)}
                     placeholder="Devalues enterprise premium positioning..."
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
@@ -621,13 +615,13 @@ export const BrandKnowledge: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/5 cursor-pointer"
+                    className="px-5 py-2.5 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-white text-black font-bold hover:bg-zinc-200 transition-all cursor-pointer shadow-lg"
+                    className="glass-button px-6 py-2.5 rounded-full text-slate-900 font-bold shadow-lg hover:scale-105 transition-all cursor-pointer"
                   >
                     Add Term Rule
                   </button>
@@ -639,24 +633,24 @@ export const BrandKnowledge: React.FC<Props> = ({
             {activeTab === 'facts' && (
               <form onSubmit={handleCreateFact} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Verified Corporate Statement</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Verified Corporate Statement</label>
                   <textarea
                     rows={2}
                     required
                     value={newFactStatement}
                     onChange={(e) => setNewFactStatement(e.target.value)}
                     placeholder="e.g. Nexus infrastructure operates across 4 primary cloud regions: Mumbai, Singapore, Frankfurt, and San Jose."
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-zinc-400 mb-1 font-semibold">Fact Category</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Fact Category</label>
                     <select
                       value={newFactCategory}
                       onChange={(e) => setNewFactCategory(e.target.value as any)}
-                      className="w-full bg-[#121218] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                      className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     >
                       <option value="corporate">Corporate &amp; Leadership</option>
                       <option value="product">Product &amp; Technical</option>
@@ -665,25 +659,25 @@ export const BrandKnowledge: React.FC<Props> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-zinc-400 mb-1 font-semibold">Fact Reference Key</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Fact Reference Key</label>
                     <input
                       type="text"
                       value={newFactKey}
                       onChange={(e) => setNewFactKey(e.target.value)}
                       placeholder="e.g. cloud_regions"
-                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                      className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Verification Source Document</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Verification Source Document</label>
                   <input
                     type="text"
                     value={newFactSource}
                     onChange={(e) => setNewFactSource(e.target.value)}
                     placeholder="e.g. Global Datacenter Operations Report Q4 2025"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                   />
                 </div>
 
@@ -691,13 +685,13 @@ export const BrandKnowledge: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/5 cursor-pointer"
+                    className="px-5 py-2.5 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-white text-black font-bold hover:bg-zinc-200 transition-all cursor-pointer shadow-lg"
+                    className="glass-button px-6 py-2.5 rounded-full text-slate-900 font-bold shadow-lg hover:scale-105 transition-all cursor-pointer"
                   >
                     Save Verified Fact
                   </button>
@@ -709,36 +703,36 @@ export const BrandKnowledge: React.FC<Props> = ({
             {activeTab === 'claims' && (
               <form onSubmit={handleCreateClaim} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Claim Text</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Claim Text</label>
                   <input
                     type="text"
                     required
                     value={newClaimText}
                     onChange={(e) => setNewClaimText(e.target.value)}
                     placeholder="e.g. Accelerates content review cycles by up to 65%"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Substantiation Evidence</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Substantiation Evidence</label>
                   <textarea
                     rows={2}
                     value={newClaimEvidence}
                     onChange={(e) => setNewClaimEvidence(e.target.value)}
                     placeholder="Verified study details or third-party audit attribution..."
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1 font-semibold">Authorized Channels (comma separated)</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Authorized Channels (comma separated)</label>
                   <input
                     type="text"
                     value={newClaimChannels}
                     onChange={(e) => setNewClaimChannels(e.target.value)}
                     placeholder="LinkedIn, Press Releases, Website"
-                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="w-full bg-white/80 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                   />
                 </div>
 
@@ -746,13 +740,13 @@ export const BrandKnowledge: React.FC<Props> = ({
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/5 cursor-pointer"
+                    className="px-5 py-2.5 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-full bg-white text-black font-bold hover:bg-zinc-200 transition-all cursor-pointer shadow-lg"
+                    className="glass-button px-6 py-2.5 rounded-full text-slate-900 font-bold shadow-lg hover:scale-105 transition-all cursor-pointer"
                   >
                     Register Approved Claim
                   </button>

@@ -37,98 +37,94 @@ const trendData = [
 export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
   return (
     <div className="relative space-y-8 pb-16">
-      {/* Decorative dot matrix in background */}
-      <div className="absolute top-0 right-0 w-80 h-72 dot-pattern opacity-30 pointer-events-none rounded-3xl" />
-
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
-        <div className="space-y-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
+        <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.15)]" />
+            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-[0_4px_10px_rgba(205,180,219,0.5)]" />
             <div>
-              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
-                Intelligence &amp; Trends
-              </div>
-              <h1 className="text-3xl font-extrabold text-white tracking-tight font-sans">
+              <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight font-sans">
                 Governance Analytics &amp; Ambiguity
               </h1>
+              <p className="text-xs text-slate-600 font-medium">
+                Identify recurring brand drift, departmental compliance health, and guidelines that creators frequently contest.
+              </p>
             </div>
           </div>
-          <p className="text-xs text-zinc-400 max-w-xl">
-            Identify recurring brand drift, departmental compliance health, and guidelines that creators frequently contest.
-          </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-white/[0.04] px-4 py-2 rounded-full border border-white/10 text-xs shadow-sm">
-          <TrendingUp className="w-4 h-4 text-emerald-400" />
-          <span className="text-zinc-400 font-medium">Trajectory:</span>
-          <span className="text-emerald-400 font-bold font-mono">+17 pts (Q4-Q1)</span>
+        <div className="flex items-center gap-2 glass-panel px-5 py-2.5 rounded-full text-xs shadow-sm bg-white/50 border border-white">
+          <TrendingUp className="w-4 h-4 text-emerald-600" />
+          <span className="text-slate-600 font-medium">Trajectory:</span>
+          <span className="text-emerald-700 font-bold font-mono">+17 pts (Q4-Q1)</span>
         </div>
       </div>
 
-      {/* Visual Analytics Grid */}
+      {/* Visual Analytics Grid in Adwise Glass Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Compliance Progress Trend */}
-        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="silver-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="glass-panel p-6 space-y-4 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-white/40">
+            <div className="adwise-bar">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Overall Brand Health Progression
               </h3>
-              <p className="text-[11px] text-zinc-400">Monthly compliance score average (0-100)</p>
+              <p className="text-[11px] text-slate-500">Monthly compliance score average (0-100)</p>
             </div>
-            <span className="text-xs font-mono font-bold text-white">88% Current</span>
+            <span className="text-xs font-mono font-bold text-purple-700 bg-purple-100 px-3 py-1 rounded-full border border-purple-200">
+              88% Current
+            </span>
           </div>
 
           <div className="h-60 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
                 <defs>
-                  <linearGradient id="scoreSilver" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#ffffff" stopOpacity={0.0} />
+                  <linearGradient id="adwiseAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FFAFCC" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#BDE0FE" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#22222d" />
-                <XAxis dataKey="month" stroke="#64748b" fontSize={11} />
-                <YAxis domain={[50, 100]} stroke="#64748b" fontSize={11} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.4)" vertical={false} />
+                <XAxis dataKey="month" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis domain={[50, 100]} stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#09090d', borderColor: '#333344', borderRadius: '1rem', fontSize: '11px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderRadius: '16px', border: '1px solid white', fontSize: '12px', color: '#1e293b', fontWeight: 'bold' }}
                 />
-                <Area type="monotone" dataKey="score" stroke="#ffffff" strokeWidth={2.5} fillOpacity={1} fill="url(#scoreSilver)" />
+                <Area type="monotone" dataKey="score" stroke="#FFAFCC" strokeWidth={3} fillOpacity={1} fill="url(#adwiseAreaGrad)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Department Compliance Scores */}
-        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="silver-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="glass-panel-alt p-6 space-y-4 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-white/40">
+            <div className="adwise-bar">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Departmental Compliance Velocity
               </h3>
-              <p className="text-[11px] text-zinc-400">Compliance health across organizational teams</p>
+              <p className="text-[11px] text-slate-500">Compliance health across organizational teams</p>
             </div>
-            <Users className="w-4 h-4 text-zinc-400" />
+            <Users className="w-4 h-4 text-purple-600" />
           </div>
 
           <div className="space-y-3 pt-2">
             {metrics.departmentScores.map((dept) => (
-              <div key={dept.department} className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5">
+              <div key={dept.department} className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-white">{dept.department}</span>
-                  <span className="font-mono font-bold text-zinc-200">{dept.score}/100</span>
+                  <span className="font-bold text-slate-800">{dept.department}</span>
+                  <span className="font-mono font-black text-slate-800">{dept.score}/100</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-white/[0.05] overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-white/70 overflow-hidden shadow-inner">
                   <div 
-                    className="h-full rounded-full bg-gradient-to-r from-zinc-400 to-white transition-all duration-500" 
+                    className="h-full rounded-full bg-gradient-to-r from-[#FFAFCC] to-[#A2D2FF] transition-all duration-500" 
                     style={{ width: `${dept.score}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
                   <span>{dept.contentVolume} assets produced</span>
-                  <span className={dept.score >= 90 ? 'text-emerald-400' : 'text-zinc-300'}>
+                  <span className={dept.score >= 90 ? 'text-emerald-700' : 'text-blue-700'}>
                     {dept.score >= 90 ? 'High Adherence' : 'Active Optimization'}
                   </span>
                 </div>
@@ -141,26 +137,26 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
       {/* Frequent Issues & Ambiguity Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Frequent Terminology Misses */}
-        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="silver-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="glass-panel p-6 space-y-4 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-white/40">
+            <div className="adwise-bar">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Recurring Terminology Drift
               </h3>
-              <p className="text-[11px] text-zinc-400">Words creators repeatedly draft before AI correction</p>
+              <p className="text-[11px] text-slate-500">Words creators repeatedly draft before AI correction</p>
             </div>
-            <AlertTriangle className="w-4 h-4 text-zinc-400" />
+            <AlertTriangle className="w-4 h-4 text-purple-600" />
           </div>
 
           <div className="space-y-2.5">
             {metrics.frequentTerminologyMisses.map((miss, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
+              <div key={idx} className="p-3 rounded-2xl bg-white/60 border border-white flex items-center justify-between text-xs shadow-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-rose-300 font-mono font-bold">"{miss.prohibited}"</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
-                  <span className="text-emerald-300 font-mono font-semibold">"{miss.preferred}"</span>
+                  <span className="text-rose-700 font-mono font-bold">"{miss.prohibited}"</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="text-emerald-800 font-mono font-bold">"{miss.preferred}"</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 font-bold">
+                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold border border-purple-200">
                   {miss.count} occurrences
                 </span>
               </div>
@@ -169,30 +165,30 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
         </div>
 
         {/* Guideline Ambiguity List */}
-        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="silver-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="glass-panel-alt p-6 space-y-4 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-white/40">
+            <div className="adwise-bar">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Contested Guidelines &amp; Ambiguity
               </h3>
-              <p className="text-[11px] text-zinc-400">Policies with high creator dispute rates requiring brand clarification</p>
+              <p className="text-[11px] text-slate-500">Policies with high creator dispute rates requiring brand clarification</p>
             </div>
-            <HelpCircle className="w-4 h-4 text-zinc-400" />
+            <HelpCircle className="w-4 h-4 text-blue-600" />
           </div>
 
           <div className="space-y-3">
             {metrics.guidelineAmbiguityList.map((item, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+              <div key={idx} className="p-4 rounded-2xl bg-white/60 border border-white space-y-2 shadow-sm">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">{item.guidelineTitle}</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-200 border border-white/10 font-bold">
+                  <span className="font-bold text-slate-800">{item.guidelineTitle}</span>
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">
                     {item.disputeRate}% Dispute Rate
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   {item.feedback}
                 </p>
-                <div className="text-[10px] text-zinc-300 font-medium flex items-center gap-1.5 pt-1">
+                <div className="text-[10px] text-purple-700 font-bold flex items-center gap-1.5 pt-1">
                   <FileEdit className="w-3.5 h-3.5" />
                   <span>Recommendation: Update policy wording with specific threshold examples.</span>
                 </div>

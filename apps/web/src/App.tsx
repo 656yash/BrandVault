@@ -285,8 +285,13 @@ export function App() {
   const pendingReviewsCount = contentItems.filter(c => c.status === 'ready_for_review' || c.status === 'changes_requested').length;
 
   return (
-    <div className="min-h-screen bg-[#050507] flex flex-col font-sans text-slate-100 selection:bg-white selection:text-black">
-      {/* Top Floating Glassmorphic Capsule Navbar (Primary Navigation - Left Sidebar Removed) */}
+    <div className="min-h-screen relative overflow-hidden flex flex-col font-sans text-slate-800">
+      {/* Adwise Background Ambient Organic Glow Blobs (identical to Adwise Layout.jsx) */}
+      <div className="fixed top-[-10%] left-[-10%] w-[420px] h-[420px] bg-pink-soft/45 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[520px] h-[520px] bg-blue-sky/45 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed top-[30%] right-[15%] w-[380px] h-[380px] bg-primary/25 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top Floating Glassmorphic Capsule Navbar */}
       <Navbar
         currentRole={currentRole}
         onRoleChange={setCurrentRole}
@@ -296,8 +301,8 @@ export function App() {
         pendingReviewsCount={pendingReviewsCount}
       />
 
-      {/* Main Expansive Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Expansive Content Layout */}
+      <div className="flex-1 flex overflow-hidden relative z-10">
         <main className="flex-1 overflow-y-auto px-6 py-8 max-w-7xl mx-auto w-full">
           {currentTab === 'dashboard' && metrics && (
             <Dashboard
@@ -367,10 +372,10 @@ export function App() {
         </main>
       </div>
 
-      {/* Floating Glassmorphic Toast Notification (Pure Silver / White Glass, NO yellow outline) */}
+      {/* Floating Glassmorphic Toast Notification in Adwise Glass */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#09090d]/90 backdrop-blur-2xl border border-white/15 text-white px-5 py-3 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] text-xs font-semibold flex items-center gap-3 animate-in slide-in-from-bottom-3 duration-200">
-          <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+        <div className="fixed bottom-6 right-6 z-50 glass-panel bg-white/85 text-slate-800 px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-3 animate-in slide-in-from-bottom-3 duration-200 border border-white/80">
+          <span className="w-2.5 h-2.5 rounded-full bg-pink-rose animate-ping"></span>
           <span>{toastMessage}</span>
         </div>
       )}
