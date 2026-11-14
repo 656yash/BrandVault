@@ -44,9 +44,9 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-md" />
+            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.15)]" />
             <div>
-              <div className="text-xs uppercase font-mono tracking-widest text-slate-500 font-semibold">
+              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
                 Intelligence &amp; Trends
               </div>
               <h1 className="text-3xl font-extrabold text-white tracking-tight font-sans">
@@ -54,14 +54,14 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
               </h1>
             </div>
           </div>
-          <p className="text-xs text-slate-400 max-w-xl">
+          <p className="text-xs text-zinc-400 max-w-xl">
             Identify recurring brand drift, departmental compliance health, and guidelines that creators frequently contest.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-[#121217] px-4 py-2 rounded-full border border-white/10 text-xs shadow-sm">
+        <div className="flex items-center gap-2 bg-white/[0.04] px-4 py-2 rounded-full border border-white/10 text-xs shadow-sm">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
-          <span className="text-slate-400 font-medium">Trajectory:</span>
+          <span className="text-zinc-400 font-medium">Trajectory:</span>
           <span className="text-emerald-400 font-bold font-mono">+17 pts (Q4-Q1)</span>
         </div>
       </div>
@@ -69,165 +69,136 @@ export const GovernanceAnalytics: React.FC<Props> = ({ metrics }) => {
       {/* Visual Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Compliance Progress Trend */}
-        <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
+        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
           <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="gold-bar">
+            <div className="silver-bar">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                 Overall Brand Health Progression
               </h3>
-              <p className="text-[11px] text-slate-500">Monthly compliance score average (0-100)</p>
+              <p className="text-[11px] text-zinc-400">Monthly compliance score average (0-100)</p>
             </div>
-            <span className="text-xs font-mono font-bold text-amber-400">88% Current</span>
+            <span className="text-xs font-mono font-bold text-white">88% Current</span>
           </div>
 
           <div className="h-60 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
                 <defs>
-                  <linearGradient id="scoreGold" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
+                  <linearGradient id="scoreSilver" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#ffffff" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1c1c26" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#22222d" />
                 <XAxis dataKey="month" stroke="#64748b" fontSize={11} />
                 <YAxis domain={[50, 100]} stroke="#64748b" fontSize={11} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#121217', borderColor: '#2b2b38', borderRadius: '1rem', fontSize: '11px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#09090d', borderColor: '#333344', borderRadius: '1rem', fontSize: '11px', color: '#fff' }}
                 />
-                <Area type="monotone" dataKey="score" stroke="#f59e0b" strokeWidth={3} fillOpacity={1} fill="url(#scoreGold)" />
+                <Area type="monotone" dataKey="score" stroke="#ffffff" strokeWidth={2.5} fillOpacity={1} fill="url(#scoreSilver)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Top Violations Bar Chart */}
-        <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
+        {/* Department Compliance Scores */}
+        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
           <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="gold-bar">
+            <div className="silver-bar">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                Top Flagged Violation Categories
+                Departmental Compliance Velocity
               </h3>
-              <p className="text-[11px] text-slate-500">Total infractions detected across creative copy</p>
+              <p className="text-[11px] text-zinc-400">Compliance health across organizational teams</p>
             </div>
-            <span className="text-xs font-mono font-bold text-amber-400">51 Flags</span>
+            <Users className="w-4 h-4 text-zinc-400" />
           </div>
 
-          <div className="h-60 w-full pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={metrics.topViolations} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#1c1c26" />
-                <XAxis type="number" stroke="#64748b" fontSize={11} />
-                <YAxis dataKey="category" type="category" stroke="#94a3b8" fontSize={10} width={130} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#121217', borderColor: '#2b2b38', borderRadius: '1rem', fontSize: '11px', color: '#fff' }}
-                />
-                <Bar dataKey="count" fill="#f59e0b" radius={[0, 8, 8, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Department Breakdown & Frequent Terminology Misses */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Department Compliance */}
-        <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="gold-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                Departmental Compliance Breakdown
-              </h3>
-              <p className="text-[11px] text-slate-500">Internal benchmarking across teams</p>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-1">
-            {metrics.departmentScores.map((dept, i) => (
-              <div key={i} className="p-4 rounded-2xl bg-[#14141c] border border-white/5 space-y-2">
+          <div className="space-y-3 pt-2">
+            {metrics.departmentScores.map((dept) => (
+              <div key={dept.department} className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white">{dept.department}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[11px] text-slate-500 font-mono">{dept.contentVolume} assets</span>
-                    <span className={`font-mono font-bold text-sm ${
-                      dept.score >= 90 ? 'text-emerald-400' : 'text-amber-400'
-                    }`}>
-                      {dept.score}%
-                    </span>
-                  </div>
+                  <span className="font-mono font-bold text-zinc-200">{dept.score}/100</span>
                 </div>
-                <div className="w-full bg-[#1c1c28] h-2 rounded-full overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-white/[0.05] overflow-hidden">
                   <div 
-                    className={`h-full rounded-full transition-all duration-500 ${dept.score >= 90 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                    className="h-full rounded-full bg-gradient-to-r from-zinc-400 to-white transition-all duration-500" 
                     style={{ width: `${dept.score}%` }}
                   />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recurring Terminology Slip-Ups */}
-        <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-            <div className="gold-bar">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                Recurring Terminology Misses
-              </h3>
-              <p className="text-[11px] text-slate-500">Training &amp; coaching opportunities</p>
-            </div>
-          </div>
-
-          <div className="space-y-2.5 pt-1">
-            {metrics.frequentTerminologyMisses.map((item, i) => (
-              <div key={i} className="p-3.5 rounded-2xl bg-[#14141c] border border-white/5 flex items-center justify-between text-xs">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2 font-mono">
-                    <span className="text-rose-400 font-bold">&quot;{item.prohibited}&quot;</span>
-                    <ArrowRight className="w-3 h-3 text-slate-600" />
-                    <span className="text-emerald-400 font-bold">&quot;{item.preferred}&quot;</span>
-                  </div>
-                  <div className="text-[10px] text-slate-500">Repeated across multiple drafts</div>
+                <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                  <span>{dept.contentVolume} assets produced</span>
+                  <span className={dept.score >= 90 ? 'text-emerald-400' : 'text-zinc-300'}>
+                    {dept.score >= 90 ? 'High Adherence' : 'Active Optimization'}
+                  </span>
                 </div>
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-mono font-bold border border-amber-500/30">
-                  {item.count} misses
-                </span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Guideline Ambiguity Reports */}
-      <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
-        <div className="gold-bar">
-          <h3 className="text-sm font-bold text-white">Guideline Ambiguity &amp; Creator Dispute Report</h3>
-          <p className="text-xs text-slate-400">
-            Policies where creators frequently contest findings, indicating ambiguous wording or unrealistic standards.
-          </p>
-        </div>
+      {/* Frequent Issues & Ambiguity Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Most Frequent Terminology Misses */}
+        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
+          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+            <div className="silver-bar">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                Recurring Terminology Drift
+              </h3>
+              <p className="text-[11px] text-zinc-400">Words creators repeatedly draft before AI correction</p>
+            </div>
+            <AlertTriangle className="w-4 h-4 text-zinc-400" />
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
-          {metrics.guidelineAmbiguityList.map((item, i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[#14141c] border border-amber-500/20 space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <h4 className="text-xs font-bold text-white">{item.guidelineTitle}</h4>
-                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
-                  {item.disputeRate}% Dispute Rate
+          <div className="space-y-2.5">
+            {metrics.frequentTerminologyMisses.map((miss, idx) => (
+              <div key={idx} className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-rose-300 font-mono font-bold">"{miss.prohibited}"</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
+                  <span className="text-emerald-300 font-mono font-semibold">"{miss.preferred}"</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 font-bold">
+                  {miss.count} occurrences
                 </span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed italic">
-                &quot;{item.feedback}&quot;
-              </p>
-              <div className="pt-2 flex items-center justify-between text-[11px] border-t border-white/5">
-                <span className="text-amber-400 font-semibold font-mono">Action: Clarify Policy Threshold</span>
-                <button className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer">
-                  <FileEdit className="w-3 h-3" />
-                  <span>Draft Revision</span>
-                </button>
-              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Guideline Ambiguity List */}
+        <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
+          <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+            <div className="silver-bar">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                Contested Guidelines &amp; Ambiguity
+              </h3>
+              <p className="text-[11px] text-zinc-400">Policies with high creator dispute rates requiring brand clarification</p>
             </div>
-          ))}
+            <HelpCircle className="w-4 h-4 text-zinc-400" />
+          </div>
+
+          <div className="space-y-3">
+            {metrics.guidelineAmbiguityList.map((item, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">{item.guidelineTitle}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-200 border border-white/10 font-bold">
+                    {item.disputeRate}% Dispute Rate
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  {item.feedback}
+                </p>
+                <div className="text-[10px] text-zinc-300 font-medium flex items-center gap-1.5 pt-1">
+                  <FileEdit className="w-3.5 h-3.5" />
+                  <span>Recommendation: Update policy wording with specific threshold examples.</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

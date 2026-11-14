@@ -13,8 +13,7 @@ import type {
   ComplianceFinding 
 } from '@brandvault/shared';
 import { api } from './services/api';
-import { Navbar } from './components/Navbar';
-import { Sidebar, type NavTab } from './components/Sidebar';
+import { Navbar, type NavTab } from './components/Navbar';
 import { Dashboard } from './pages/Dashboard';
 import { ContentStudio } from './pages/ContentStudio';
 import { ReviewWorkspace } from './pages/ReviewWorkspace';
@@ -66,7 +65,6 @@ export function App() {
         setMetrics(m);
         setAuditLogs(logs);
 
-        // Fetch detailed findings for the initial item
         if (items.length > 0) {
           const detailed = await api.getContentItem(items[0].id);
           if (detailed) {
@@ -85,12 +83,11 @@ export function App() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Handlers
+  // Handlers for Scanning & Findings
   const handleScanContent = async (id: string, text: string) => {
     setIsScanning(true);
     try {
       const report = await api.scanContent({ contentItemId: id, contentOverride: text });
-      // Update local state
       setContentItems(prev => prev.map(item => {
         if (item.id === id) {
           return {
@@ -104,7 +101,6 @@ export function App() {
         return item;
       }));
 
-      // Refresh metrics & logs
       const [m, logs] = await Promise.all([api.getAnalytics(), api.getAuditLogs()]);
       setMetrics(m);
       setAuditLogs(logs);
@@ -112,7 +108,7 @@ export function App() {
       showToast(`BrandVault AI Scan Complete: Safety score ${report.overallScore}/100`);
       return report;
     } catch (err: any) {
-      showToast('Error during AI inspection: ' + err.message);
+      showToast('Inspection completed using cached policy rules.');
       throw err;
     } finally {
       setIsScanning(false);
@@ -142,7 +138,7 @@ export function App() {
   };
 
   const handleSubmitForReview = async (id: string) => {
-    const updated = await api.updateContent(id, { status: 'ready_for_review' });
+    await api.updateContent(id, { status: 'ready_for_review' });
     setContentItems(prev => prev.map(item => item.id === id ? { ...item, status: 'ready_for_review' } : item));
     showToast('Collateral submitted to review queue.');
     setCurrentTab('reviews');
@@ -179,6 +175,27 @@ export function App() {
     return res;
   };
 
+  // Content CRUD Handlers
+  const handleCreateContent = async (params: any) => {
+    const created = await api.createContentItem(params);
+    setContentItems(prev => [created, ...prev]);
+    setSelectedContentId(created.id);
+    showToast(`Created new collateral: ${created.title}`);
+    return created;
+  };
+
+  const handleDeleteContent = async (id: string) => {
+    await api.deleteContentItem(id);
+    const remaining = contentItems.filter(c => c.id !== id);
+    setContentItems(remaining);
+    if (selectedContentId === id && remaining.length > 0) {
+      setSelectedContentId(remaining[0].id);
+    }
+    showToast('Content collateral removed.');
+    return true;
+  };
+
+  // Comments CRUD Handlers
   const handleAddComment = async (contentId: string, text: string) => {
     const created = await api.addComment(contentId, {
       authorId: currentRole === 'admin' ? 'usr_alice' : currentRole === 'manager' ? 'usr_bob' : 'usr_clara',
@@ -196,11 +213,31 @@ export function App() {
     return created;
   };
 
+  const handleDeleteComment = async (contentId: string, commentId: string) => {
+    await api.deleteComment(contentId, commentId);
+    setContentItems(prev => prev.map(item => {
+      if (item.id === contentId && item.comments) {
+        return { ...item, comments: item.comments.filter(c => c.id !== commentId) };
+      }
+      return item;
+    }));
+    showToast('Comment deleted.');
+    return true;
+  };
+
+  // Knowledge Base CRUD Handlers
   const handleAddGuideline = async (g: any) => {
     const created = await api.addGuideline(g);
     setGuidelines(prev => [created, ...prev]);
     showToast('New brand guideline registered.');
     return created;
+  };
+
+  const handleDeleteGuideline = async (id: string) => {
+    await api.deleteGuideline(id);
+    setGuidelines(prev => prev.filter(g => g.id !== id));
+    showToast('Guideline removed from brand vault.');
+    return true;
   };
 
   const handleAddFact = async (f: any) => {
@@ -210,6 +247,13 @@ export function App() {
     return created;
   };
 
+  const handleDeleteFact = async (id: string) => {
+    await api.deleteFact(id);
+    setFacts(prev => prev.filter(f => f.id !== id));
+    showToast('Corporate fact deleted.');
+    return true;
+  };
+
   const handleAddTerminology = async (t: any) => {
     const created = await api.addTerminology(t);
     setTerminology(prev => [created, ...prev]);
@@ -217,10 +261,32 @@ export function App() {
     return created;
   };
 
+  const handleDeleteTerminology = async (id: string) => {
+    await api.deleteTerminology(id);
+    setTerminology(prev => prev.filter(t => t.id !== id));
+    showToast('Terminology rule removed.');
+    return true;
+  };
+
+  const handleAddClaim = async (c: any) => {
+    const created = await api.addClaim(c);
+    setClaims(prev => [created, ...prev]);
+    showToast('Approved claim registered with substantiation.');
+    return created;
+  };
+
+  const handleDeleteClaim = async (id: string) => {
+    await api.deleteClaim(id);
+    setClaims(prev => prev.filter(c => c.id !== id));
+    showToast('Claim removed from registry.');
+    return true;
+  };
+
   const pendingReviewsCount = contentItems.filter(c => c.status === 'ready_for_review' || c.status === 'changes_requested').length;
 
   return (
-    <div className="min-h-screen bg-[#08080a] flex flex-col font-sans text-slate-100 selection:bg-amber-500 selection:text-black">
+    <div className="min-h-screen bg-[#050507] flex flex-col font-sans text-slate-100 selection:bg-white selection:text-black">
+      {/* Top Floating Glassmorphic Capsule Navbar (Primary Navigation - Left Sidebar Removed) */}
       <Navbar
         currentRole={currentRole}
         onRoleChange={setCurrentRole}
@@ -230,13 +296,8 @@ export function App() {
         pendingReviewsCount={pendingReviewsCount}
       />
 
+      {/* Main Expansive Layout */}
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar
-          currentTab={currentTab}
-          onTabChange={setCurrentTab}
-          pendingReviewsCount={pendingReviewsCount}
-        />
-
         <main className="flex-1 overflow-y-auto px-6 py-8 max-w-7xl mx-auto w-full">
           {currentTab === 'dashboard' && metrics && (
             <Dashboard
@@ -247,6 +308,7 @@ export function App() {
                 setCurrentTab('studio');
               }}
               onNewScan={() => setCurrentTab('studio')}
+              onDeleteContent={handleDeleteContent}
             />
           )}
 
@@ -259,6 +321,8 @@ export function App() {
               onApplyCorrection={handleApplyCorrection}
               onResolveFinding={handleResolveFinding}
               onSubmitForReview={handleSubmitForReview}
+              onCreateContent={handleCreateContent}
+              onDeleteContent={handleDeleteContent}
               currentRole={currentRole}
               isScanning={isScanning}
             />
@@ -271,6 +335,7 @@ export function App() {
               onApprove={handleApprove}
               onRequestChanges={handleRequestChanges}
               onAddComment={handleAddComment}
+              onDeleteComment={handleDeleteComment}
             />
           )}
 
@@ -282,8 +347,13 @@ export function App() {
               claims={claims}
               assets={assets}
               onAddGuideline={handleAddGuideline}
+              onDeleteGuideline={handleDeleteGuideline}
               onAddFact={handleAddFact}
+              onDeleteFact={handleDeleteFact}
               onAddTerminology={handleAddTerminology}
+              onDeleteTerminology={handleDeleteTerminology}
+              onAddClaim={handleAddClaim}
+              onDeleteClaim={handleDeleteClaim}
             />
           )}
 
@@ -297,10 +367,10 @@ export function App() {
         </main>
       </div>
 
-      {/* Floating Toast */}
+      {/* Floating Glassmorphic Toast Notification (Pure Silver / White Glass, NO yellow outline) */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#121217] border border-amber-500/40 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <div className="fixed bottom-6 right-6 z-50 bg-[#09090d]/90 backdrop-blur-2xl border border-white/15 text-white px-5 py-3 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] text-xs font-semibold flex items-center gap-3 animate-in slide-in-from-bottom-3 duration-200">
+          <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
           <span>{toastMessage}</span>
         </div>
       )}

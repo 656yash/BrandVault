@@ -10,7 +10,9 @@ import {
   BookOpen, 
   CheckCircle2,
   FileCheck2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import type { 
   ContentItem, 
@@ -34,6 +36,8 @@ interface Props {
   onApplyCorrection: (finding: ComplianceFinding) => void;
   onResolveFinding: (findingId: string, decision: 'accepted' | 'rejected') => void;
   onSubmitForReview: (id: string) => void;
+  onCreateContent: (item: any) => Promise<ContentItem>;
+  onDeleteContent: (id: string) => Promise<boolean>;
   currentRole: UserRole;
   isScanning: boolean;
 }
@@ -46,12 +50,22 @@ export const ContentStudio: React.FC<Props> = ({
   onApplyCorrection,
   onResolveFinding,
   onSubmitForReview,
+  onCreateContent,
+  onDeleteContent,
   currentRole,
   isScanning,
 }) => {
   const currentItem = contentItems.find(c => c.id === selectedContentId) || contentItems[0];
   const [editorText, setEditorText] = useState(currentItem?.rawContent || '');
   const [activeFilter, setActiveFilter] = useState<'all' | 'critical' | 'warning' | 'suggestion'>('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // New Content Form
+  const [newTitle, setNewTitle] = useState('');
+  const [newType, setNewType] = useState<'social_ad' | 'blog_post' | 'press_release' | 'email_newsletter' | 'landing_page'>('social_ad');
+  const [newAudience, setNewAudience] = useState('');
+  const [newChannel, setNewChannel] = useState('');
+  const [newContent, setNewContent] = useState('');
 
   React.useEffect(() => {
     if (currentItem) {
@@ -81,18 +95,44 @@ export const ContentStudio: React.FC<Props> = ({
     onResolveFinding(finding.id, 'accepted');
   };
 
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim()) return;
+    const created = await onCreateContent({
+      title: newTitle,
+      contentType: newType,
+      targetAudience: newAudience || 'Enterprise Decision Makers',
+      targetChannel: newChannel || 'Digital Channels',
+      rawContent: newContent || 'Draft copy ready for compliance pre-flight inspection.',
+    });
+    setNewTitle('');
+    setNewAudience('');
+    setNewChannel('');
+    setNewContent('');
+    setShowCreateModal(false);
+    onSelectContent(created.id);
+  };
+
+  const handleDeleteItem = async () => {
+    if (!currentItem) return;
+    const confirmed = window.confirm(`Are you sure you want to remove "${currentItem.title}"?`);
+    if (confirmed) {
+      await onDeleteContent(currentItem.id);
+    }
+  };
+
   return (
     <div className="relative space-y-8 pb-16">
       {/* Decorative dot matrix in background */}
-      <div className="absolute top-0 right-0 w-72 h-72 dot-pattern opacity-30 pointer-events-none rounded-3xl" />
+      <div className="absolute top-0 right-0 w-80 h-72 dot-pattern opacity-30 pointer-events-none rounded-3xl" />
 
       {/* Studio Header Bar */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-md" />
+            <ChromePaperPlane className="w-8 h-8 filter drop-shadow-[0_4px_12px_rgba(255,255,255,0.15)]" />
             <div>
-              <div className="text-xs uppercase font-mono tracking-widest text-slate-500 font-semibold">
+              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
                 Pre-Flight Inspection
               </div>
               <h1 className="text-3xl font-extrabold text-white tracking-tight font-sans">
@@ -100,11 +140,11 @@ export const ContentStudio: React.FC<Props> = ({
               </h1>
             </div>
           </div>
-          <div className="flex items-center gap-3 pt-1">
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <select
               value={currentItem?.id}
               onChange={(e) => onSelectContent(e.target.value)}
-              className="bg-[#121217] border border-white/10 rounded-xl px-3 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-amber-500 shadow-sm"
+              className="bg-[#0e0e14] border border-white/10 rounded-xl px-3 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-white/40 shadow-sm"
             >
               {contentItems.map(c => (
                 <option key={c.id} value={c.id}>
@@ -112,9 +152,30 @@ export const ContentStudio: React.FC<Props> = ({
                 </option>
               ))}
             </select>
-            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-[#181822] text-amber-400 font-mono border border-amber-500/20 font-bold">
+
+            <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] text-zinc-200 font-mono border border-white/10 font-bold">
               V{currentItem?.currentVersion || 1}
             </span>
+
+            {/* Add New Content Button */}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-zinc-200 border border-white/10 transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Collateral</span>
+            </button>
+
+            {/* Delete Content Button */}
+            {contentItems.length > 1 && (
+              <button
+                onClick={handleDeleteItem}
+                className="p-1.5 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-colors cursor-pointer"
+                title="Delete this content item"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -124,8 +185,8 @@ export const ContentStudio: React.FC<Props> = ({
             disabled={isScanning}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs transition-all shadow-xl cursor-pointer ${
               isScanning
-                ? 'bg-[#1e1e27] text-amber-400 cursor-not-allowed border border-amber-500/30'
-                : 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 shadow-amber-500/20 hover:scale-105'
+                ? 'bg-white/10 text-zinc-300 cursor-not-allowed border border-white/20'
+                : 'bg-white text-black hover:bg-zinc-200 shadow-white/5 hover:scale-105'
             }`}
           >
             <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
@@ -135,14 +196,14 @@ export const ContentStudio: React.FC<Props> = ({
           <button
             onClick={() => onSubmitForReview(currentItem.id)}
             disabled={criticalCount > 0}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               criticalCount > 0
-                ? 'bg-[#14141c] text-slate-500 cursor-not-allowed border border-white/5'
-                : 'bg-[#1a1a24] hover:bg-[#222230] text-white border border-white/15 shadow-sm'
+                ? 'bg-white/[0.03] text-zinc-600 cursor-not-allowed border border-white/5'
+                : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/15 shadow-sm'
             }`}
             title={criticalCount > 0 ? 'Resolve critical violations before submitting' : 'Submit for review'}
           >
-            <Send className="w-3.5 h-3.5 text-amber-400" />
+            <Send className="w-3.5 h-3.5 text-zinc-300" />
             <span>Submit for Review</span>
           </button>
         </div>
@@ -152,15 +213,15 @@ export const ContentStudio: React.FC<Props> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Content Editor & Visual Spec */}
         <div className="lg:col-span-7 space-y-5">
-          <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
+          <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <div className="gold-bar">
+              <div className="silver-bar">
                 <span className="text-xs font-bold text-white uppercase tracking-wider">Collateral Copy</span>
-                <div className="text-[10px] text-slate-500 font-mono">
+                <div className="text-[10px] text-zinc-400 font-mono">
                   Target: {currentItem?.targetAudience || 'Enterprise'} • {currentItem?.targetChannel || 'Multi-channel'}
                 </div>
               </div>
-              <div className="text-[11px] text-slate-400 font-mono bg-[#14141c] px-3 py-1 rounded-full border border-white/5">
+              <div className="text-[11px] text-zinc-400 font-mono bg-white/[0.03] px-3 py-1 rounded-full border border-white/5">
                 {editorText.length} chars • {editorText.split(/\s+/).filter(Boolean).length} words
               </div>
             </div>
@@ -172,81 +233,67 @@ export const ContentStudio: React.FC<Props> = ({
                 onChange={(e) => setEditorText(e.target.value)}
                 rows={11}
                 placeholder="Draft or paste marketing copy, press releases, or social advertisements here..."
-                className="w-full bg-[#121217] border border-white/10 rounded-2xl p-4 text-sm text-slate-100 leading-relaxed focus:outline-none focus:ring-1 focus:ring-amber-500/60 resize-y font-sans selection:bg-amber-500 selection:text-black placeholder:text-slate-600"
+                className="w-full bg-[#0a0a0f] border border-white/10 rounded-2xl p-4 text-sm text-slate-100 leading-relaxed focus:outline-none focus:ring-1 focus:ring-white/40 resize-y font-sans selection:bg-white selection:text-black placeholder:text-zinc-600"
               />
             </div>
 
             {/* Multimodal Visual Creative Spec (if applicable) */}
             {currentItem?.contentType === 'social_ad' && (
-              <div className="p-4 rounded-2xl bg-[#14141c] border border-white/[0.06] space-y-3">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+                <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
                   <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-amber-400" />
+                    <ImageIcon className="w-4 h-4 text-zinc-300" />
                     <span>Multimodal Visual Creative Pre-Flight</span>
                   </div>
                   <span className="text-[10px] text-emerald-400 font-mono font-bold">WCAG 2.1 AA Compliant</span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-slate-400">
-                  <div className="w-20 h-16 rounded-xl bg-[#1e1e28] border border-white/10 flex flex-col items-center justify-center font-mono text-[10px] text-slate-300">
+                <div className="flex items-center gap-4 text-xs text-zinc-400">
+                  <div className="w-20 h-16 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center font-mono text-[10px] text-zinc-300">
                     <span>1200x628</span>
-                    <span className="text-[8px] text-amber-400">LinkedIn Ad</span>
+                    <span className="text-[8px] text-zinc-400">LinkedIn Ad</span>
                   </div>
                   <div className="space-y-1 text-[11px]">
-                    <div className="text-white font-medium">Palette Match: <span className="text-amber-400 font-mono">#4F46E5 &amp; #06B6D4</span></div>
-                    <div className="text-slate-400">Logo Clear Space: <span className="text-emerald-400 font-semibold">28px (&gt; 24px requirement)</span></div>
+                    <div className="text-white font-medium">Palette Match: <span className="text-zinc-300 font-mono">#4F46E5 &amp; #06B6D4</span></div>
+                    <div className="text-zinc-400">Logo Clear Space: <span className="text-emerald-400 font-semibold">28px (&gt; 24px requirement)</span></div>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Editor Action Bar */}
-            <div className="flex items-center justify-between pt-2 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="text-[11px]">Grounding: 4 Guidelines • 6 Prohibited Rules • 4 Verified Facts</span>
-              </div>
-              <button
-                onClick={() => setEditorText(currentItem?.rawContent || '')}
-                className="hover:text-amber-300 transition-colors text-[11px] underline"
-              >
-                Reset to Original
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Right Column: Explainable Findings Drawer */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="p-6 rounded-3xl bg-[#0e0e13] border border-white/[0.07] space-y-4 shadow-2xl">
-            {/* Compliance Score Header */}
+        {/* Right Column: AI Findings & Corrections Panel */}
+        <div className="lg:col-span-5 space-y-5">
+          <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-xl space-y-4 shadow-2xl">
+            {/* Panel Header */}
             <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-              <div className="gold-bar">
-                <div className="text-xs text-slate-500 font-medium">Compliance Pre-Flight</div>
-                <div className="text-sm font-bold text-white">Brand Safety Score</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className={`px-4 py-1.5 rounded-2xl text-xl font-mono font-black border ${
-                  (currentItem?.complianceScore || 0) >= 90
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                    : (currentItem?.complianceScore || 0) >= 70
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                }`}>
-                  {currentItem?.complianceScore ?? '--'}/100
+              <div>
+                <div className="text-xs font-bold text-white uppercase tracking-wider">Multi-Agent Diagnostics</div>
+                <div className="text-[10px] text-zinc-400 font-mono">
+                  {findings.length} findings • {criticalCount} blocking
                 </div>
+              </div>
+
+              {/* Overall Score Badge */}
+              <div className="text-right">
+                <div className="text-2xl font-black font-mono text-white">
+                  {currentItem?.complianceScore ?? 100}
+                  <span className="text-xs text-zinc-500 font-normal">/100</span>
+                </div>
+                <div className="text-[9px] font-mono uppercase tracking-wider text-zinc-400">Brand Safety Score</div>
               </div>
             </div>
 
-            {/* Filter Pills matching navbar style */}
-            <div className="flex items-center gap-1 p-1 bg-[#121217] rounded-full border border-white/10 text-[11px]">
-              {(['all', 'critical', 'warning', 'suggestion'] as const).map((filter) => (
+            {/* Filter Pills */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/5 text-[11px]">
+              {(['all', 'critical', 'warning', 'suggestion'] as const).map(filter => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`flex-1 py-1 rounded-full capitalize font-medium transition-all ${
+                  className={`flex-1 py-1 rounded-lg font-medium capitalize transition-all cursor-pointer ${
                     activeFilter === filter
-                      ? 'bg-[#1e1e27] text-white border border-white/15 font-semibold shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white/15 text-white font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-300'
                   }`}
                 >
                   {filter}
@@ -255,115 +302,192 @@ export const ContentStudio: React.FC<Props> = ({
             </div>
 
             {/* Findings List */}
-            {filteredFindings.length === 0 ? (
-              <div className="p-8 text-center rounded-2xl bg-[#121217]/50 border border-dashed border-white/10 space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                <h4 className="text-sm font-semibold text-white">No Issues Detected</h4>
-                <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                  Content complies with all active brand voice, fact verification, and promotional claim policies.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-[540px] overflow-y-auto pr-1">
-                {filteredFindings.map((finding) => {
-                  const isCritical = finding.severity === 'critical';
-                  const isWarning = finding.severity === 'warning';
-                  const isResolved = finding.status !== 'open';
-
-                  return (
-                    <div
-                      key={finding.id}
-                      className={`p-4 rounded-2xl border transition-all space-y-3 ${
-                        isResolved
-                          ? 'bg-[#121217]/40 border-white/5 opacity-60'
-                          : isCritical
-                          ? 'bg-[#161215] border-rose-900/40 hover:border-rose-700/60'
-                          : isWarning
-                          ? 'bg-[#171512] border-amber-900/40 hover:border-amber-700/60'
-                          : 'bg-[#12141a] border-indigo-900/40 hover:border-indigo-700/60'
-                      }`}
-                    >
-                      {/* Header */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          {isCritical ? (
-                            <AlertOctagon className="w-4 h-4 text-rose-400 shrink-0" />
-                          ) : isWarning ? (
-                            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                          ) : (
-                            <Info className="w-4 h-4 text-cyan-400 shrink-0" />
-                          )}
-                          <span className="text-xs font-bold text-white">{finding.issue}</span>
-                        </div>
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-mono font-bold ${
-                          isCritical ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30' :
-                          isWarning ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 
-                          'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
-                        }`}>
-                          {finding.agentType}
-                        </span>
-                      </div>
-
-                      {/* Excerpt */}
-                      <div className="p-2.5 rounded-xl bg-[#0c0c10] border border-white/5 text-xs font-mono text-rose-300">
-                        &quot;{finding.contentExcerpt}&quot;
-                      </div>
-
-                      {/* Evidence & Citation */}
-                      <div className="space-y-1 text-xs">
-                        <div className="text-[11px] text-amber-400 font-semibold flex items-center gap-1 font-mono">
-                          <BookOpen className="w-3 h-3 text-amber-400" />
-                          <span>{finding.guidelineReference}</span>
-                        </div>
-                        <p className="text-[11px] text-slate-300 leading-relaxed">
-                          {finding.evidence}
-                        </p>
-                      </div>
-
-                      {/* Suggested Context-Preserving Correction */}
-                      <div className="p-3.5 rounded-xl bg-[#0c0c10] border border-emerald-900/40 space-y-2">
-                        <div className="flex items-center justify-between text-[10px] font-semibold text-emerald-400 uppercase tracking-wider font-mono">
-                          <span>Suggested Correction</span>
-                          <span>Confidence: {Math.round(finding.confidence * 100)}%</span>
-                        </div>
-                        <div className="text-xs text-emerald-200 font-medium">
-                          &quot;{finding.suggestedCorrection}&quot;
-                        </div>
-
-                        {!isResolved && (
-                          <div className="flex items-center gap-2 pt-1">
-                            <button
-                              onClick={() => handleAcceptCorrection(finding)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition-colors shadow-sm cursor-pointer"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Accept &amp; Replace</span>
-                            </button>
-                            <button
-                              onClick={() => onResolveFinding(finding.id, 'rejected')}
-                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#181822] hover:bg-[#20202e] text-slate-300 text-[11px] transition-colors cursor-pointer"
-                            >
-                              <X className="w-3 h-3" />
-                              <span>Dismiss</span>
-                            </button>
-                          </div>
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+              {filteredFindings.length === 0 ? (
+                <div className="p-8 text-center space-y-2">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto opacity-75" />
+                  <div className="text-sm font-bold text-white">No Issues Found</div>
+                  <p className="text-xs text-zinc-400">
+                    This copy adheres strictly to approved guidelines and verified facts.
+                  </p>
+                </div>
+              ) : (
+                filteredFindings.map((f) => (
+                  <div
+                    key={f.id}
+                    className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3 hover:border-white/15 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        {f.severity === 'critical' ? (
+                          <AlertOctagon className="w-4 h-4 text-rose-400 shrink-0" />
+                        ) : f.severity === 'warning' ? (
+                          <AlertTriangle className="w-4 h-4 text-zinc-300 shrink-0" />
+                        ) : (
+                          <Info className="w-4 h-4 text-zinc-400 shrink-0" />
                         )}
-
-                        {isResolved && (
-                          <div className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 pt-1">
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Correction Applied</span>
-                          </div>
-                        )}
+                        <span className="text-xs font-bold text-white">{f.issue}</span>
                       </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold ${
+                        f.severity === 'critical' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30' :
+                        f.severity === 'warning' ? 'bg-zinc-700 text-zinc-200 border border-zinc-600' :
+                        'bg-white/10 text-zinc-300 border border-white/15'
+                      }`}>
+                        {f.severity}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+
+                    {/* Excerpt */}
+                    <div className="text-xs bg-white/[0.03] p-2.5 rounded-xl border border-white/5 space-y-1">
+                      <div className="text-[10px] font-mono text-zinc-400 uppercase">Violating Excerpt:</div>
+                      <div className="text-rose-300 font-mono text-xs font-medium">"{f.contentExcerpt}"</div>
+                    </div>
+
+                    {/* Rationale & Source Reference */}
+                    <div className="text-[11px] text-zinc-400 leading-relaxed">
+                      {f.evidence}
+                    </div>
+
+                    <div className="text-[10px] text-zinc-500 font-mono flex items-center gap-1.5">
+                      <BookOpen className="w-3 h-3" />
+                      <span>Source: {f.guidelineReference}</span>
+                    </div>
+
+                    {/* Suggested Correction & Action */}
+                    {f.suggestedCorrection && (
+                      <div className="pt-2 border-t border-white/5 space-y-2">
+                        <div className="text-[10px] font-mono uppercase text-zinc-400">Suggested Correction:</div>
+                        <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium">
+                          "{f.suggestedCorrection}"
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <button
+                            onClick={() => handleAcceptCorrection(f)}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white text-black font-bold text-xs hover:bg-zinc-200 transition-all cursor-pointer shadow-sm"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Apply Suggestion</span>
+                          </button>
+                          <button
+                            onClick={() => onResolveFinding(f.id, 'rejected')}
+                            className="px-3 py-1.5 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 text-xs transition-colors cursor-pointer"
+                            title="Dismiss finding"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* New Content Collateral Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xl bg-[#09090d]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-7 shadow-2xl text-slate-200 space-y-5">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors p-1 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="text-xs uppercase font-mono tracking-widest text-zinc-400 font-semibold">
+                Draft Collateral
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight mt-1">
+                Create New Content Collateral
+              </h2>
+            </div>
+
+            <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-zinc-400 mb-1 font-semibold">Collateral Title</label>
+                <input
+                  type="text"
+                  required
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="e.g. Q2 Customer Case Study or Instagram Product Teaser"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-zinc-400 mb-1 font-semibold">Content Format</label>
+                  <select
+                    value={newType}
+                    onChange={(e) => setNewType(e.target.value as any)}
+                    className="w-full bg-[#121218] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                  >
+                    <option value="social_ad">Social Ad (LinkedIn / X)</option>
+                    <option value="press_release">Press Release</option>
+                    <option value="blog_post">Technical Blog Post</option>
+                    <option value="email_newsletter">Email Newsletter</option>
+                    <option value="landing_page">Landing Page Copy</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-400 mb-1 font-semibold">Target Audience</label>
+                  <input
+                    type="text"
+                    value={newAudience}
+                    onChange={(e) => setNewAudience(e.target.value)}
+                    placeholder="e.g. Enterprise IT Leaders"
+                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-zinc-400 mb-1 font-semibold">Distribution Channel</label>
+                <input
+                  type="text"
+                  value={newChannel}
+                  onChange={(e) => setNewChannel(e.target.value)}
+                  placeholder="e.g. PR Newswire, LinkedIn, Email"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/40"
+                />
+              </div>
+
+              <div>
+                <label className="block text-zinc-400 mb-1 font-semibold">Draft Copy / Text</label>
+                <textarea
+                  rows={4}
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  placeholder="Write or paste your draft marketing message here..."
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:ring-1 focus:ring-white/40 resize-none font-sans"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/5 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-white text-black font-bold hover:bg-zinc-200 transition-all cursor-pointer shadow-lg"
+                >
+                  Create &amp; Inspect
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

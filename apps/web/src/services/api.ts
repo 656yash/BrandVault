@@ -18,7 +18,7 @@ import type {
 
 const API_BASE = '/api/v1';
 
-// Seed Fallback data
+// Seed Brand data
 const mockBrand: BrandWorkspace = {
   id: 'brand_nexus',
   organizationId: 'org_acme',
@@ -161,6 +161,27 @@ const defaultTerminology: TerminologyRule[] = [
     reason: 'Hyperbolic puffery damages technical credibility with enterprise CTO buyers.',
     category: 'brand_voice',
     severity: 'warning',
+  }
+];
+
+const defaultClaims: ApprovedClaim[] = [
+  {
+    id: 'claim_01',
+    brandId: 'brand_nexus',
+    claimText: 'Accelerates content compliance review cycles by up to 65%',
+    substantiationEvidence: 'Verified via Acme Enterprise Benchmark Study Q3 2025 across 12,000 document workflows.',
+    authorizedChannels: ['All digital & print'],
+    expiresAt: '2026-12-31',
+    approvedBy: 'Alice Vance (Compliance Director)',
+  },
+  {
+    id: 'claim_02',
+    brandId: 'brand_nexus',
+    claimText: 'Zero data retention for client AI inference workflows',
+    substantiationEvidence: 'BSI Security Audit Report Section 4.12; ephemeral memory processing only.',
+    authorizedChannels: ['Whitepapers & Security portal'],
+    expiresAt: '2027-01-01',
+    approvedBy: 'Sarah Connor (Legal Compliance Officer)',
   }
 ];
 
@@ -309,7 +330,11 @@ const defaultContentItems: ContentItem[] = [
   }
 ];
 
-// Local state cache
+// In-memory data store for live website CRUD operations
+let memoryGuidelines = [...defaultGuidelines];
+let memoryFacts = [...defaultFacts];
+let memoryTerminology = [...defaultTerminology];
+let memoryClaims = [...defaultClaims];
 const localContentMap: Record<string, ContentItem> = {
   cnt_01: { ...defaultContentItems[0] },
   cnt_02: { ...defaultContentItems[1] }
@@ -489,7 +514,7 @@ export const api = {
         if (data.data) return data.data;
       }
     } catch {}
-    return defaultGuidelines;
+    return [...memoryGuidelines];
   },
 
   async addGuideline(g: any): Promise<Guideline> {
@@ -501,7 +526,10 @@ export const api = {
       });
       if (res.ok) {
         const data = await res.json();
-        return data.data;
+        if (data.data) {
+          memoryGuidelines.unshift(data.data);
+          return data.data;
+        }
       }
     } catch {}
     const created: Guideline = {
@@ -511,8 +539,16 @@ export const api = {
       status: 'active',
       updatedAt: new Date().toISOString(),
     };
-    defaultGuidelines.unshift(created);
+    memoryGuidelines.unshift(created);
     return created;
+  },
+
+  async deleteGuideline(id: string): Promise<boolean> {
+    try {
+      await fetch(`${API_BASE}/guidelines/${id}`, { method: 'DELETE' });
+    } catch {}
+    memoryGuidelines = memoryGuidelines.filter(g => g.id !== id);
+    return true;
   },
 
   async getFacts(): Promise<ApprovedFact[]> {
@@ -523,7 +559,7 @@ export const api = {
         if (data.data) return data.data;
       }
     } catch {}
-    return defaultFacts;
+    return [...memoryFacts];
   },
 
   async addFact(f: any): Promise<ApprovedFact> {
@@ -535,12 +571,23 @@ export const api = {
       });
       if (res.ok) {
         const data = await res.json();
-        return data.data;
+        if (data.data) {
+          memoryFacts.unshift(data.data);
+          return data.data;
+        }
       }
     } catch {}
     const created: ApprovedFact = { ...f, id: `fact_${Date.now()}` };
-    defaultFacts.unshift(created);
+    memoryFacts.unshift(created);
     return created;
+  },
+
+  async deleteFact(id: string): Promise<boolean> {
+    try {
+      await fetch(`${API_BASE}/facts/${id}`, { method: 'DELETE' });
+    } catch {}
+    memoryFacts = memoryFacts.filter(f => f.id !== id);
+    return true;
   },
 
   async getTerminology(): Promise<TerminologyRule[]> {
@@ -551,7 +598,7 @@ export const api = {
         if (data.data) return data.data;
       }
     } catch {}
-    return defaultTerminology;
+    return [...memoryTerminology];
   },
 
   async addTerminology(t: any): Promise<TerminologyRule> {
@@ -563,12 +610,23 @@ export const api = {
       });
       if (res.ok) {
         const data = await res.json();
-        return data.data;
+        if (data.data) {
+          memoryTerminology.unshift(data.data);
+          return data.data;
+        }
       }
     } catch {}
     const created: TerminologyRule = { ...t, id: `term_${Date.now()}` };
-    defaultTerminology.unshift(created);
+    memoryTerminology.unshift(created);
     return created;
+  },
+
+  async deleteTerminology(id: string): Promise<boolean> {
+    try {
+      await fetch(`${API_BASE}/terminology/${id}`, { method: 'DELETE' });
+    } catch {}
+    memoryTerminology = memoryTerminology.filter(t => t.id !== id);
+    return true;
   },
 
   async getClaims(): Promise<ApprovedClaim[]> {
@@ -579,17 +637,26 @@ export const api = {
         if (data.data) return data.data;
       }
     } catch {}
-    return [
-      {
-        id: 'claim_01',
-        brandId: 'brand_nexus',
-        claimText: 'Accelerates content compliance review cycles by up to 65%',
-        substantiationEvidence: 'Verified via Acme Enterprise Benchmark Study Q3 2025 across 12,000 document workflows.',
-        authorizedChannels: ['All digital & print'],
-        expiresAt: '2026-12-31',
-        approvedBy: 'Alice Vance (Compliance Director)',
-      }
-    ];
+    return [...memoryClaims];
+  },
+
+  async addClaim(c: any): Promise<ApprovedClaim> {
+    const created: ApprovedClaim = {
+      id: `claim_${Date.now()}`,
+      brandId: 'brand_nexus',
+      claimText: c.claimText,
+      substantiationEvidence: c.substantiationEvidence,
+      authorizedChannels: c.authorizedChannels || ['Digital', 'Press'],
+      expiresAt: c.expiresAt || '2027-12-31',
+      approvedBy: c.approvedBy || 'Brand Compliance Officer',
+    };
+    memoryClaims.unshift(created);
+    return created;
+  },
+
+  async deleteClaim(id: string): Promise<boolean> {
+    memoryClaims = memoryClaims.filter(c => c.id !== id);
+    return true;
   },
 
   async getAssets(): Promise<BrandAsset[]> {
@@ -648,7 +715,10 @@ export const api = {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.data) return data.data;
+        if (data.data) {
+          localContentMap[data.data.id] = data.data;
+          return data.data;
+        }
       }
     } catch {}
     const newItem: ContentItem = {
@@ -656,19 +726,32 @@ export const api = {
       brandId: params.brandId || 'brand_nexus',
       authorId: 'usr_clara',
       authorName: 'Clara Oswald',
-      title: params.title,
-      contentType: params.contentType,
-      rawContent: params.rawContent,
+      title: params.title || 'Untitled Collateral',
+      contentType: params.contentType || 'social_ad',
+      rawContent: params.rawContent || '',
       mediaUrl: params.mediaUrl,
-      targetAudience: params.targetAudience,
-      targetChannel: params.targetChannel,
+      targetAudience: params.targetAudience || 'Enterprise Audience',
+      targetChannel: params.targetChannel || 'Multi-channel',
       status: 'draft',
       currentVersion: 1,
+      complianceScore: 100,
+      findings: [],
+      comments: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
     localContentMap[newItem.id] = newItem;
     return newItem;
+  },
+
+  async deleteContentItem(id: string): Promise<boolean> {
+    try {
+      await fetch(`${API_BASE}/content/${id}`, { method: 'DELETE' });
+    } catch {}
+    delete localContentMap[id];
+    delete localFindingsMap[id];
+    delete localCommentsMap[id];
+    return true;
   },
 
   async updateContent(id: string, updates: Partial<ContentItem>): Promise<ContentItem> {
@@ -711,8 +794,8 @@ export const api = {
       // Backend not running on port 8787 -> gracefully run client-side BrandVault AI engine
     }
 
-    // Client-side Multi-Agent evaluation (350ms realistic execution latency)
-    await new Promise(r => setTimeout(r, 350));
+    // Client-side Multi-Agent evaluation (300ms realistic execution latency)
+    await new Promise(r => setTimeout(r, 300));
     const content = localContentMap[params.contentItemId] || defaultContentItems[0];
     const textToScan = params.contentOverride !== undefined ? params.contentOverride : content.rawContent;
     const report = runClientInspection(params.contentItemId, params.versionNumber || content.currentVersion, textToScan);
@@ -793,6 +876,16 @@ export const api = {
       localContentMap[contentId].comments!.push(newComment);
     }
     return newComment;
+  },
+
+  async deleteComment(contentId: string, commentId: string): Promise<boolean> {
+    if (localCommentsMap[contentId]) {
+      localCommentsMap[contentId] = localCommentsMap[contentId].filter(c => c.id !== commentId);
+    }
+    if (localContentMap[contentId]?.comments) {
+      localContentMap[contentId].comments = localContentMap[contentId].comments!.filter(c => c.id !== commentId);
+    }
+    return true;
   },
 
   async submitApproval(params: {
