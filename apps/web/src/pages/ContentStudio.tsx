@@ -62,7 +62,7 @@ export const ContentStudio: React.FC<Props> = ({
 
   // New Content Form
   const [newTitle, setNewTitle] = useState('');
-  const [newType, setNewType] = useState<'social_ad' | 'blog_post' | 'press_release' | 'email_newsletter' | 'landing_page'>('social_ad');
+  const [newType, setNewType] = useState<'social_ad' | 'press_release' | 'marketing_copy' | 'newsletter' | 'text' | 'creative_image'>('social_ad');
   const [newAudience, setNewAudience] = useState('');
   const [newChannel, setNewChannel] = useState('');
   const [newContent, setNewContent] = useState('');
@@ -424,9 +424,10 @@ export const ContentStudio: React.FC<Props> = ({
                   >
                     <option value="social_ad">Social Ad (LinkedIn / X)</option>
                     <option value="press_release">Press Release</option>
-                    <option value="blog_post">Technical Blog Post</option>
-                    <option value="email_newsletter">Email Newsletter</option>
-                    <option value="landing_page">Landing Page Copy</option>
+                    <option value="marketing_copy">Marketing Copy / Blog Post</option>
+                    <option value="newsletter">Email Newsletter</option>
+                    <option value="text">General Copy / Text</option>
+                    <option value="creative_image">Creative Visual Asset</option>
                   </select>
                 </div>
 
