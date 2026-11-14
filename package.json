@@ -23,5 +23,8 @@
     "brandvault"
   ],
   "author": "BrandVault Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^13.3.0"
+  }
 }
