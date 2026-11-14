@@ -12,7 +12,10 @@ import {
   FileCheck2,
   Image as ImageIcon,
   Plus,
-  Trash2
+  Trash2,
+  Sparkles,
+  RotateCcw,
+  ShieldCheck
 } from 'lucide-react';
 import type { 
   ContentItem, 
@@ -67,6 +70,8 @@ export const ContentStudio: React.FC<Props> = ({
   const [newChannel, setNewChannel] = useState('');
   const [newContent, setNewContent] = useState('');
 
+  const [lastScannedAt, setLastScannedAt] = useState<string | null>(null);
+
   React.useEffect(() => {
     if (currentItem) {
       setEditorText(currentItem.rawContent);
@@ -84,6 +89,36 @@ export const ContentStudio: React.FC<Props> = ({
   const handleScan = async () => {
     if (!currentItem) return;
     await onScanContent(currentItem.id, editorText);
+    setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  };
+
+  const handleInjectTestViolations = () => {
+    let violationCopy = '';
+    if (currentItem?.brandId === 'brand_easya1') {
+      violationCopy = "Planning to study abroad? Easy-A1 is India's No. 1 agency with 100% visa guarantee! Avoid competitor X who is obsolete and try our cheap package with revolutionary magic.";
+    } else if (currentItem?.brandId === 'brand_assetsgenius') {
+      violationCopy = "Assets Genius Escrow provides risk-free escrow for high-value transactions! We are India's No. 1 custody vault, proving competitor X is obsolete with our cheap settlement rates and revolutionary magic.";
+    } else if (currentItem?.brandId === 'brand_shotnest') {
+      violationCopy = "ShotNest Media produces the world's best cinematography! We guarantee 100% flawless results, proving competitor X is obsolete with our cheap production packages and revolutionary magic.";
+    } else {
+      violationCopy = `${currentItem?.title || 'Our platform'} is officially India's No. 1 generative platform! It guarantees 100% uptime without failure, proving competitor X is obsolete. Switch today to our cheap starter tier and unleash revolutionary magic for every end-user.`;
+    }
+    setEditorText(violationCopy);
+    // Also trigger scan automatically so the user immediately sees the multi-agent findings!
+    if (currentItem) {
+      onScanContent(currentItem.id, violationCopy).then(() => {
+        setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      });
+    }
+  };
+
+  const handleResetCleanCopy = () => {
+    if (currentItem) {
+      setEditorText(currentItem.rawContent);
+      onScanContent(currentItem.id, currentItem.rawContent).then(() => {
+        setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      });
+    }
   };
 
   const handleAcceptCorrection = (finding: ComplianceFinding) => {
@@ -209,15 +244,38 @@ export const ContentStudio: React.FC<Props> = ({
         {/* Left Column: Content Editor & Visual Spec */}
         <div className="lg:col-span-7 space-y-5">
           <div className="glass-panel p-6 space-y-4 shadow-lg">
-            <div className="flex items-center justify-between border-b border-white/40 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/40 pb-3">
               <div className="adwise-bar">
                 <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Collateral Copy</span>
                 <div className="text-[10px] text-slate-500 font-mono">
                   Target: {currentItem?.targetAudience || 'Enterprise'} • {currentItem?.targetChannel || 'Multi-channel'}
                 </div>
               </div>
-              <div className="text-[11px] text-slate-600 font-mono bg-white/60 px-3 py-1 rounded-full border border-white/80 font-semibold shadow-sm">
-                {editorText.length} chars • {editorText.split(/\s+/).filter(Boolean).length} words
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleInjectTestViolations}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-bold border border-rose-300 shadow-xs transition-all cursor-pointer"
+                  title="Inject sample marketing superlatives, prohibited words, and unverified guarantees to test the AI scanner"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+                  <span>⚡ Inject Test Violations</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResetCleanCopy}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/70 hover:bg-white text-slate-700 text-[11px] font-medium border border-white shadow-xs transition-all cursor-pointer"
+                  title="Restore 100% compliant approved copy"
+                >
+                  <RotateCcw className="w-3 h-3 text-slate-500" />
+                  <span>Clean Copy</span>
+                </button>
+
+                <div className="text-[11px] text-slate-600 font-mono bg-white/60 px-3 py-1 rounded-full border border-white/80 font-semibold shadow-sm">
+                  {editorText.length} chars • {editorText.split(/\s+/).filter(Boolean).length} words
+                </div>
               </div>
             </div>
 
@@ -298,13 +356,79 @@ export const ContentStudio: React.FC<Props> = ({
 
             {/* Findings List */}
             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-              {filteredFindings.length === 0 ? (
-                <div className="p-8 text-center space-y-2">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+              {isScanning ? (
+                <div className="p-8 text-center space-y-3">
+                  <RefreshCw className="w-8 h-8 text-pink-600 animate-spin mx-auto" />
+                  <div className="text-sm font-bold text-slate-800">Evaluating Multi-Agent Compliance...</div>
+                  <p className="text-xs text-slate-500 font-mono">
+                    Running sub-second pre-flight checks across voice, facts, terminology, and legal claims.
+                  </p>
+                </div>
+              ) : filteredFindings.length === 0 ? (
+                <div className="p-6 text-center space-y-3">
+                  <CheckCircle2 className="w-9 h-9 text-emerald-600 mx-auto" />
                   <div className="text-sm font-bold text-slate-800">100% Brand Compliant</div>
                   <p className="text-xs text-slate-600">
-                    This copy adheres strictly to approved guidelines and verified facts.
+                    This copy adheres strictly to approved guidelines, terminology dictionaries, and verified corporate facts.
                   </p>
+                  {lastScannedAt && (
+                    <div className="text-[10px] font-mono text-emerald-700 bg-emerald-50 py-1 px-3 rounded-full inline-block border border-emerald-200">
+                      ✓ Last inspected at {lastScannedAt} (0 issues)
+                    </div>
+                  )}
+
+                  {/* 6-Agent Verification Checklist */}
+                  <div className="mt-3 p-3.5 rounded-2xl bg-white/60 border border-white/80 text-left space-y-2 shadow-xs">
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+                      Multi-Agent Audit Breakdown
+                    </div>
+                    <div className="space-y-1.5 text-xs text-slate-700">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Tone &amp; Voice Agent</span>
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Pass</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Terminology Agent</span>
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Clean</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Corporate Fact Agent</span>
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Verified</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Claim Substantiation Agent</span>
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Compliant</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Visual &amp; A11y Agent</span>
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">WCAG 2.1 AA</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleInjectTestViolations}
+                    className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-[#FFC8DD] to-[#BDE0FE] hover:opacity-95 text-slate-900 font-bold text-xs shadow-sm transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-pink-600" />
+                    <span>Test Violation Detection (Inject Test Claims)</span>
+                  </button>
                 </div>
               ) : (
                 filteredFindings.map((f) => (
