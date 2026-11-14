@@ -14,6 +14,7 @@ import {
   X
 } from 'lucide-react';
 import type { 
+  BrandWorkspace,
   Guideline, 
   ApprovedFact, 
   TerminologyRule, 
@@ -23,6 +24,7 @@ import type {
 import { ChromeShield, ChromePaperPlane } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   guidelines: Guideline[];
   facts: ApprovedFact[];
   terminology: TerminologyRule[];
@@ -39,6 +41,7 @@ interface Props {
 }
 
 export const BrandKnowledge: React.FC<Props> = ({
+  brand,
   guidelines,
   facts,
   terminology,
@@ -85,7 +88,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newTitle.trim()) return;
     await onAddGuideline({
-      brandId: 'brand_nexus',
+      brandId: brand?.id || 'brand_nexus',
       title: newTitle,
       category: newCategory,
       description: newDescription,
@@ -102,7 +105,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newProhibited.trim()) return;
     await onAddTerminology({
-      brandId: 'brand_nexus',
+      brandId: brand?.id || 'brand_nexus',
       prohibitedTerm: newProhibited,
       preferredTerm: newPreferred,
       reason: newReason,
@@ -119,7 +122,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newFactStatement.trim()) return;
     await onAddFact({
-      brandId: 'brand_nexus',
+      brandId: brand?.id || 'brand_nexus',
       factKey: newFactKey || `fact_${Date.now()}`,
       statement: newFactStatement,
       category: newFactCategory,
@@ -136,6 +139,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newClaimText.trim()) return;
     await onAddClaim({
+      brandId: brand?.id || 'brand_nexus',
       claimText: newClaimText,
       substantiationEvidence: newClaimEvidence,
       authorizedChannels: newClaimChannels ? newClaimChannels.split(',').map(s => s.trim()) : ['All channels'],
@@ -639,7 +643,7 @@ export const BrandKnowledge: React.FC<Props> = ({
                     required
                     value={newFactStatement}
                     onChange={(e) => setNewFactStatement(e.target.value)}
-                    placeholder="e.g. Nexus infrastructure operates across 4 primary cloud regions: Mumbai, Singapore, Frankfurt, and San Jose."
+                    placeholder={`e.g. ${brand?.name || 'Company'} corporate milestone, credential, or verified organizational statement.`}
                     className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>

@@ -15,7 +15,7 @@ import {
   Eye,
   Package
 } from 'lucide-react';
-import type { ContentItem, GovernanceMetrics } from '@brandvault/shared';
+import type { ContentItem, GovernanceMetrics, BrandWorkspace } from '@brandvault/shared';
 import { 
   ChromeShield, 
   ChromePaperPlane, 
@@ -29,6 +29,7 @@ import {
 } from '../components/ChromeIcons';
 
 interface Props {
+  brand?: BrandWorkspace | null;
   contentItems: ContentItem[];
   metrics: GovernanceMetrics;
   onOpenContent: (contentId: string) => void;
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export const Dashboard: React.FC<Props> = ({ 
+  brand,
   contentItems, 
   metrics, 
   onOpenContent, 
@@ -188,7 +190,7 @@ export const Dashboard: React.FC<Props> = ({
             </h2>
           </div>
           <span className="text-xs text-slate-600 font-mono font-semibold">
-            Active Workspace: Nexus Enterprise AI
+            Active Workspace: {brand?.name || 'Nexus Enterprise AI'}
           </span>
         </div>
 
@@ -199,21 +201,33 @@ export const Dashboard: React.FC<Props> = ({
             <div className="grid grid-cols-3 gap-3">
               {/* Asset 1: Digital Ad */}
               <div className="p-3 rounded-2xl bg-white/60 border border-white/80 space-y-2 shadow-sm">
-                <div className="h-28 rounded-xl bg-gradient-to-tr from-[#FFAFCC] to-[#BDE0FE] flex flex-col justify-end p-2.5 text-slate-900 shadow-sm">
+                <div 
+                  className="h-28 rounded-xl flex flex-col justify-end p-2.5 text-slate-900 shadow-sm"
+                  style={{
+                    background: `linear-gradient(135deg, ${brand?.primaryColor || '#FFAFCC'} 0%, ${brand?.secondaryColor || '#BDE0FE'} 100%)`
+                  }}
+                >
                   <span className="text-[9px] uppercase font-mono tracking-wider font-bold opacity-80">Campaign Ad</span>
-                  <span className="text-xs font-bold leading-tight">Modern Governance Moat</span>
+                  <span className="text-xs font-bold leading-tight line-clamp-2">
+                    {contentItems[0]?.title || `${brand?.name || 'Brand'} Campaign`}
+                  </span>
                 </div>
                 <div className="text-[10px] text-slate-600 flex items-center justify-between font-semibold">
-                  <span>LinkedIn Ad</span>
-                  <span className="text-emerald-700 font-mono font-bold">96/100</span>
+                  <span className="capitalize">{contentItems[0]?.contentType?.replace('_', ' ') || 'Social Ad'}</span>
+                  <span className="text-emerald-700 font-mono font-bold">{contentItems[0]?.complianceScore || 96}/100</span>
                 </div>
               </div>
 
               {/* Asset 2: Brand Identity Card */}
               <div className="p-3 rounded-2xl bg-white/60 border border-white/80 space-y-2 shadow-sm">
                 <div className="h-28 rounded-xl bg-white/80 border border-white/90 flex flex-col items-center justify-center p-2 text-center shadow-inner">
-                  <ChromeShield className="w-8 h-8 mb-1" />
-                  <span className="text-[11px] font-bold text-slate-800">Nexus Cloud</span>
+                  <div 
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm mb-1"
+                    style={{ backgroundColor: brand?.primaryColor || '#4F46E5' }}
+                  >
+                    {brand?.name?.charAt(0) || 'B'}
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-800 truncate max-w-full px-1">{brand?.name || 'Brand Identity'}</span>
                   <span className="text-[8px] text-slate-500 font-mono font-bold">24px Clear-Space</span>
                 </div>
                 <div className="text-[10px] text-slate-600 flex items-center justify-between font-semibold">
@@ -225,26 +239,32 @@ export const Dashboard: React.FC<Props> = ({
               {/* Asset 3: Swatch Palettes */}
               <div className="p-3 rounded-2xl bg-white/60 border border-white/80 space-y-2 shadow-sm">
                 <div className="h-28 rounded-xl bg-white/80 p-2 flex flex-col justify-between shadow-inner">
-                  <div className="h-5 rounded bg-[#CDB4DB] text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold">#CDB4DB</div>
-                  <div className="h-5 rounded bg-[#FFC8DD] text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold">#FFC8DD</div>
-                  <div className="h-5 rounded bg-[#BDE0FE] text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold">#BDE0FE</div>
+                  <div className="h-5 rounded text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold shadow-xs truncate" style={{ backgroundColor: brand?.primaryColor || '#FFAFCC' }}>
+                    {brand?.primaryColor || '#FFAFCC'}
+                  </div>
+                  <div className="h-5 rounded text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold shadow-xs truncate" style={{ backgroundColor: brand?.secondaryColor || '#BDE0FE' }}>
+                    {brand?.secondaryColor || '#BDE0FE'}
+                  </div>
+                  <div className="h-5 rounded text-[9px] text-slate-900 flex items-center px-2 font-mono font-bold shadow-xs truncate" style={{ backgroundColor: brand?.accentColor || '#CDB4DB' }}>
+                    {brand?.accentColor || '#CDB4DB'}
+                  </div>
                 </div>
                 <div className="text-[10px] text-slate-600 flex items-center justify-between font-semibold">
                   <span>Color Tokens</span>
-                  <span className="text-blue-700 font-mono font-bold">Adwise Purity</span>
+                  <span className="text-blue-700 font-mono font-bold truncate max-w-[85px]">{brand?.name || 'Brand'}</span>
                 </div>
               </div>
             </div>
 
             {/* Metadata Footer */}
-            <div className="pt-4 mt-4 border-t border-white/40 flex items-center justify-between text-xs">
+            <div className="pt-4 mt-4 border-t border-white/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div>
                 <span className="text-slate-500">Company Name: </span>
-                <strong className="text-slate-800">Nexus Enterprise AI</strong>
+                <strong className="text-slate-800">{brand?.name || 'Nexus Enterprise AI'}</strong>
               </div>
-              <div>
+              <div className="truncate max-w-md">
                 <span className="text-slate-500">Industry: </span>
-                <strong className="text-slate-800">Enterprise Cloud Intelligence &amp; Brand Automation</strong>
+                <strong className="text-slate-800 truncate">{brand?.description || 'Enterprise Brand Governance'}</strong>
               </div>
             </div>
           </div>

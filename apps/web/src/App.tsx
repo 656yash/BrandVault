@@ -383,6 +383,7 @@ export function App() {
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
           {currentTab === 'dashboard' && metrics && (
             <Dashboard
+              brand={brand}
               contentItems={contentItems}
               metrics={metrics}
               onOpenContent={(id) => {
@@ -422,6 +423,7 @@ export function App() {
 
           {currentTab === 'knowledge' && (
             <BrandKnowledge
+              brand={brand}
               guidelines={guidelines}
               facts={facts}
               terminology={terminology}
