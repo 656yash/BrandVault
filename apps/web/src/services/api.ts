@@ -22,20 +22,6 @@ const API_BASE = '/api/v1';
 // Active Brands Repository (Multi-Brand Support)
 export const initialBrands: BrandWorkspace[] = [
   {
-    id: 'brand_nexus',
-    organizationId: 'org_acme',
-    name: 'Nexus Enterprise AI',
-    description: 'Flagship enterprise cloud intelligence and brand automation suite.',
-    primaryColor: '#4F46E5',
-    secondaryColor: '#06B6D4',
-    accentColor: '#10B981',
-    logoUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
-    toneKeywords: ['authoritative', 'transparent', 'empowering', 'precise', 'forward-looking'],
-    restrictedTopics: ['unsubstantiated claims', 'competitor disparagement', 'cryptocurrency hype'],
-    createdAt: '2026-01-01T00:00:00Z',
-    updatedAt: '2026-02-15T00:00:00Z',
-  },
-  {
     id: 'brand_easya1',
     organizationId: 'org_easya1',
     name: 'Easy-A1',
@@ -94,61 +80,10 @@ export const initialBrands: BrandWorkspace[] = [
 ];
 
 let memoryBrands: BrandWorkspace[] = [...initialBrands];
-let activeBrandId = 'brand_nexus';
+let activeBrandId = 'brand_easya1';
 
 // Guidelines Seed Data (Strictly scoped by brandId)
 const defaultGuidelines: Guideline[] = [
-  // Nexus Enterprise AI
-  {
-    id: 'gl_tone_01',
-    brandId: 'brand_nexus',
-    title: 'Brand Voice & Tone Standards',
-    category: 'tone',
-    description: 'Nexus communicates with authoritative clarity and professional empathy.',
-    rules: [
-      'Never use clickbait or fear-inducing messaging',
-      'Maintain an approachable, technically credible voice',
-      'Avoid excessive buzzwords (e.g., revolutionizing, magic)',
-      'Write in active voice with clear value statements'
-    ],
-    version: 1,
-    status: 'active',
-    effectiveDate: '2026-01-01',
-    updatedAt: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'gl_claims_01',
-    brandId: 'brand_nexus',
-    title: 'Promotional Claims Substantiation Policy',
-    category: 'claims',
-    description: 'Every performance or market ranking claim must cite documented benchmark evidence.',
-    rules: [
-      'Never claim #1 rank without third-party audit attribution',
-      'Do not promise absolute 100% guarantees or unvalidated metrics',
-      'All ROI claims must specify baseline methodology'
-    ],
-    version: 1,
-    status: 'active',
-    effectiveDate: '2026-01-01',
-    updatedAt: '2026-01-01T00:00:00Z',
-  },
-  {
-    id: 'gl_visual_01',
-    brandId: 'brand_nexus',
-    title: 'Visual Identity & Palette Compliance',
-    category: 'visual',
-    description: 'Visual assets must adhere strictly to approved color codes and minimum clear space.',
-    rules: [
-      'Primary brand color is #4F46E5 (Indigo) and secondary is #06B6D4 (Cyan)',
-      'Minimum 24px clear space around primary logo',
-      'Text contrast against background must achieve WCAG AA (4.5:1 ratio)'
-    ],
-    version: 1,
-    status: 'active',
-    effectiveDate: '2026-01-01',
-    updatedAt: '2026-01-01T00:00:00Z',
-  },
-
   // Easy-A1 Guidelines
   {
     id: 'gl_ea1_01',
@@ -299,35 +234,6 @@ const defaultGuidelines: Guideline[] = [
 
 // Facts Seed Data (Strictly scoped by brandId)
 const defaultFacts: ApprovedFact[] = [
-  // Nexus Enterprise AI
-  {
-    id: 'fact_founding',
-    brandId: 'brand_nexus',
-    factKey: 'founding_year',
-    statement: 'Nexus Enterprise AI was established in 2021 by enterprise infrastructure veterans.',
-    category: 'corporate',
-    verifiedSource: 'Articles of Incorporation 2021',
-    verifiedDate: '2026-01-01',
-  },
-  {
-    id: 'fact_regions',
-    brandId: 'brand_nexus',
-    factKey: 'cloud_regions',
-    statement: 'Nexus is deployed across 34 global cloud edge regions with sub-50ms latency.',
-    category: 'product',
-    verifiedSource: 'Global Infrastructure Architecture Review Q4 2025',
-    verifiedDate: '2026-01-05',
-  },
-  {
-    id: 'fact_sla',
-    brandId: 'brand_nexus',
-    factKey: 'uptime_sla',
-    statement: 'Nexus platform offers a contractual high availability SLA of 99.99%.',
-    category: 'product',
-    verifiedSource: 'Customer Service Agreement SLA Schedule B',
-    verifiedDate: '2026-01-01',
-  },
-
   // Easy-A1 Facts
   {
     id: 'fact_easya1_01',
@@ -420,44 +326,6 @@ const defaultFacts: ApprovedFact[] = [
 
 // Terminology Seed Data (Strictly scoped by brandId)
 const defaultTerminology: TerminologyRule[] = [
-  // Nexus Enterprise AI
-  {
-    id: 'term_cheap',
-    brandId: 'brand_nexus',
-    prohibitedTerm: 'cheap',
-    preferredTerm: 'cost-effective enterprise tier',
-    reason: 'The word "cheap" devalues enterprise premium positioning.',
-    category: 'brand_voice',
-    severity: 'warning',
-  },
-  {
-    id: 'term_magic',
-    brandId: 'brand_nexus',
-    prohibitedTerm: 'revolutionary magic',
-    preferredTerm: 'architectural breakthrough',
-    reason: 'Exaggerated buzzwords undermine technical authority with enterprise buyers.',
-    category: 'brand_voice',
-    severity: 'warning',
-  },
-  {
-    id: 'term_obsolete',
-    brandId: 'brand_nexus',
-    prohibitedTerm: 'competitor X is obsolete',
-    preferredTerm: 'traditional legacy architectures face challenges',
-    reason: 'Direct disparagement of named competitors is prohibited by brand legal guidelines.',
-    category: 'legal_risk',
-    severity: 'critical',
-  },
-  {
-    id: 'term_enduser',
-    brandId: 'brand_nexus',
-    prohibitedTerm: 'end-user',
-    preferredTerm: 'customer',
-    reason: 'Cold technical jargon; use customer, client, or team member for empathy.',
-    category: 'brand_voice',
-    severity: 'suggestion',
-  },
-
   // Easy-A1 Terminology
   {
     id: 'term_ea1_100',
@@ -550,26 +418,6 @@ const defaultTerminology: TerminologyRule[] = [
 
 // Approved Claims (Strictly scoped by brandId)
 const defaultClaims: ApprovedClaim[] = [
-  // Nexus Enterprise AI
-  {
-    id: 'claim_latency',
-    brandId: 'brand_nexus',
-    claimText: 'Sub-50ms global inference latency',
-    substantiationEvidence: 'Cloudflare Workers & Groq API Global Latency Audit, Dec 2025 (p95: 42ms)',
-    authorizedChannels: ['Website', 'Technical Whitepapers', 'Social Ads', 'Sales Decks'],
-    expiresAt: '2026-12-31',
-    approvedBy: 'Sarah Connor (Compliance Director)',
-  },
-  {
-    id: 'claim_roi',
-    brandId: 'brand_nexus',
-    claimText: 'Reduces content review cycles by up to 65%',
-    substantiationEvidence: 'Customer Cohort Study Q3 2025 across 42 enterprise marketing teams',
-    authorizedChannels: ['Case Studies', 'Digital Ads', 'Executive Presentations'],
-    expiresAt: '2026-06-30',
-    approvedBy: 'Bob Chen (Marketing Lead)',
-  },
-
   // Easy-A1 Claims
   {
     id: 'claim_easya1_01',
@@ -626,65 +474,12 @@ const defaultClaims: ApprovedClaim[] = [
 
 // Content Collaterals (Strictly scoped by brandId)
 export const defaultContentItems: ContentItem[] = [
-  // Nexus Collaterals
-  {
-    id: 'cnt_01',
-    brandId: 'brand_nexus',
-    authorId: 'usr_clara',
-    authorName: 'Clara Oswald',
-    title: 'Nexus Enterprise AI - Q1 Global Launch Announcement',
-    contentType: 'social_ad',
-    targetAudience: 'Chief Technology Officers & Marketing Directors',
-    targetChannel: 'LinkedIn Sponsored Content',
-    status: 'changes_requested',
-    currentVersion: 1,
-    rawContent: "Nexus Enterprise AI is officially India's No. 1 generative platform! It guarantees 100% uptime without failure, proving competitor X is obsolete. Switch today to our cheap starter tier and unleash revolutionary magic for every end-user.",
-    complianceScore: 38,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
-    findings: [],
-    comments: [
-      {
-        id: 'comm_01',
-        contentItemId: 'cnt_01',
-        authorId: 'usr_alice',
-        authorName: 'Alice Vance',
-        authorRole: 'admin',
-        text: 'Critical claims violations flagged by Claim Agent and Fact Agent. We cannot claim India No.1 without third-party proof or promise 100% uptime.',
-        resolved: false,
-        createdAt: '2026-02-15T11:20:00Z',
-      }
-    ],
-    createdAt: '2026-02-15T09:30:00Z',
-    updatedAt: '2026-02-15T11:20:00Z',
-  },
-  {
-    id: 'cnt_02',
-    brandId: 'brand_nexus',
-    authorId: 'usr_bob',
-    authorName: 'Bob Chen',
-    title: 'Nexus Architecture & Data Governance Whitepaper',
-    contentType: 'marketing_copy',
-    targetAudience: 'Enterprise Security Officers & Data Protection Leads',
-    targetChannel: 'Technical Resources & Direct Download',
-    status: 'approved',
-    currentVersion: 2,
-    rawContent: 'Enterprise brand compliance requires deterministic guardrails. Nexus operates under a verified Zero-Retention Architecture, validating messaging against corporate facts without persisting customer data in model training buffers.',
-    complianceScore: 98,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
-    findings: [],
-    comments: [],
-    createdAt: '2026-02-14T14:00:00Z',
-    updatedAt: '2026-02-15T10:00:00Z',
-  },
-
   // Easy-A1 Collaterals
   {
     id: 'cnt_03',
     brandId: 'brand_easya1',
-    authorId: 'usr_clara',
-    authorName: 'Clara Oswald',
+    authorId: 'usr_advisory',
+    authorName: 'Easy-A1 Advisory Team',
     title: 'Easy-A1 Global Study Abroad Program 2026',
     contentType: 'press_release',
     targetAudience: 'Prospective Students & Parents',
@@ -693,8 +488,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Easy-A1 announces expanded study abroad counseling services for international student visas. With over 12,000 students successfully placed worldwide, our counselors assist prospective scholars with university selection, documentation, and certified visa preparation.',
     complianceScore: 95,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Admissions Director',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T08:00:00Z',
@@ -703,8 +498,8 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_06',
     brandId: 'brand_easya1',
-    authorId: 'usr_clara',
-    authorName: 'Clara Oswald',
+    authorId: 'usr_advisory',
+    authorName: 'Easy-A1 Advisory Team',
     title: 'Easy-A1 Student Visa Consultation Campaign',
     contentType: 'social_ad',
     targetAudience: 'University Candidates & International Scholars',
@@ -713,8 +508,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Planning to study abroad? Easy-A1 provides personalized educational counseling, verified visa application preparation, and pre-departure advisory. Connect with an accredited consultant today.',
     complianceScore: 98,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Admissions Director',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T09:15:00Z',
@@ -725,8 +520,8 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_04',
     brandId: 'brand_shotnest',
-    authorId: 'usr_bob',
-    authorName: 'Bob Chen',
+    authorId: 'usr_producer',
+    authorName: 'ShotNest Studio',
     title: 'ShotNest Media 2026 Cinematography Reel',
     contentType: 'social_ad',
     targetAudience: 'Entertainment Producers & Creative Directors',
@@ -735,8 +530,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Explore the 2026 cinematography showcase from ShotNest Media. Featuring over 150 commercial cinema projects, ShotNest crafts dynamic visual storytelling with high-end camera framing and precision color grading.',
     complianceScore: 94,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Production Lead',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T09:00:00Z',
@@ -745,8 +540,8 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_08',
     brandId: 'brand_shotnest',
-    authorId: 'usr_bob',
-    authorName: 'Bob Chen',
+    authorId: 'usr_producer',
+    authorName: 'ShotNest Studio',
     title: 'ShotNest Commercial Filmmaking & Color Lab Services',
     contentType: 'marketing_copy',
     targetAudience: 'Production Houses & Agency Heads',
@@ -755,8 +550,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'ShotNest Media delivers end-to-end commercial filmmaking services. Utilizing calibrated 8K master workflows and precision color suites, our directors transform brand narratives into memorable cinematic experiences.',
     complianceScore: 98,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Production Lead',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T10:30:00Z',
@@ -767,8 +562,8 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_07',
     brandId: 'brand_assetsgenius',
-    authorId: 'usr_bob',
-    authorName: 'Bob Chen',
+    authorId: 'usr_escrow',
+    authorName: 'Assets Genius Operations',
     title: 'Assets Genius Escrow - Institutional Asset Protection Protocol',
     contentType: 'marketing_copy',
     targetAudience: 'Institutional Investors & Real Estate Legal Counsel',
@@ -777,8 +572,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Assets Genius Escrow delivers institutional-grade collateralized custody and automated escrow settlements. Engineered with multi-signature authorization and strict AML verification, your high-value assets remain protected throughout transaction lifecycles.',
     complianceScore: 97,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Fiduciary Officer',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T09:45:00Z',
@@ -787,8 +582,8 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_09',
     brandId: 'brand_assetsgenius',
-    authorId: 'usr_clara',
-    authorName: 'Clara Oswald',
+    authorId: 'usr_escrow',
+    authorName: 'Assets Genius Operations',
     title: 'Assets Genius Real Estate Escrow Settlement Launch',
     contentType: 'press_release',
     targetAudience: 'Commercial Real Estate Brokers & Title Companies',
@@ -797,8 +592,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Assets Genius Escrow announces its dedicated commercial real estate escrow facility. With over $450M in secured transaction volume, our multi-party vaults provide audited transparency and secure settlement coordination.',
     complianceScore: 96,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Fiduciary Officer',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T11:00:00Z',
@@ -809,7 +604,7 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_05',
     brandId: 'brand_flkdesigns',
-    authorId: 'usr_clara',
+    authorId: 'usr_flk',
     authorName: 'Nicholas Joshua',
     title: 'FLK Designs - Brand Identity & Visual Systems Showcase',
     contentType: 'marketing_copy',
@@ -819,8 +614,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'With over 10 years of experience in graphic design and brand systems, Nicholas Joshua leads FLK Designs in transforming concepts into memorable visual experiences. From brand identity development to user interface concepts, every project is crafted with precision.',
     complianceScore: 96,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Design Director',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T10:00:00Z',
@@ -829,7 +624,7 @@ export const defaultContentItems: ContentItem[] = [
   {
     id: 'cnt_10',
     brandId: 'brand_flkdesigns',
-    authorId: 'usr_clara',
+    authorId: 'usr_flk',
     authorName: 'Nicholas Joshua',
     title: 'FLK Designs 2026 Creative Services & Portfolio Launch',
     contentType: 'social_ad',
@@ -839,8 +634,8 @@ export const defaultContentItems: ContentItem[] = [
     currentVersion: 1,
     rawContent: 'Great design is strategic communication. FLK Designs crafts bespoke brand identities, high-density UI/UX concepts, and marketing collateral designed to make an impact. Explore our 2026 portfolio showcase today.',
     complianceScore: 99,
-    assignedReviewerId: 'usr_alice',
-    assignedReviewerName: 'Alice Vance',
+    assignedReviewerId: 'usr_dir',
+    assignedReviewerName: 'Design Director',
     findings: [],
     comments: [],
     createdAt: '2026-02-15T11:30:00Z',
@@ -859,12 +654,10 @@ defaultContentItems.forEach(item => {
 });
 
 const localFindingsMap: Record<string, ComplianceFinding[]> = {};
-const localCommentsMap: Record<string, ReviewComment[]> = {
-  cnt_01: [...(defaultContentItems[0].comments || [])]
-};
+const localCommentsMap: Record<string, ReviewComment[]> = {};
 
 // Client-side Multi-Agent Compliance Evaluator
-export function runClientInspection(contentId: string, version: number, text: string, currentBrandId: string = 'brand_nexus'): AnalysisReport {
+export function runClientInspection(contentId: string, version: number, text: string, currentBrandId: string = 'brand_easya1'): AnalysisReport {
   const findings: ComplianceFinding[] = [];
 
   const coreRules: Array<{
@@ -1412,7 +1205,7 @@ export const api = {
       id: `cnt_${Date.now()}`,
       brandId: targetBrand,
       authorId: params.authorId || 'usr_clara',
-      authorName: params.authorName || 'Clara Oswald',
+      authorName: params.authorName || 'Brand Creator',
       title: params.title || 'Untitled Collateral',
       contentType: params.contentType || 'social_ad',
       rawContent: params.rawContent || '',
@@ -1510,8 +1303,8 @@ export const api = {
     const comment: ReviewComment = {
       id: `comm_${Date.now()}`,
       contentItemId: contentId,
-      authorId: params.authorId || 'usr_alice',
-      authorName: params.authorName || 'Alice Vance',
+      authorId: params.authorId || 'usr_admin',
+      authorName: params.authorName || 'Administrator',
       authorRole: params.authorRole || 'admin',
       text: params.text,
       resolved: false,
@@ -1540,13 +1333,14 @@ export const api = {
     versionNumber: number;
     decision: 'approved' | 'changes_requested' | 'rejected';
     feedback?: string;
+    reviewerName?: string;
   }): Promise<ApprovalDecision> {
     const decision: ApprovalDecision = {
       id: `dec_${Date.now()}`,
       contentItemId: params.contentItemId,
       versionNumber: params.versionNumber,
-      reviewerId: 'usr_alice',
-      reviewerName: 'Alice Vance',
+      reviewerId: 'usr_admin',
+      reviewerName: params.reviewerName || 'Administrator',
       decision: params.decision,
       feedback: params.feedback,
       cryptographicSeal: `sha256_${Math.random().toString(36).substring(2, 10)}`,
@@ -1718,8 +1512,8 @@ export const api = {
           id: 'log_ea1_01',
           organizationId: 'org_easya1',
           brandId: 'brand_easya1',
-          actorId: 'usr_clara',
-          actorName: 'Clara Oswald',
+          actorId: 'usr_counselor',
+          actorName: 'Admissions Lead',
           action: 'CONTENT_SCANNED',
           details: { score: 95, itemTitle: 'Easy-A1 Global Study Abroad Program 2026', agent: 'BrandVault Multi-Agent' },
           timestamp: new Date().toISOString(),
@@ -1728,8 +1522,8 @@ export const api = {
           id: 'log_ea1_02',
           organizationId: 'org_easya1',
           brandId: 'brand_easya1',
-          actorId: 'usr_alice',
-          actorName: 'Alice Vance',
+          actorId: 'usr_director',
+          actorName: 'Admissions Director',
           action: 'CONTENT_APPROVED',
           details: { score: 98, itemTitle: 'Easy-A1 Student Visa Consultation Campaign', version: 1 },
           timestamp: '2026-02-15T09:15:00Z',
@@ -1738,8 +1532,8 @@ export const api = {
           id: 'log_ea1_03',
           organizationId: 'org_easya1',
           brandId: 'brand_easya1',
-          actorId: 'usr_alice',
-          actorName: 'Alice Vance',
+          actorId: 'usr_compliance',
+          actorName: 'Compliance Officer',
           action: 'GUIDELINE_VERIFIED',
           details: { guidelineTitle: 'Visa & Admission Advisory Guidelines', status: 'active' },
           timestamp: '2026-02-15T08:00:00Z',
@@ -1753,8 +1547,8 @@ export const api = {
           id: 'log_sn_01',
           organizationId: 'org_shotnest',
           brandId: 'brand_shotnest',
-          actorId: 'usr_bob',
-          actorName: 'Bob Chen',
+          actorId: 'usr_cinematographer',
+          actorName: 'Lead Cinematographer',
           action: 'CONTENT_SCANNED',
           details: { score: 94, itemTitle: 'ShotNest Media 2026 Cinematography Reel', agent: 'BrandVault Multi-Agent' },
           timestamp: new Date().toISOString(),
@@ -1763,8 +1557,8 @@ export const api = {
           id: 'log_sn_02',
           organizationId: 'org_shotnest',
           brandId: 'brand_shotnest',
-          actorId: 'usr_alice',
-          actorName: 'Alice Vance',
+          actorId: 'usr_producer',
+          actorName: 'Executive Producer',
           action: 'CONTENT_APPROVED',
           details: { score: 98, itemTitle: 'ShotNest Commercial Filmmaking & Color Lab Services' },
           timestamp: '2026-02-15T10:30:00Z',
@@ -1778,8 +1572,8 @@ export const api = {
           id: 'log_age_01',
           organizationId: 'org_assetsgenius',
           brandId: 'brand_assetsgenius',
-          actorId: 'usr_bob',
-          actorName: 'Bob Chen',
+          actorId: 'usr_officer',
+          actorName: 'Settlement Officer',
           action: 'CONTENT_SCANNED',
           details: { score: 97, itemTitle: 'Assets Genius Escrow - Institutional Asset Protection Protocol' },
           timestamp: new Date().toISOString(),
@@ -1788,8 +1582,8 @@ export const api = {
           id: 'log_age_02',
           organizationId: 'org_assetsgenius',
           brandId: 'brand_assetsgenius',
-          actorId: 'usr_alice',
-          actorName: 'Alice Vance',
+          actorId: 'usr_fiduciary',
+          actorName: 'Escrow Fiduciary',
           action: 'CONTENT_APPROVED',
           details: { score: 96, itemTitle: 'Assets Genius Real Estate Escrow Settlement Launch' },
           timestamp: '2026-02-15T11:00:00Z',
@@ -1803,7 +1597,7 @@ export const api = {
           id: 'log_flk_01',
           organizationId: 'org_flk',
           brandId: 'brand_flkdesigns',
-          actorId: 'usr_clara',
+          actorId: 'usr_nj',
           actorName: 'Nicholas Joshua',
           action: 'CONTENT_SCANNED',
           details: { score: 96, itemTitle: 'FLK Designs - Brand Identity & Visual Systems Showcase' },
@@ -1813,8 +1607,8 @@ export const api = {
           id: 'log_flk_02',
           organizationId: 'org_flk',
           brandId: 'brand_flkdesigns',
-          actorId: 'usr_alice',
-          actorName: 'Nicholas Joshua',
+          actorId: 'usr_director',
+          actorName: 'Brand Director',
           action: 'CONTENT_APPROVED',
           details: { score: 99, itemTitle: 'FLK Designs 2026 Creative Services & Portfolio Launch' },
           timestamp: '2026-02-15T11:30:00Z',
@@ -1822,36 +1616,26 @@ export const api = {
       ];
     }
 
-    // Default: Nexus Enterprise AI or custom brand
+    // Default for any custom brand
     return [
       {
-        id: 'log_01',
-        organizationId: 'org_acme',
-        brandId: 'brand_nexus',
-        actorId: 'usr_clara',
-        actorName: 'Clara Oswald',
+        id: `log_${Date.now()}_01`,
+        organizationId: b?.organizationId || 'org_custom',
+        brandId: targetBrand,
+        actorId: 'usr_creator',
+        actorName: 'Content Creator',
         action: 'CONTENT_SCANNED',
-        details: { score: 38, findingsCount: 4, itemTitle: 'Nexus Enterprise AI - Q1 Global Launch' },
+        details: { score: 95, itemTitle: `${b?.name || 'Brand'} Promotional Campaign`, agent: 'BrandVault Multi-Agent' },
         timestamp: new Date().toISOString(),
       },
       {
-        id: 'log_02',
-        organizationId: 'org_acme',
-        brandId: 'brand_nexus',
-        actorId: 'usr_alice',
-        actorName: 'Alice Vance',
-        action: 'CHANGES_REQUESTED',
-        details: { feedback: 'Claims policy violations flagged.' },
-        timestamp: '2026-02-15T11:20:00Z',
-      },
-      {
-        id: 'log_03',
-        organizationId: 'org_acme',
-        brandId: 'brand_nexus',
-        actorId: 'usr_alice',
-        actorName: 'Alice Vance',
+        id: `log_${Date.now()}_02`,
+        organizationId: b?.organizationId || 'org_custom',
+        brandId: targetBrand,
+        actorId: 'usr_director',
+        actorName: 'Brand Director',
         action: 'CONTENT_APPROVED',
-        details: { score: 98, version: 2, itemTitle: 'Nexus Architecture & Data Governance Whitepaper' },
+        details: { score: 98, version: 1, itemTitle: `${b?.name || 'Brand'} Brand Identity & Standards` },
         timestamp: '2026-02-15T10:00:00Z',
       }
     ];

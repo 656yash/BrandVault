@@ -75,7 +75,7 @@ export const AIDisclosureModal: React.FC<Props> = ({ isOpen, onClose }) => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-pink-600 shrink-0" />
-                <span><strong>Human-in-the-Loop Authority:</strong> AI flags and explains; only authorized humans (Alice Vance, Bob Chen) can grant publication approvals.</span>
+                <span><strong>Human-in-the-Loop Authority:</strong> AI flags and explains; only authorized human directors and compliance managers can grant publication approvals.</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-pink-600 shrink-0" />

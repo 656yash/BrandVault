@@ -45,7 +45,7 @@ export function App() {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [metrics, setMetrics] = useState<GovernanceMetrics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [selectedContentId, setSelectedContentId] = useState<string>('cnt_01');
+  const [selectedContentId, setSelectedContentId] = useState<string>('cnt_03');
   const [isScanning, setIsScanning] = useState<boolean>(false);
 
   // Initial Data Fetch
@@ -137,6 +137,22 @@ export function App() {
     return created;
   };
 
+  const handleDeleteBrand = async (brandId: string) => {
+    if (brands.length <= 1) {
+      showToast('Cannot delete the only remaining workspace.');
+      return;
+    }
+    const targetBrand = brands.find(b => b.id === brandId);
+    const confirmed = window.confirm(`Are you sure you want to delete "${targetBrand?.name || 'this brand'}" workspace?`);
+    if (!confirmed) return;
+    
+    await api.deleteBrand(brandId);
+    const remaining = brands.filter(b => b.id !== brandId);
+    setBrands(remaining);
+    await handleSelectBrand(remaining[0].id);
+    showToast(`Brand workspace "${targetBrand?.name}" removed.`);
+  };
+
   // Handlers for Scanning & Findings (Zero "Failed to fetch" errors)
   const handleScanContent = async (id: string, text: string): Promise<AnalysisReport> => {
     setIsScanning(true);
@@ -164,7 +180,7 @@ export function App() {
     } catch (err: any) {
       console.warn('Scan handled gracefully:', err);
       showToast('AI inspection completed using multi-agent compliance rules.');
-      return runClientInspection(id, 1, text, brand?.id || 'brand_nexus');
+      return runClientInspection(id, 1, text, brand?.id || 'brand_easya1');
     } finally {
       setIsScanning(false);
     }
@@ -206,6 +222,7 @@ export function App() {
       versionNumber: content?.currentVersion || 1,
       decision: 'approved',
       feedback,
+      reviewerName: currentUser?.displayName || 'Administrator',
     });
     setContentItems(prev => prev.map(item => item.id === contentId ? { ...item, status: 'approved' } : item));
     const logs = await api.getAuditLogs();
@@ -221,6 +238,7 @@ export function App() {
       versionNumber: content?.currentVersion || 1,
       decision: 'changes_requested',
       feedback: feedback || 'Please address flagged brand compliance issues.',
+      reviewerName: currentUser?.displayName || 'Administrator',
     });
     setContentItems(prev => prev.map(item => item.id === contentId ? { ...item, status: 'changes_requested' } : item));
     const logs = await api.getAuditLogs();
@@ -233,7 +251,7 @@ export function App() {
   const handleCreateContent = async (params: any) => {
     const created = await api.createContentItem({
       ...params,
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
     });
     setContentItems(prev => [created, ...prev]);
     setSelectedContentId(created.id);
@@ -255,8 +273,8 @@ export function App() {
   // Comments CRUD Handlers
   const handleAddComment = async (contentId: string, text: string) => {
     const created = await api.addComment(contentId, {
-      authorId: currentRole === 'admin' ? 'usr_alice' : currentRole === 'manager' ? 'usr_bob' : 'usr_clara',
-      authorName: currentUser?.displayName || (currentRole === 'admin' ? 'Alice Vance' : currentRole === 'manager' ? 'Bob Chen' : 'Clara Oswald'),
+      authorId: currentUser?.uid || 'usr_user',
+      authorName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Administrator',
       authorRole: currentRole,
       text,
     });
@@ -286,7 +304,7 @@ export function App() {
   const handleAddGuideline = async (g: any) => {
     const created = await api.addGuideline({
       ...g,
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
     });
     setGuidelines(prev => [created, ...prev]);
     showToast('New brand guideline registered.');
@@ -303,7 +321,7 @@ export function App() {
   const handleAddFact = async (f: any) => {
     const created = await api.addFact({
       ...f,
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
     });
     setFacts(prev => [created, ...prev]);
     showToast('Corporate fact verified & added.');
@@ -320,7 +338,7 @@ export function App() {
   const handleAddTerminology = async (t: any) => {
     const created = await api.addTerminology({
       ...t,
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
     });
     setTerminology(prev => [created, ...prev]);
     showToast('Terminology rule added to dictionary.');
@@ -337,7 +355,7 @@ export function App() {
   const handleAddClaim = async (c: any) => {
     const created = await api.addClaim({
       ...c,
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
     });
     setClaims(prev => [created, ...prev]);
     showToast('Approved claim registered in registry.');
@@ -378,6 +396,7 @@ export function App() {
         brands={brands}
         onSelectBrand={handleSelectBrand}
         onOpenCreateBrandModal={() => setShowCreateBrandModal(true)}
+        onDeleteBrand={handleDeleteBrand}
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         pendingReviewsCount={pendingReviewsCount}

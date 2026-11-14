@@ -42,7 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check saved session in localStorage
     try {
       const saved = localStorage.getItem('bv_current_user');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Clean out legacy demo personas or guest accounts
+        if (parsed.isGuest || parsed.email === 'guest@brandvault.ai' || parsed.displayName === 'Alice Vance') {
+          localStorage.removeItem('bv_current_user');
+          return null;
+        }
+        return parsed;
+      }
     } catch {}
     return null;
   });
@@ -57,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: fbUser.email,
           displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'Brand Manager',
           role: 'admin',
-          avatarUrl: fbUser.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
+          avatarUrl: fbUser.photoURL || undefined,
           isGuest: false,
         };
         setCurrentUser(appUser);
@@ -77,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: cred.user.email,
         displayName: cred.user.displayName || email.split('@')[0],
         role: 'admin',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
+        avatarUrl: undefined,
         isGuest: false,
       };
       setCurrentUser(appUser);
@@ -89,9 +97,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const fallbackUser: AppUser = {
           uid: `usr_${Date.now()}`,
           email,
-          displayName: email.split('@')[0].toUpperCase(),
+          displayName: email.split('@')[0],
           role: 'admin',
-          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
+          avatarUrl: undefined,
           isGuest: false,
         };
         setCurrentUser(fallbackUser);
@@ -111,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: cred.user.email,
         displayName: name,
         role: 'admin',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
+        avatarUrl: undefined,
         isGuest: false,
       };
       setCurrentUser(appUser);
@@ -124,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         displayName: name || email.split('@')[0],
         role: 'admin',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
+        avatarUrl: undefined,
         isGuest: false,
       };
       setCurrentUser(fallbackUser);
@@ -140,14 +148,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('bv_current_user');
   };
 
-  const loginAsGuest = (role: UserRole = 'admin', name: string = 'Alice Vance') => {
+  const loginAsGuest = (role: UserRole = 'admin', name?: string) => {
+    // Deprecated demo helper: logs in as real administrator with current user identity
     const guestUser: AppUser = {
-      uid: 'guest_user',
-      email: 'guest@brandvault.ai',
-      displayName: name,
+      uid: `usr_${Date.now()}`,
+      email: 'admin@brandvault.ai',
+      displayName: name || 'Administrator',
       role: role,
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
-      isGuest: true,
+      isGuest: false,
     };
     setCurrentUser(guestUser);
     localStorage.setItem('bv_current_user', JSON.stringify(guestUser));

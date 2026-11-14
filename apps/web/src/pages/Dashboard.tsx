@@ -190,7 +190,7 @@ export const Dashboard: React.FC<Props> = ({
             </h2>
           </div>
           <span className="text-xs text-slate-600 font-mono font-semibold">
-            Active Workspace: {brand?.name || 'Nexus Enterprise AI'}
+            Active Workspace: {brand?.name || 'Workspace Brand'}
           </span>
         </div>
 
@@ -260,7 +260,7 @@ export const Dashboard: React.FC<Props> = ({
             <div className="pt-4 mt-4 border-t border-white/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div>
                 <span className="text-slate-500">Company Name: </span>
-                <strong className="text-slate-800">{brand?.name || 'Nexus Enterprise AI'}</strong>
+                <strong className="text-slate-800">{brand?.name || 'Workspace Brand'}</strong>
               </div>
               <div className="truncate max-w-md">
                 <span className="text-slate-500">Industry: </span>
@@ -274,54 +274,60 @@ export const Dashboard: React.FC<Props> = ({
             <div>
               <div className="text-xs font-bold text-slate-800 tracking-tight mb-3">Recent Content Items</div>
               <div className="space-y-2.5">
-                {contentItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-3 rounded-2xl bg-white/70 border border-white hover:bg-white/90 transition-all cursor-pointer group space-y-1 shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span 
-                        onClick={() => onOpenContent(item.id)}
-                        className="text-xs font-bold text-slate-800 group-hover:text-pink-600 transition-colors truncate max-w-[170px]"
-                      >
-                        {item.title}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-mono font-bold ${
-                          (item.complianceScore || 0) >= 90 ? 'text-emerald-700' : 'text-pink-600'
-                        }`}>
-                          {item.complianceScore ?? '--'}/100
+                {contentItems.length === 0 ? (
+                  <div className="p-4 rounded-2xl bg-white/50 border border-white text-center text-xs text-slate-500 font-medium">
+                    No content collaterals yet. Click below to inspect your first asset.
+                  </div>
+                ) : (
+                  contentItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3 rounded-2xl bg-white/70 border border-white hover:bg-white/90 transition-all cursor-pointer group space-y-1 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span 
+                          onClick={() => onOpenContent(item.id)}
+                          className="text-xs font-bold text-slate-800 group-hover:text-pink-600 transition-colors truncate max-w-[170px]"
+                        >
+                          {item.title}
                         </span>
-                        {onDeleteContent && contentItems.length > 1 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (window.confirm(`Delete "${item.title}"?`)) {
-                                onDeleteContent(item.id);
-                              }
-                            }}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-opacity"
-                            title="Delete Item"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-mono font-bold ${
+                            (item.complianceScore || 0) >= 90 ? 'text-emerald-700' : 'text-pink-600'
+                          }`}>
+                            {item.complianceScore ?? '--'}/100
+                          </span>
+                          {onDeleteContent && contentItems.length > 1 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Delete "${item.title}"?`)) {
+                                  onDeleteContent(item.id);
+                                }
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-opacity"
+                              title="Delete Item"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div 
+                        onClick={() => onOpenContent(item.id)}
+                        className="flex items-center justify-between text-[10px] text-slate-500 font-medium"
+                      >
+                        <span className="capitalize">{item.contentType.replace('_', ' ')} • V{item.currentVersion}</span>
+                        <span className="capitalize text-slate-700 font-semibold">{item.status.replace('_', ' ')}</span>
                       </div>
                     </div>
-                    <div 
-                      onClick={() => onOpenContent(item.id)}
-                      className="flex items-center justify-between text-[10px] text-slate-500 font-medium"
-                    >
-                      <span className="capitalize">{item.contentType.replace('_', ' ')} • V{item.currentVersion}</span>
-                      <span className="capitalize text-slate-700 font-semibold">{item.status.replace('_', ' ')}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
             <button
-              onClick={() => onOpenContent(contentItems[0]?.id || 'cnt_01')}
+              onClick={() => onOpenContent(contentItems[0]?.id || '')}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-white/80 hover:bg-white text-xs font-bold text-slate-800 border border-white shadow-sm transition-all cursor-pointer"
             >
               <span>Open Studio Workbench</span>

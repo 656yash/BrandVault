@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const LoginPage: React.FC<Props> = ({ onSuccess, onAddInitialBrand }) => {
-  const { login, register, loginAsGuest } = useAuth();
+  const { login, register } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,11 +49,6 @@ export const LoginPage: React.FC<Props> = ({ onSuccess, onAddInitialBrand }) => 
     }
   };
 
-  const handleQuickLogin = (role: UserRole, personaName: string) => {
-    loginAsGuest(role, personaName);
-    onSuccess();
-  };
-
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
       {/* Adwise Ambient Organic Blobs */}
@@ -76,7 +71,7 @@ export const LoginPage: React.FC<Props> = ({ onSuccess, onAddInitialBrand }) => 
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 border border-white shadow-sm mt-1">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-[10px] font-mono text-slate-600 font-bold">
-              Firestore Auth • skillforgedemowebsite
+              Firestore Auth • Production Ready
             </span>
           </div>
         </div>
@@ -180,40 +175,10 @@ export const LoginPage: React.FC<Props> = ({ onSuccess, onAddInitialBrand }) => 
             disabled={loading}
             className="w-full glass-button flex items-center justify-center gap-2 py-3 rounded-xl text-slate-900 font-bold shadow-lg hover:scale-[1.02] transition-all cursor-pointer mt-2 disabled:opacity-70"
           >
-            <span>{loading ? 'Processing...' : isRegister ? 'Register & Enter Workspace' : 'Sign In with Firestore'}</span>
+            <span>{loading ? 'Processing...' : isRegister ? 'Register & Enter Workspace' : 'Sign In to Workspace'}</span>
             <ArrowRight className="w-4 h-4 text-slate-900" />
           </button>
         </form>
-
-        {/* Quick Demo Personas */}
-        <div className="pt-4 border-t border-white/40 space-y-2">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono text-center">
-            Or One-Click Persona Login
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => handleQuickLogin('admin', 'Alice Vance')}
-              className="p-2 rounded-xl bg-white/70 hover:bg-white border border-white text-center transition-all cursor-pointer shadow-sm"
-            >
-              <div className="text-[11px] font-bold text-slate-800">Alice Vance</div>
-              <div className="text-[9px] text-pink-600 font-semibold font-mono">Director</div>
-            </button>
-            <button
-              onClick={() => handleQuickLogin('manager', 'Bob Chen')}
-              className="p-2 rounded-xl bg-white/70 hover:bg-white border border-white text-center transition-all cursor-pointer shadow-sm"
-            >
-              <div className="text-[11px] font-bold text-slate-800">Bob Chen</div>
-              <div className="text-[9px] text-blue-600 font-semibold font-mono">Lead</div>
-            </button>
-            <button
-              onClick={() => handleQuickLogin('creator', 'Clara Oswald')}
-              className="p-2 rounded-xl bg-white/70 hover:bg-white border border-white text-center transition-all cursor-pointer shadow-sm"
-            >
-              <div className="text-[11px] font-bold text-slate-800">Clara Oswald</div>
-              <div className="text-[9px] text-purple-600 font-semibold font-mono">Creator</div>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

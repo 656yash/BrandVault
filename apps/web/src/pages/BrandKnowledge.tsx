@@ -88,7 +88,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newTitle.trim()) return;
     await onAddGuideline({
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
       title: newTitle,
       category: newCategory,
       description: newDescription,
@@ -105,7 +105,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newProhibited.trim()) return;
     await onAddTerminology({
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
       prohibitedTerm: newProhibited,
       preferredTerm: newPreferred,
       reason: newReason,
@@ -122,7 +122,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newFactStatement.trim()) return;
     await onAddFact({
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
       factKey: newFactKey || `fact_${Date.now()}`,
       statement: newFactStatement,
       category: newFactCategory,
@@ -139,7 +139,7 @@ export const BrandKnowledge: React.FC<Props> = ({
     e.preventDefault();
     if (!newClaimText.trim()) return;
     await onAddClaim({
-      brandId: brand?.id || 'brand_nexus',
+      brandId: brand?.id || 'brand_easya1',
       claimText: newClaimText,
       substantiationEvidence: newClaimEvidence,
       authorizedChannels: newClaimChannels ? newClaimChannels.split(',').map(s => s.trim()) : ['All channels'],

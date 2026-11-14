@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check } from 'lucide-react';
+import { Sparkles, ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check, Trash2, User } from 'lucide-react';
 import type { UserRole, BrandWorkspace } from '@brandvault/shared';
 import { AIDisclosureModal } from './AIDisclosureModal';
 import { ChromeShield } from './ChromeIcons';
@@ -14,32 +14,17 @@ interface Props {
   brands: BrandWorkspace[];
   onSelectBrand: (brandId: string) => void;
   onOpenCreateBrandModal: () => void;
+  onDeleteBrand?: (brandId: string) => void;
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   pendingReviewsCount?: number;
 }
 
-const USERS_BY_ROLE: Record<UserRole, { name: string; title: string; avatar: string }> = {
-  admin: {
-    name: 'Alice Vance',
-    title: 'Brand Compliance Director',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120'
-  },
-  manager: {
-    name: 'Bob Chen',
-    title: 'Senior Marketing Lead',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120'
-  },
-  creator: {
-    name: 'Clara Oswald',
-    title: 'Content Creator & Copywriter',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120'
-  },
-  compliance_officer: {
-    name: 'Sarah Connor',
-    title: 'Legal Compliance Officer',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120'
-  }
+const ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Administrator',
+  manager: 'Compliance Manager',
+  creator: 'Content Creator',
+  compliance_officer: 'Compliance Officer',
 };
 
 export const Navbar: React.FC<Props> = ({ 
@@ -49,6 +34,7 @@ export const Navbar: React.FC<Props> = ({
   brands,
   onSelectBrand,
   onOpenCreateBrandModal,
+  onDeleteBrand,
   currentTab, 
   onTabChange,
   pendingReviewsCount = 0
@@ -57,8 +43,6 @@ export const Navbar: React.FC<Props> = ({
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showBrandMenu, setShowBrandMenu] = useState(false);
   const [showDisclosure, setShowDisclosure] = useState(false);
-
-  const activePersona = USERS_BY_ROLE[currentRole] || USERS_BY_ROLE.admin;
 
   const navItems = [
     { id: 'dashboard' as NavTab, label: 'Overview' },
@@ -128,19 +112,21 @@ export const Navbar: React.FC<Props> = ({
                   {brands.map((b) => {
                     const isSelected = brand?.id === b.id;
                     return (
-                      <button
+                      <div
                         key={b.id}
-                        onClick={() => {
-                          onSelectBrand(b.id);
-                          setShowBrandMenu(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-left text-xs transition-colors cursor-pointer ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-left text-xs transition-colors group ${
                           isSelected
                             ? 'bg-gradient-to-r from-pink-soft/30 to-blue-sky/30 text-slate-900 font-bold border border-white shadow-sm'
                             : 'text-slate-700 hover:bg-white/60'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 truncate">
+                        <div
+                          onClick={() => {
+                            onSelectBrand(b.id);
+                            setShowBrandMenu(false);
+                          }}
+                          className="flex items-center gap-2.5 truncate flex-1 cursor-pointer"
+                        >
                           <div
                             className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shadow-xs shrink-0"
                             style={{ backgroundColor: b.primaryColor || '#4F46E5' }}
@@ -152,8 +138,23 @@ export const Navbar: React.FC<Props> = ({
                             <div className="text-[10px] text-slate-500 truncate">{b.description}</div>
                           </div>
                         </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-pink-600 shrink-0 ml-1.5" />}
-                      </button>
+
+                        <div className="flex items-center gap-1.5 ml-2">
+                          {isSelected && <Check className="w-3.5 h-3.5 text-pink-600 shrink-0" />}
+                          {brands.length > 1 && onDeleteBrand && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteBrand(b.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 rounded transition-opacity cursor-pointer"
+                              title={`Delete ${b.name} workspace`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -212,73 +213,74 @@ export const Navbar: React.FC<Props> = ({
             <span className="font-mono text-[11px]">Zero-Retention</span>
           </button>
 
-          {/* User Persona & Role Switcher */}
+          {/* User Profile & Role Menu */}
           <div className="relative">
             <button
               onClick={() => {
                 setShowRoleMenu(!showRoleMenu);
                 setShowBrandMenu(false);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 border border-white/80 hover:bg-white/80 transition-all text-left shadow-sm cursor-pointer backdrop-blur-md"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/50 border border-white/80 hover:bg-white/80 transition-all text-left shadow-sm cursor-pointer backdrop-blur-md"
             >
-              <img
-                src={currentUser?.avatarUrl || activePersona.avatar}
-                alt={currentUser?.displayName || activePersona.name}
-                className="w-6 h-6 rounded-full object-cover ring-2 ring-white shadow-sm"
-              />
-              <div className="hidden sm:block">
-                <span className="text-xs font-bold text-slate-800">
-                  {currentUser?.displayName || activePersona.name}
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFAFCC] to-[#BDE0FE] flex items-center justify-center text-[11px] font-black text-slate-800 ring-1 ring-white shadow-xs">
+                {(currentUser?.displayName || currentUser?.email || 'A').charAt(0).toUpperCase()}
+              </div>
+              <div className="hidden sm:block text-left">
+                <span className="text-xs font-bold text-slate-800 block truncate max-w-[130px]">
+                  {currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Administrator'}
                 </span>
-                <span className="text-[10px] text-slate-600 ml-1.5 capitalize">
-                  ({currentRole})
+                <span className="text-[9px] text-slate-500 font-mono block">
+                  {ROLE_LABELS[currentRole] || 'Administrator'}
                 </span>
               </div>
               <ChevronDown className="w-3 h-3 text-slate-600" />
             </button>
 
             {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-64 rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/90 shadow-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                {currentUser && (
-                  <div className="px-3 py-2 border-b border-slate-200 mb-1">
-                    <div className="text-xs font-bold text-slate-900 truncate">{currentUser.displayName}</div>
-                    <div className="text-[10px] text-slate-500 font-mono truncate">{currentUser.email}</div>
+              <div className="absolute right-0 mt-2 w-64 rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/90 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3 py-2 border-b border-slate-200 mb-2">
+                  <div className="text-xs font-bold text-slate-900 truncate">
+                    {currentUser?.displayName || 'Administrator'}
                   </div>
-                )}
-
-                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">
-                  Switch Active Persona
+                  <div className="text-[10px] text-slate-500 font-mono truncate">
+                    {currentUser?.email || 'admin@brandvault.ai'}
+                  </div>
+                  <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[9px] font-mono font-bold border border-emerald-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Authenticated User</span>
+                  </div>
                 </div>
-                {(['admin', 'manager', 'creator'] as UserRole[]).map((r) => {
-                  const u = USERS_BY_ROLE[r];
-                  const isSelected = currentRole === r;
-                  return (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        onRoleChange(r);
-                        setShowRoleMenu(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-2xl text-left text-xs transition-colors mt-1 cursor-pointer ${
-                        isSelected 
-                          ? 'bg-gradient-to-r from-pink-soft/30 to-blue-sky/30 text-slate-900 font-bold border border-white/80 shadow-sm' 
-                          : 'text-slate-700 hover:bg-white/50'
-                      }`}
-                    >
-                      <img src={u.avatar} alt={u.name} className="w-6 h-6 rounded-full object-cover ring-1 ring-slate-300" />
-                      <div className="flex-1">
-                        <div className="text-slate-900 text-xs font-semibold">{u.name}</div>
-                        <div className="text-[10px] text-slate-500">{u.title}</div>
-                      </div>
-                      {isSelected && <CheckCircle className="w-3.5 h-3.5 text-pink-600" />}
-                    </button>
-                  );
-                })}
+
+                <div className="px-3 py-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider font-mono">
+                  Operational Role
+                </div>
+                <div className="space-y-1 mt-1">
+                  {(['admin', 'manager', 'creator', 'compliance_officer'] as UserRole[]).map((r) => {
+                    const isSelected = currentRole === r;
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => {
+                          onRoleChange(r);
+                          setShowRoleMenu(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-left text-xs transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'bg-slate-100 text-slate-900 font-bold'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>{ROLE_LABELS[r]}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-pink-600" />}
+                      </button>
+                    );
+                  })}
+                </div>
 
                 <div className="mt-2 pt-2 border-t border-slate-200">
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
