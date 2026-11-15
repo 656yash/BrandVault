@@ -15,6 +15,7 @@ import {
   addDoc, 
   getDocs, 
   getDoc,
+  deleteDoc,
   serverTimestamp 
 } from 'firebase/firestore';
 
@@ -64,5 +65,25 @@ export async function saveBrandToFirestore(brand: any) {
     }, { merge: true });
   } catch (err) {
     console.warn('Firestore brand save note:', err);
+  }
+}
+
+// Helper: Fetch Brands from Firestore
+export async function getBrandsFromFirestore(): Promise<any[]> {
+  try {
+    const snap = await getDocs(collection(db, 'brands'));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.warn('Firestore get brands note:', err);
+    return [];
+  }
+}
+
+// Helper: Delete Brand from Firestore
+export async function deleteBrandFromFirestore(brandId: string) {
+  try {
+    await deleteDoc(doc(db, 'brands', brandId));
+  } catch (err) {
+    console.warn('Firestore delete brand note:', err);
   }
 }

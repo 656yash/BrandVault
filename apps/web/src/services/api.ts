@@ -15,7 +15,7 @@ import type {
   AgentType,
   FindingSeverity
 } from '@brandvault/shared';
-import { saveBrandToFirestore } from './firebase';
+import { saveBrandToFirestore, getBrandsFromFirestore, deleteBrandFromFirestore } from './firebase';
 
 const API_BASE = '/api/v1';
 
@@ -338,6 +338,16 @@ export function runClientInspection(
 export const api = {
   // Brand Workspaces
   async getBrands(): Promise<BrandWorkspace[]> {
+    try {
+      const fsBrands = await getBrandsFromFirestore();
+      if (fsBrands && fsBrands.length > 0) {
+        const map = new Map<string, BrandWorkspace>();
+        memoryBrands.forEach(b => map.set(b.id, b));
+        fsBrands.forEach((b: any) => map.set(b.id, b as BrandWorkspace));
+        memoryBrands = Array.from(map.values());
+        saveItem('bv_brands', memoryBrands);
+      }
+    } catch {}
     return [...memoryBrands];
   },
 
@@ -392,6 +402,7 @@ export const api = {
     }
     saveItem('bv_brands', memoryBrands);
     saveItem('bv_active_brand', activeBrandId);
+    deleteBrandFromFirestore(brandId).catch(() => {});
     return true;
   },
 
