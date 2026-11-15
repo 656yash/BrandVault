@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   BookOpen, 
   FileCheck, 
@@ -12,7 +12,10 @@ import {
   AlertOctagon,
   AlertTriangle,
   Info,
-  X
+  X,
+  Upload,
+  Download,
+  Sparkles
 } from 'lucide-react';
 import type { 
   BrandWorkspace,
@@ -152,8 +155,125 @@ export const BrandKnowledge: React.FC<Props> = ({
     setShowAddModal(false);
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportStarterPack = async () => {
+    const brandName = brand?.name || 'Enterprise Workspace';
+    const confirmed = window.confirm(`Import standard enterprise compliance guidelines, terminology rules, facts, and claims for "${brandName}"?`);
+    if (!confirmed) return;
+
+    // 1. Guidelines
+    await onAddGuideline({
+      title: `${brandName} Voice, Tone & Persona Standards`,
+      category: 'tone',
+      description: 'Defines authoritative, trustworthy, and empathetic communication standards across all media channels.',
+      rules: [
+        'Maintain an empathetic, technically grounded voice without condescension.',
+        'Avoid hyperbolic puffery, ungrounded superlatives, and high-pressure sales manipulation.',
+        'Ensure all technical statements cite verifiable architectural specifications.'
+      ]
+    });
+
+    await onAddGuideline({
+      title: `${brandName} Visual & Design Systems Policy`,
+      category: 'visual',
+      description: 'Preserves brand integrity, clear space buffers, and WCAG contrast rules.',
+      rules: [
+        'Maintain minimum 24px clear space perimeter around official logo marks.',
+        'Ensure text-to-background contrast ratio meets WCAG 2.1 AA standards (minimum 4.5:1).',
+        'Use only approved hex swatches for all digital promotional creatives.'
+      ]
+    });
+
+    // 2. Terminology
+    await onAddTerminology({
+      prohibitedTerm: 'cheap',
+      preferredTerm: 'cost-effective',
+      reason: 'The word "cheap" devalues premium brand positioning and enterprise reliability.',
+      category: 'brand_voice',
+      severity: 'warning'
+    });
+
+    await onAddTerminology({
+      prohibitedTerm: 'revolutionary magic',
+      preferredTerm: 'architectural breakthrough',
+      reason: 'Marketing puffery degrades technical credibility and customer trust.',
+      category: 'brand_voice',
+      severity: 'warning'
+    });
+
+    await onAddTerminology({
+      prohibitedTerm: 'competitor X is obsolete',
+      preferredTerm: 'traditional legacy architectures face scalability limitations',
+      reason: 'Direct disparagement of competitors is prohibited under fair advertising ethics.',
+      category: 'legal_risk',
+      severity: 'critical'
+    });
+
+    // 3. Facts
+    await onAddFact({
+      statement: `${brandName} infrastructure guarantees 99.9% uptime SLA backed by SOC 2 Type II compliance.`,
+      category: 'infrastructure',
+      verifiedSource: 'Annual Infrastructure Audit Report 2026',
+      verifiedDate: new Date().toISOString().split('T')[0]
+    });
+
+    await onAddFact({
+      statement: `Customer and brand assets are protected with AES-256 encryption at rest and zero external AI retention.`,
+      category: 'security',
+      verifiedSource: 'SOC 2 Type II & ISO 27001 Security Framework',
+      verifiedDate: new Date().toISOString().split('T')[0]
+    });
+
+    // 4. Claims
+    await onAddClaim({
+      claimText: `Reduces brand compliance turnaround time by up to 65% with sub-second multi-agent diagnostics.`,
+      substantiationEvidence: 'Benchmarked workflow acceleration studies across enterprise review cohorts, Q3 2026.',
+      authorizedChannels: ['Digital Ads', 'Social Media', 'Press Releases', 'Website'],
+      expiresAt: '2027-12-31',
+      approvedBy: 'Director of Brand Governance'
+    });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        if (Array.isArray(data.guidelines)) {
+          for (const g of data.guidelines) await onAddGuideline(g);
+        }
+        if (Array.isArray(data.terminology)) {
+          for (const t of data.terminology) await onAddTerminology(t);
+        }
+        if (Array.isArray(data.facts)) {
+          for (const f of data.facts) await onAddFact(f);
+        }
+        if (Array.isArray(data.claims)) {
+          for (const c of data.claims) await onAddClaim(c);
+        }
+        alert('Rules successfully imported from JSON file!');
+      } catch (err) {
+        alert('Invalid JSON file format. Please ensure valid guideline/rule schema.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="relative space-y-8 pb-16">
+      {/* Hidden file input for JSON rule import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept=".json"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
         <div className="space-y-1">
@@ -170,18 +290,38 @@ export const BrandKnowledge: React.FC<Props> = ({
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="glass-button flex items-center gap-2 px-6 py-3 rounded-full text-slate-900 font-bold text-xs shadow-lg hover:scale-105 transition-all cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>
-            {activeTab === 'guidelines' ? 'Add Guideline' :
-             activeTab === 'terminology' ? 'Add Term Rule' :
-             activeTab === 'facts' ? 'Add Verified Fact' :
-             activeTab === 'claims' ? 'Add Approved Claim' : 'Add Brand Item'}
-          </span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={handleImportStarterPack}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/70 hover:bg-white text-slate-800 font-bold text-xs border border-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+            title="Import ready-to-use enterprise brand guidelines, terminology rules, and facts"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-pink-600" />
+            <span>Import Starter Pack</span>
+          </button>
+
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/70 hover:bg-white text-slate-800 font-bold text-xs border border-white shadow-sm transition-all hover:scale-105 cursor-pointer"
+            title="Upload rules from JSON file"
+          >
+            <Upload className="w-3.5 h-3.5 text-blue-600" />
+            <span>Import JSON</span>
+          </button>
+
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="glass-button flex items-center gap-2 px-5 py-2.5 rounded-full text-slate-900 font-bold text-xs shadow-md hover:scale-105 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>
+              {activeTab === 'guidelines' ? 'Add Guideline' :
+               activeTab === 'terminology' ? 'Add Term Rule' :
+               activeTab === 'facts' ? 'Add Verified Fact' :
+               activeTab === 'claims' ? 'Add Approved Claim' : 'Add Brand Item'}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Adwise Capsule Tabs */}

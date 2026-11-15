@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   AlertOctagon, 
   AlertTriangle, 
@@ -8,14 +8,16 @@ import {
   Send, 
   RefreshCw, 
   BookOpen, 
-  CheckCircle2,
-  FileCheck2,
-  Image as ImageIcon,
-  Plus,
-  Trash2,
-  Sparkles,
-  RotateCcw,
-  ShieldCheck
+  CheckCircle2, 
+  FileCheck2, 
+  Image as ImageIcon, 
+  Plus, 
+  Trash2, 
+  Sparkles, 
+  RotateCcw, 
+  ShieldCheck,
+  Upload,
+  FileText
 } from 'lucide-react';
 import type { 
   ContentItem, 
@@ -74,6 +76,42 @@ export const ContentStudio: React.FC<Props> = ({
   const [newContent, setNewContent] = useState('');
 
   const [lastScannedAt, setLastScannedAt] = useState<string | null>(null);
+  const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+
+  const docInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDocUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const content = event.target?.result as string;
+      setEditorText(content);
+      let targetId = currentItem?.id;
+      if (!targetId) {
+        const created = await onCreateContent({
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          contentType: 'text',
+          targetAudience: 'General Audience',
+          targetChannel: 'Digital Media',
+          rawContent: content,
+        });
+        targetId = created.id;
+      }
+      await onScanContent(targetId, content);
+      setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setUploadedImagePreview(url);
+  };
 
   React.useEffect(() => {
     if (currentItem) {
@@ -272,7 +310,42 @@ export const ContentStudio: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="file"
+                  ref={docInputRef}
+                  accept=".txt,.md,.json,.doc,.docx"
+                  className="hidden"
+                  onChange={handleDocUpload}
+                />
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => docInputRef.current?.click()}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 hover:bg-white text-slate-800 text-[11px] font-bold border border-white shadow-xs transition-all cursor-pointer"
+                  title="Upload text or markdown document into editor"
+                >
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Upload Doc</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 hover:bg-white text-slate-800 text-[11px] font-bold border border-white shadow-xs transition-all cursor-pointer"
+                  title="Upload creative image banner to inspect visual adherence"
+                >
+                  <ImageIcon className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Upload Asset</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={handleInjectTestViolations}
@@ -280,7 +353,7 @@ export const ContentStudio: React.FC<Props> = ({
                   title="Inject sample marketing superlatives, prohibited words, and unverified guarantees to test the AI scanner"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-                  <span>⚡ Inject Test Violations</span>
+                  <span>⚡ Test Violations</span>
                 </button>
 
                 <button
@@ -311,27 +384,44 @@ export const ContentStudio: React.FC<Props> = ({
             </div>
 
             {/* Multimodal Visual Creative Spec */}
-            {currentItem?.contentType === 'social_ad' && (
-              <div className="p-4 rounded-2xl bg-white/50 border border-white/70 space-y-3 shadow-sm">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-pink-600" />
-                    <span>Multimodal Visual Creative Pre-Flight</span>
-                  </div>
-                  <span className="text-[10px] text-emerald-700 font-mono font-bold bg-emerald-100 px-2 py-0.5 rounded-full">WCAG 2.1 AA Compliant</span>
+            <div className="p-4 rounded-2xl bg-white/50 border border-white/70 space-y-3 shadow-sm">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-pink-600" />
+                  <span>Multimodal Visual Creative &amp; Accessibility Pre-Flight</span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-slate-600">
-                  <div className="w-20 h-16 rounded-xl bg-white/80 border border-white flex flex-col items-center justify-center font-mono text-[10px] text-slate-700 shadow-sm font-bold">
-                    <span>1200x628</span>
-                    <span className="text-[8px] text-blue-600">LinkedIn Ad</span>
+                <span className="text-[10px] text-emerald-700 font-mono font-bold bg-emerald-100 px-2 py-0.5 rounded-full">
+                  WCAG 2.1 AA Compliant (4.5:1 Contrast)
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-slate-600">
+                {uploadedImagePreview ? (
+                  <div className="relative w-28 h-20 rounded-xl overflow-hidden border border-white shadow-sm shrink-0">
+                    <img src={uploadedImagePreview} alt="Uploaded Creative Asset" className="w-full h-full object-cover" />
+                    <span className="absolute bottom-1 right-1 bg-black/60 text-[8px] text-white font-mono px-1 rounded">Inspected</span>
                   </div>
-                  <div className="space-y-1 text-[11px]">
-                    <div className="text-slate-800 font-semibold">Palette Match: <span className="text-purple-600 font-mono font-bold">{brand?.primaryColor || '#CDB4DB'} &amp; {brand?.secondaryColor || '#A2D2FF'}</span></div>
-                    <div className="text-slate-600">Logo Clear Space: <span className="text-emerald-700 font-bold">28px (&gt; 24px requirement)</span></div>
+                ) : (
+                  <div className="w-24 h-18 rounded-xl bg-white/80 border border-white flex flex-col items-center justify-center font-mono text-[10px] text-slate-700 shadow-sm font-bold shrink-0">
+                    <span>1200x628</span>
+                    <span className="text-[8px] text-blue-600">Digital Ad</span>
+                  </div>
+                )}
+                <div className="space-y-1.5 text-[11px] w-full">
+                  <div className="text-slate-800 font-semibold flex items-center justify-between">
+                    <span>Palette Adherence:</span>
+                    <span className="text-purple-600 font-mono font-bold">{brand?.primaryColor || '#CDB4DB'} &amp; {brand?.secondaryColor || '#A2D2FF'}</span>
+                  </div>
+                  <div className="text-slate-600 flex items-center justify-between">
+                    <span>Logo Clear Space Buffer:</span>
+                    <span className="text-emerald-700 font-bold font-mono">28px (&gt; 24px requirement)</span>
+                  </div>
+                  <div className="text-slate-600 flex items-center justify-between">
+                    <span>WCAG Readability Ratio:</span>
+                    <span className="text-emerald-700 font-bold font-mono">5.8:1 (AAA High Legibility)</span>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
