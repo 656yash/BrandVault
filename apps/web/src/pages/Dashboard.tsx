@@ -243,7 +243,7 @@ export const Dashboard: React.FC<Props> = ({
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/75 hover:bg-white text-slate-800 font-bold text-xs border border-white shadow-xs transition-all hover:scale-105 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 text-pink-600" />
-            <span>+ Create New Content</span>
+            <span>Create New Content</span>
           </button>
 
           <button

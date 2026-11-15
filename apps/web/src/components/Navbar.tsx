@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check, Trash2, User, Globe } from 'lucide-react';
+import { ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check, Trash2, User, Globe } from 'lucide-react';
 import type { UserRole, BrandWorkspace } from '@brandvault/shared';
 import { AIDisclosureModal } from './AIDisclosureModal';
 import { BrandVaultLogo } from './BrandVaultLogo';
@@ -176,7 +176,7 @@ export const Navbar: React.FC<Props> = ({
                     className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-2xl bg-gradient-to-r from-[#FFC8DD] to-[#BDE0FE] hover:opacity-90 text-slate-900 text-xs font-bold shadow-sm transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4 text-slate-800" />
-                    <span>+ Add New Brand Workspace</span>
+                    <span>Add New Brand Workspace</span>
                   </button>
                 </div>
               </div>
@@ -211,16 +211,6 @@ export const Navbar: React.FC<Props> = ({
 
         {/* Right side controls */}
         <div className="flex items-center gap-3">
-          {/* AI Transparency Button */}
-          <button
-            onClick={() => setShowDisclosure(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/50 border border-white/80 text-slate-700 hover:bg-white/80 transition-all cursor-pointer shadow-sm backdrop-blur-md"
-            title="Click to view AI Transparency & Responsible Governance disclosures"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-pink-600" />
-            <span className="font-mono text-[11px]">Zero-Retention</span>
-          </button>
-
           {/* User Profile & Role Menu */}
           <div className="relative">
             <button

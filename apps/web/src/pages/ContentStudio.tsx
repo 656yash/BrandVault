@@ -406,7 +406,7 @@ export const ContentStudio: React.FC<Props> = ({
             className="glass-button flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm shadow-xl hover:scale-105 transition-all cursor-pointer text-slate-900"
           >
             <Plus className="w-4 h-4 text-slate-900" />
-            <span>+ New Content</span>
+            <span>New Content</span>
           </button>
         </div>
 
