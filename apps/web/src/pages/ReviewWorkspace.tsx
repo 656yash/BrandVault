@@ -497,67 +497,128 @@ export const ReviewWorkspace: React.FC<Props> = ({
                 </div>
               )}
 
-              {/* Reviewer Action Controls (Approve, Request Changes, Reject) */}
-              <div className="pt-4 border-t border-white/50 space-y-3">
-                <label className="block text-xs font-bold text-slate-800">
-                  Reviewer Rationale &amp; Audit Notes
-                </label>
-                <textarea
-                  value={reviewFeedback}
-                  onChange={(e) => setReviewFeedback(e.target.value)}
-                  rows={2}
-                  placeholder="Enter governance notes, required adjustments, or publication rationale..."
-                  className="w-full bg-white/80 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none placeholder:text-slate-400 font-medium shadow-sm"
-                />
+              {/* Reviewer Action Controls: Once done (approved or rejected), hide the approve/reject buttons */}
+              {currentItem.status === 'approved' ? (
+                <div className="pt-4 border-t border-white/50">
+                  <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-xs shrink-0">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-emerald-950 font-mono flex items-center gap-1.5">
+                          <span>Decision Finalized — Approved &amp; Sealed</span>
+                        </div>
+                        <p className="text-[11px] text-emerald-800 font-medium">
+                          This collateral has cleared governance review and is sealed for release. Approval controls are now closed.
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                  <span className="text-[11px] text-slate-500 font-mono font-semibold">
-                    Reviewer Role: <strong className="text-slate-900 capitalize">{currentRole}</strong>
-                  </span>
-
-                  <div className="flex items-center gap-2">
-                    {/* Reject Button */}
-                    <button
-                      onClick={handleRejectAction}
-                      disabled={isSubmitting || !canApprove}
-                      className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        canApprove
-                          ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shadow-xs'
-                          : 'bg-white/30 text-slate-400 cursor-not-allowed border border-white/30'
-                      }`}
-                      title="Reject this submission"
-                    >
-                      Reject
-                    </button>
-
-                    {/* Request Changes */}
-                    <button
-                      onClick={handleRequestChanges}
-                      disabled={isSubmitting || !canApprove}
-                      className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        canApprove
-                          ? 'bg-white/80 hover:bg-white text-slate-800 border border-white shadow-xs'
-                          : 'bg-white/30 text-slate-400 cursor-not-allowed border border-white/30'
-                      }`}
-                    >
-                      Request Changes
-                    </button>
-
-                    {/* Approve & Seal */}
-                    <button
-                      onClick={handleApprove}
-                      disabled={isSubmitting || !canApprove}
-                      className={`glass-button px-5 py-2.5 rounded-full text-xs font-bold transition-all shadow-md cursor-pointer ${
-                        canApprove
-                          ? 'hover:scale-105 text-slate-900'
-                          : 'opacity-50 cursor-not-allowed'
-                      }`}
-                    >
-                      Approve &amp; Seal
-                    </button>
+                    {canApprove && (
+                      <button
+                        onClick={handleRequestChanges}
+                        disabled={isSubmitting}
+                        className="text-[11px] font-bold text-slate-700 hover:text-slate-900 px-3.5 py-1.5 rounded-xl bg-white/80 hover:bg-white border border-white transition-all cursor-pointer whitespace-nowrap shadow-xs shrink-0"
+                        title="Re-open review to request revisions"
+                      >
+                        Re-open Review
+                      </button>
+                    )}
                   </div>
                 </div>
-              </div>
+              ) : currentItem.status === 'rejected' ? (
+                <div className="pt-4 border-t border-white/50">
+                  <div className="p-4 rounded-2xl bg-rose-50/80 border border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 shadow-xs shrink-0">
+                        <XCircle className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-rose-950 font-mono">
+                          Decision Finalized — Submission Rejected
+                        </div>
+                        <p className="text-[11px] text-rose-800 font-medium">
+                          This collateral was rejected and marked non-compliant. Action controls are closed.
+                        </p>
+                      </div>
+                    </div>
+
+                    {canApprove && (
+                      <button
+                        onClick={handleRequestChanges}
+                        disabled={isSubmitting}
+                        className="text-[11px] font-bold text-slate-700 hover:text-slate-900 px-3.5 py-1.5 rounded-xl bg-white/80 hover:bg-white border border-white transition-all cursor-pointer whitespace-nowrap shadow-xs shrink-0"
+                        title="Re-open review"
+                      >
+                        Re-open Review
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* Active Review Controls (Shown only while review is pending or in-progress) */
+                <div className="pt-4 border-t border-white/50 space-y-3">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Reviewer Rationale &amp; Audit Notes
+                  </label>
+                  <textarea
+                    value={reviewFeedback}
+                    onChange={(e) => setReviewFeedback(e.target.value)}
+                    rows={2}
+                    placeholder="Enter governance notes, required adjustments, or publication rationale..."
+                    className="w-full bg-white/80 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none placeholder:text-slate-400 font-medium shadow-sm"
+                  />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <span className="text-[11px] text-slate-500 font-mono font-semibold">
+                      Reviewer Role: <strong className="text-slate-900 capitalize">{currentRole}</strong>
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      {/* Reject Button */}
+                      <button
+                        onClick={handleRejectAction}
+                        disabled={isSubmitting || !canApprove}
+                        className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                          canApprove
+                            ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shadow-xs'
+                            : 'bg-white/30 text-slate-400 cursor-not-allowed border border-white/30'
+                        }`}
+                        title="Reject this submission"
+                      >
+                        Reject
+                      </button>
+
+                      {/* Request Changes */}
+                      <button
+                        onClick={handleRequestChanges}
+                        disabled={isSubmitting || !canApprove}
+                        className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                          canApprove
+                            ? 'bg-white/80 hover:bg-white text-slate-800 border border-white shadow-xs'
+                            : 'bg-white/30 text-slate-400 cursor-not-allowed border border-white/30'
+                        }`}
+                      >
+                        Request Changes
+                      </button>
+
+                      {/* Approve & Seal */}
+                      <button
+                        onClick={handleApprove}
+                        disabled={isSubmitting || !canApprove}
+                        className={`glass-button px-5 py-2.5 rounded-full text-xs font-bold transition-all shadow-md cursor-pointer ${
+                          canApprove
+                            ? 'hover:scale-105 text-slate-900'
+                            : 'opacity-50 cursor-not-allowed'
+                        }`}
+                      >
+                        Approve &amp; Seal
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Collaboration Thread / Comments Stream */}
               <div className="pt-4 border-t border-white/50 space-y-3">
