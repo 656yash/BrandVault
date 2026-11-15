@@ -7,18 +7,22 @@ import {
   Check, 
   CheckCircle2,
   Palette, 
-  ShieldCheck,
-  Trash2,
-  AlertOctagon,
-  AlertTriangle,
-  Info,
-  X,
-  Upload,
-  Download,
-  Sparkles
+  ShieldCheck, 
+  Trash2, 
+  AlertOctagon, 
+  AlertTriangle, 
+  Info, 
+  X, 
+  Upload, 
+  Download, 
+  Sparkles,
+  Mic,
+  MessageSquare,
+  Compass,
+  Volume2
 } from 'lucide-react';
 import type { 
-  BrandWorkspace,
+  BrandWorkspace, 
   Guideline, 
   ApprovedFact, 
   TerminologyRule, 
@@ -44,6 +48,8 @@ interface Props {
   onDeleteClaim: (id: string) => Promise<any>;
 }
 
+export type KnowledgeTab = 'guidelines' | 'voice' | 'facts' | 'claims' | 'terminology' | 'assets';
+
 export const BrandKnowledge: React.FC<Props> = ({
   brand,
   guidelines,
@@ -60,7 +66,7 @@ export const BrandKnowledge: React.FC<Props> = ({
   onAddClaim,
   onDeleteClaim,
 }) => {
-  const [activeTab, setActiveTab] = useState<'guidelines' | 'terminology' | 'facts' | 'claims' | 'assets'>('guidelines');
+  const [activeTab, setActiveTab] = useState<KnowledgeTab>('guidelines');
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -96,7 +102,9 @@ export const BrandKnowledge: React.FC<Props> = ({
       title: newTitle,
       category: newCategory,
       description: newDescription,
-      rules: newRules.split('\n').filter(Boolean),
+      rules: newRules.split('\n').filter(r => r.trim().length > 0),
+      version: 1,
+      status: 'active',
       effectiveDate: new Date().toISOString().split('T')[0],
     });
     setNewTitle('');
@@ -158,45 +166,41 @@ export const BrandKnowledge: React.FC<Props> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImportStarterPack = async () => {
-    const brandName = brand?.name || 'Enterprise Workspace';
-    const confirmed = window.confirm(`Import standard enterprise compliance guidelines, terminology rules, facts, and claims for "${brandName}"?`);
-    if (!confirmed) return;
-
+    const brandName = brand?.name || 'BrandVault';
+    
     // 1. Guidelines
     await onAddGuideline({
-      title: `${brandName} Voice, Tone & Persona Standards`,
+      title: `${brandName} Tone of Voice & Technical Empathy`,
       category: 'tone',
-      description: 'Defines authoritative, trustworthy, and empathetic communication standards across all media channels.',
+      description: `Defines the enterprise voice for ${brandName}. Direct, empowering, transparent, and grounded in verifiable engineering reality.`,
       rules: [
-        'Maintain an empathetic, technically grounded voice without condescension.',
-        'Avoid hyperbolic puffery, ungrounded superlatives, and high-pressure sales manipulation.',
-        'Ensure all technical statements cite verifiable architectural specifications.'
-      ]
+        'Avoid unsubstantiated marketing puffery or exaggerated superlatives ("revolutionary", "miracle", "magic").',
+        'State technical specifications accurately with verified metrics.',
+        'Use inclusive, empowering second-person phrasing ("you can inspect", "empowers teams").'
+      ],
+      version: 1,
+      status: 'active',
+      effectiveDate: new Date().toISOString().split('T')[0]
     });
 
     await onAddGuideline({
-      title: `${brandName} Visual & Design Systems Policy`,
-      category: 'visual',
-      description: 'Preserves brand integrity, clear space buffers, and WCAG contrast rules.',
+      title: `${brandName} Commercial Claims Substantiation Policy`,
+      category: 'claims',
+      description: 'Requires all comparative rankings, performance multipliers, and customer success figures to cite accredited audit filings.',
       rules: [
-        'Maintain minimum 24px clear space perimeter around official logo marks.',
-        'Ensure text-to-background contrast ratio meets WCAG 2.1 AA standards (minimum 4.5:1).',
-        'Use only approved hex swatches for all digital promotional creatives.'
-      ]
+        'Do not claim "#1" or "World\'s Best" without documented third-party benchmark citations.',
+        'Always qualify percentage improvements with methodology or sample size footnotes.',
+        'Uptime claims must reference real-time SLA metrics.'
+      ],
+      version: 1,
+      status: 'active',
+      effectiveDate: new Date().toISOString().split('T')[0]
     });
 
     // 2. Terminology
     await onAddTerminology({
-      prohibitedTerm: 'cheap',
-      preferredTerm: 'cost-effective',
-      reason: 'The word "cheap" devalues premium brand positioning and enterprise reliability.',
-      category: 'brand_voice',
-      severity: 'warning'
-    });
-
-    await onAddTerminology({
-      prohibitedTerm: 'revolutionary magic',
-      preferredTerm: 'architectural breakthrough',
+      prohibitedTerm: 'revolutionary AI breakthrough',
+      preferredTerm: 'validated multi-agent compliance architecture',
       reason: 'Marketing puffery degrades technical credibility and customer trust.',
       category: 'brand_voice',
       severity: 'warning'
@@ -281,10 +285,10 @@ export const BrandKnowledge: React.FC<Props> = ({
             <ChromeShield className="w-8 h-8 filter drop-shadow-[0_4px_10px_rgba(205,180,219,0.5)]" />
             <div>
               <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight font-sans">
-                Brand Knowledge Base
+                Brand Knowledge Centre
               </h1>
               <p className="text-xs text-slate-600 font-medium">
-                Guidelines, substantiated claims, terminology dictionaries, and verified corporate facts for <span className="font-bold text-slate-800">{brand?.name || 'Brand Workspace'}</span>.
+                Guidelines, brand voice pillars, substantiated claims, terminology dictionaries, and verified facts for <span className="font-bold text-slate-800">{brand?.name || 'Brand Workspace'}</span>.
               </p>
             </div>
           </div>
@@ -303,19 +307,19 @@ export const BrandKnowledge: React.FC<Props> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/70 hover:bg-white text-slate-800 font-bold text-xs border border-white shadow-sm transition-all hover:scale-105 cursor-pointer"
-            title="Upload rules from JSON file"
           >
-            <Upload className="w-3.5 h-3.5 text-blue-600" />
-            <span>Import JSON</span>
+            <Upload className="w-3.5 h-3.5 text-slate-700" />
+            <span>Upload JSON</span>
           </button>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="glass-button flex items-center gap-2 px-5 py-2.5 rounded-full text-slate-900 font-bold text-xs shadow-md hover:scale-105 transition-all cursor-pointer"
+            className="glass-button flex items-center gap-2 px-5 py-2.5 rounded-full text-slate-900 font-bold text-xs shadow-lg hover:scale-105 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>
               {activeTab === 'guidelines' ? 'Add Guideline' :
+               activeTab === 'voice' ? 'Add Voice Principle' :
                activeTab === 'terminology' ? 'Add Term Rule' :
                activeTab === 'facts' ? 'Add Verified Fact' :
                activeTab === 'claims' ? 'Add Approved Claim' : 'Add Brand Item'}
@@ -324,11 +328,11 @@ export const BrandKnowledge: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Adwise Capsule Tabs */}
+      {/* Adwise Capsule Tabs (6 Full Tabs from Section 9) */}
       <div className="flex items-center gap-1.5 p-1.5 rounded-full glass-capsule w-fit overflow-x-auto max-w-full">
         <button
           onClick={() => setActiveTab('guidelines')}
-          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'guidelines'
               ? 'sidebar-active text-slate-900'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
@@ -339,32 +343,32 @@ export const BrandKnowledge: React.FC<Props> = ({
         </button>
 
         <button
-          onClick={() => setActiveTab('terminology')}
-          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'terminology'
+          onClick={() => setActiveTab('voice')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'voice'
               ? 'sidebar-active text-slate-900'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
-          <SpellCheck className="w-3.5 h-3.5" />
-          <span>Terminology Rules ({terminology.length})</span>
+          <Volume2 className="w-3.5 h-3.5" />
+          <span>Brand Voice &amp; Tone</span>
         </button>
 
         <button
           onClick={() => setActiveTab('facts')}
-          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'facts'
               ? 'sidebar-active text-slate-900'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <FileCheck className="w-3.5 h-3.5" />
-          <span>Corporate Facts ({facts.length})</span>
+          <span>Approved Facts ({facts.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('claims')}
-          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'claims'
               ? 'sidebar-active text-slate-900'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
@@ -375,15 +379,27 @@ export const BrandKnowledge: React.FC<Props> = ({
         </button>
 
         <button
+          onClick={() => setActiveTab('terminology')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'terminology'
+              ? 'sidebar-active text-slate-900'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
+          }`}
+        >
+          <SpellCheck className="w-3.5 h-3.5" />
+          <span>Terminology ({terminology.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('assets')}
-          className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'assets'
               ? 'sidebar-active text-slate-900'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/30'
           }`}
         >
           <Palette className="w-3.5 h-3.5" />
-          <span>Design Assets ({assets.length})</span>
+          <span>Brand Assets ({assets.length})</span>
         </button>
       </div>
 
@@ -397,7 +413,7 @@ export const BrandKnowledge: React.FC<Props> = ({
             <div>
               <h3 className="text-base font-bold text-slate-800">No Brand Guidelines Configured</h3>
               <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-                Add your brand voice, tone, positioning, and visual guidelines using the "+ Add Rule" button above.
+                Add your brand voice, tone, positioning, and visual guidelines using the "+ Add Guideline" button above or import the starter pack.
               </p>
             </div>
             <button
@@ -457,92 +473,138 @@ export const BrandKnowledge: React.FC<Props> = ({
         )
       )}
 
-      {/* Tab 2: Terminology Rules Table (Adwise Table style) */}
-      {activeTab === 'terminology' && (
-        <div className="glass-panel p-6 space-y-5 shadow-lg">
-          <div className="flex items-center justify-between pb-3 border-b border-white/40">
-            <div>
-              <h3 className="text-base font-bold text-slate-800">Active Terminology Dictionary</h3>
-              <p className="text-xs text-slate-600">Deterministic string and semantic pattern matching for prohibited words.</p>
+      {/* Tab 2: Brand Voice & Tone (Section 9 dedicated tab) */}
+      {activeTab === 'voice' && (
+        <div className="space-y-6">
+          {/* Brand Voice Pillars Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="glass-panel p-5 space-y-2 border border-white">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-700 font-bold">Voice Pillar 01</span>
+              <h4 className="text-sm font-bold text-slate-900">Empowering &amp; Clear</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Prioritize straightforward language. Avoid convoluted jargon and empower users to make educated, confident decisions.
+              </p>
             </div>
-            <span className="text-xs font-mono font-bold text-slate-600">{terminology.length} rules loaded</span>
+
+            <div className="glass-panel p-5 space-y-2 border border-white">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-700 font-bold">Voice Pillar 02</span>
+              <h4 className="text-sm font-bold text-slate-900">Verifiable &amp; Grounded</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Anchor all performance statements in documented fact. Never rely on marketing hype or exaggerated claims.
+              </p>
+            </div>
+
+            <div className="glass-panel p-5 space-y-2 border border-white">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-700 font-bold">Voice Pillar 03</span>
+              <h4 className="text-sm font-bold text-slate-900">Empathic &amp; Supportive</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Acknowledge user challenges with understanding. Maintain a warm, encouraging, human-centric cadence.
+              </p>
+            </div>
+
+            <div className="glass-panel p-5 space-y-2 border border-white">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-700 font-bold">Voice Pillar 04</span>
+              <h4 className="text-sm font-bold text-slate-900">Forward-Looking</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Demonstrate thoughtful innovation and modern rigor without using hyperbolic buzzwords like "magic".
+              </p>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-white/40 text-slate-500 uppercase text-[10px] font-mono font-bold tracking-wider">
-                  <th className="p-4 font-bold">Prohibited Phrase</th>
-                  <th className="p-4 font-bold">Preferred Alternative</th>
-                  <th className="p-4 font-bold">Severity</th>
-                  <th className="p-4 font-bold">Policy Rationale</th>
-                  <th className="p-4 font-bold text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {terminology.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-500 font-medium">
-                      No prohibited terminology rules added yet. Click "+ Add Rule" to enforce approved brand vocabulary.
-                    </td>
-                  </tr>
-                ) : (
-                  terminology.map((t) => (
-                    <tr key={t.id} className="border-b border-white/20 hover:bg-white/40 transition-colors group">
-                      <td className="p-4 font-mono font-bold text-rose-700">
-                        "{t.prohibitedTerm}"
-                      </td>
-                      <td className="p-4 font-semibold text-emerald-800">
-                        "{t.preferredTerm}"
-                      </td>
-                      <td className="p-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
-                          t.severity === 'critical' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
-                          t.severity === 'warning' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
-                          'bg-blue-100 text-blue-700 border border-blue-300'
-                        }`}>
-                          {t.severity}
-                        </span>
-                      </td>
-                      <td className="p-4 text-slate-600 text-xs max-w-md font-medium">
-                        {t.reason}
-                      </td>
-                      <td className="p-4 text-right">
-                        <button
-                          onClick={() => onDeleteTerminology(t.id)}
-                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
-                          title="Delete Rule"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          {/* Do's and Don'ts Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="glass-panel p-6 space-y-4 border border-white shadow-md">
+              <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider font-mono">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Brand Voice Do's</span>
+              </div>
+              <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span>Use active voice: "BrandVault protects your assets" instead of "Your assets are protected".</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span>State verifiable capabilities with precise performance numbers and source attribution.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span>Highlight user agency: our platform equips human reviewers rather than replacing them.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span>Keep sentence length disciplined (15-20 words average) for optimal cross-device readability.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="glass-panel-alt p-6 space-y-4 border border-white shadow-md">
+              <div className="flex items-center gap-2 text-rose-700 font-bold text-xs uppercase tracking-wider font-mono">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Brand Voice Don'ts</span>
+              </div>
+              <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                  <span>Never use unbacked superlative rankings like "India's No. 1" or "World's Best".</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                  <span>Do not disparage or mention competitor products directly in promotional copy.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                  <span>Avoid speculative guarantees like "100% guarantee", "foolproof", or "zero risk".</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                  <span>Never use condescending or overly opaque technical terminology that confuses non-engineers.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Tone Spectrum Dial for Active Workspace */}
+          <div className="glass-panel p-6 space-y-4 border border-white">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+              Audience Tone Calibration Matrix for {brand?.name || 'Workspace'}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-white/70 border border-white space-y-1">
+                <span className="font-bold text-slate-800">Executive &amp; Regulatory</span>
+                <p className="text-slate-600 text-[11px]">80% Formal • 20% Conversational. Focus on governance, audit trails, and risk reduction.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white/70 border border-white space-y-1">
+                <span className="font-bold text-slate-800">Social Media &amp; Community</span>
+                <p className="text-slate-600 text-[11px]">40% Formal • 60% Conversational. Energetic, punchy, value-driven with clear calls-to-action.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white/70 border border-white space-y-1">
+                <span className="font-bold text-slate-800">Documentation &amp; Policy</span>
+                <p className="text-slate-600 text-[11px]">90% Technical &amp; Precise. Direct, unambiguous instructions with structured checklists.</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Tab 3: Corporate Facts */}
+      {/* Tab 3: Approved Facts */}
       {activeTab === 'facts' && (
         facts.length === 0 ? (
           <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
-            <div className="w-14 h-14 mx-auto rounded-3xl bg-blue-soft/30 border border-white flex items-center justify-center text-blue-600 shadow-sm">
-              <CheckCircle2 className="w-7 h-7" />
+            <div className="w-14 h-14 mx-auto rounded-3xl bg-pink-soft/30 border border-white flex items-center justify-center text-pink-600 shadow-sm">
+              <FileCheck className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800">No Corporate Facts Registered</h3>
+              <h3 className="text-base font-bold text-slate-800">No Verified Corporate Facts</h3>
               <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-                Register audited enterprise facts (e.g. employee count, uptime SLA, certifications) to verify marketing copy automatically.
+                Add audited corporate metrics, certifications, and operational milestones to automatically fact-check content.
               </p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="glass-button px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-all cursor-pointer"
             >
-              + Register First Fact
+              + Register Verified Fact
             </button>
           </div>
         ) : (
@@ -583,7 +645,7 @@ export const BrandKnowledge: React.FC<Props> = ({
 
                 <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
                   <span>Verified: {f.verifiedDate}</span>
-                  <span className="text-emerald-700 font-bold">SOC 2 Grounded</span>
+                  <span className="text-emerald-700 font-bold">Audited Fact</span>
                 </div>
               </div>
             ))}
@@ -654,10 +716,78 @@ export const BrandKnowledge: React.FC<Props> = ({
         )
       )}
 
-      {/* Tab 5: Brand Assets */}
+      {/* Tab 5: Terminology Rules Table */}
+      {activeTab === 'terminology' && (
+        <div className="glass-panel p-6 space-y-5 shadow-lg border border-white">
+          <div className="flex items-center justify-between pb-3 border-b border-white/40">
+            <div>
+              <h3 className="text-base font-bold text-slate-800">Active Terminology Dictionary</h3>
+              <p className="text-xs text-slate-600">Deterministic dictionary rules and semantic pattern matching for prohibited words.</p>
+            </div>
+            <span className="text-xs font-mono font-bold text-slate-600">{terminology.length} rules loaded</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-white/40 text-slate-500 uppercase text-[10px] font-mono font-bold tracking-wider">
+                  <th className="p-4 font-bold">Prohibited Phrase</th>
+                  <th className="p-4 font-bold">Preferred Alternative</th>
+                  <th className="p-4 font-bold">Severity</th>
+                  <th className="p-4 font-bold">Policy Rationale</th>
+                  <th className="p-4 font-bold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {terminology.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 font-medium">
+                      No prohibited terminology rules added yet. Click "+ Add Rule" to enforce approved brand vocabulary.
+                    </td>
+                  </tr>
+                ) : (
+                  terminology.map((t) => (
+                    <tr key={t.id} className="border-b border-white/20 hover:bg-white/40 transition-colors group">
+                      <td className="p-4 font-mono font-bold text-rose-700">
+                        "{t.prohibitedTerm}"
+                      </td>
+                      <td className="p-4 font-semibold text-emerald-800">
+                        "{t.preferredTerm}"
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
+                          t.severity === 'critical' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                          t.severity === 'warning' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
+                          'bg-blue-100 text-blue-700 border border-blue-300'
+                        }`}>
+                          {t.severity}
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate-600 text-xs max-w-md font-medium">
+                        {t.reason}
+                      </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => onDeleteTerminology(t.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
+                          title="Delete Rule"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 6: Brand Assets */}
       {activeTab === 'assets' && (
         assets.length === 0 ? (
-          <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
+          <div className="glass-panel p-12 text-center space-y-4 shadow-lg border border-white">
             <div className="w-14 h-14 mx-auto rounded-3xl bg-pink-soft/30 border border-white flex items-center justify-center text-pink-600 shadow-sm">
               <Palette className="w-7 h-7" />
             </div>
@@ -673,7 +803,7 @@ export const BrandKnowledge: React.FC<Props> = ({
             {assets.map((a) => (
               <div
                 key={a.id}
-                className="glass-panel p-6 space-y-4 shadow-md"
+                className="glass-panel p-6 space-y-4 shadow-md border border-white"
               >
                 <div className="h-40 rounded-2xl bg-white/70 border border-white flex items-center justify-center p-4 shadow-inner">
                   <ChromeShield className="w-20 h-20 filter drop-shadow-[0_4px_12px_rgba(205,180,219,0.5)]" />
@@ -708,14 +838,14 @@ export const BrandKnowledge: React.FC<Props> = ({
                 Governance Rule Registry
               </div>
               <h2 className="text-2xl font-bold text-slate-800 tracking-tight mt-1">
-                {activeTab === 'guidelines' ? 'Register New Brand Guideline' :
+                {activeTab === 'guidelines' || activeTab === 'voice' ? 'Register New Brand Guideline' :
                  activeTab === 'terminology' ? 'Add Prohibited Term & Suggestion' :
                  activeTab === 'facts' ? 'Register Verified Corporate Fact' : 'Register Approved Claim'}
               </h2>
             </div>
 
             {/* Guideline Form */}
-            {activeTab === 'guidelines' && (
+            {(activeTab === 'guidelines' || activeTab === 'voice') && (
               <form onSubmit={handleCreateGuideline} className="space-y-4 text-xs">
                 <div>
                   <label className="block text-slate-700 mb-1 font-bold">Guideline Title</label>
@@ -737,11 +867,11 @@ export const BrandKnowledge: React.FC<Props> = ({
                       onChange={(e) => setNewCategory(e.target.value as any)}
                       className="w-full bg-white/80 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft font-medium shadow-sm"
                     >
-                      <option value="tone">Brand Tone & Voice</option>
+                      <option value="tone">Brand Tone &amp; Voice</option>
                       <option value="claims">Promotional Claims</option>
-                      <option value="visual">Visual & Design</option>
+                      <option value="visual">Visual &amp; Design</option>
                       <option value="accessibility">Accessibility (WCAG)</option>
-                      <option value="legal">Legal & Liability</option>
+                      <option value="legal">Legal &amp; Liability</option>
                     </select>
                   </div>
                 </div>
@@ -752,18 +882,18 @@ export const BrandKnowledge: React.FC<Props> = ({
                     rows={2}
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="Explain the brand context and governing principle..."
+                    placeholder="Defines brand standards across marketing and communications..."
                     className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 mb-1 font-bold">Actionable Rules (One per line)</label>
+                  <label className="block text-slate-700 mb-1 font-bold">Enforceable Rules (One per line)</label>
                   <textarea
                     rows={3}
                     value={newRules}
                     onChange={(e) => setNewRules(e.target.value)}
-                    placeholder="Always write in active voice&#10;Never use unsubstantiated superlative claims"
+                    placeholder="Avoid superlatives&#10;Include verifiable metrics&#10;Follow tone pillars"
                     className="w-full bg-white/80 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft resize-none font-medium shadow-sm"
                   />
                 </div>
@@ -780,7 +910,7 @@ export const BrandKnowledge: React.FC<Props> = ({
                     type="submit"
                     className="glass-button px-6 py-2.5 rounded-full text-slate-900 font-bold shadow-lg hover:scale-105 transition-all cursor-pointer"
                   >
-                    Register Guideline
+                    Save Guideline
                   </button>
                 </div>
               </form>
@@ -791,7 +921,7 @@ export const BrandKnowledge: React.FC<Props> = ({
               <form onSubmit={handleCreateTerminology} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-700 mb-1 font-bold">Prohibited Term / Phrase</label>
+                    <label className="block text-slate-700 mb-1 font-bold">Prohibited Term or Phrase</label>
                     <input
                       type="text"
                       required

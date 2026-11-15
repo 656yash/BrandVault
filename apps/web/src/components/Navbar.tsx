@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check, Trash2, User } from 'lucide-react';
+import { Sparkles, ChevronDown, CheckCircle, Shield, Plus, Building2, LogOut, Check, Trash2, User, Globe } from 'lucide-react';
 import type { UserRole, BrandWorkspace } from '@brandvault/shared';
 import { AIDisclosureModal } from './AIDisclosureModal';
+import { BrandVaultLogo } from './BrandVaultLogo';
 import { ChromeShield } from './ChromeIcons';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -18,6 +19,7 @@ interface Props {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   pendingReviewsCount?: number;
+  onViewLanding?: () => void;
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -37,7 +39,8 @@ export const Navbar: React.FC<Props> = ({
   onDeleteBrand,
   currentTab, 
   onTabChange,
-  pendingReviewsCount = 0
+  pendingReviewsCount = 0,
+  onViewLanding,
 }) => {
   const { currentUser, logout } = useAuth();
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -61,10 +64,10 @@ export const Navbar: React.FC<Props> = ({
   return (
     <>
       <header className="sticky top-0 z-40 w-full px-6 py-3 bg-white/35 backdrop-blur-2xl border-b border-white/50 flex items-center justify-between shadow-sm">
-        {/* Left: Brand Identity with Dynamic Multi-Brand Selector */}
+        {/* Left: BrandVault Distinctive Logo & Dynamic Multi-Brand Selector */}
         <div className="flex items-center gap-4">
-          <div className="relative group cursor-pointer" onClick={() => onTabChange('dashboard')}>
-            <ChromeShield className="w-8 h-8 filter drop-shadow-[0_4px_10px_rgba(205,180,219,0.5)] transition-transform group-hover:scale-105" />
+          <div className="cursor-pointer" onClick={() => onTabChange('dashboard')}>
+            <BrandVaultLogo size="sm" showTagline={false} />
           </div>
 
           {/* Brand Switcher Pill */}
@@ -282,7 +285,19 @@ export const Navbar: React.FC<Props> = ({
                   })}
                 </div>
 
-                <div className="mt-2 pt-2 border-t border-slate-200">
+                <div className="mt-2 pt-2 border-t border-slate-200 space-y-1">
+                  {onViewLanding && (
+                    <button
+                      onClick={() => {
+                        setShowRoleMenu(false);
+                        onViewLanding();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Public Landing Page</span>
+                    </button>
+                  )}
                   <button
                     onClick={handleSignOut}
                     className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"

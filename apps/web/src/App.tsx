@@ -22,6 +22,7 @@ import { BrandKnowledge } from './pages/BrandKnowledge';
 import { GovernanceAnalytics } from './pages/GovernanceAnalytics';
 import { AuditTransparency } from './pages/AuditTransparency';
 import { LoginPage } from './pages/LoginPage';
+import { LandingPage } from './pages/LandingPage';
 import { CreateBrandModal } from './components/CreateBrandModal';
 import { useAuth } from './contexts/AuthContext';
 
@@ -42,6 +43,8 @@ export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showLanding, setShowLanding] = useState<boolean>(true);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
 
   // Multi-Brand State (Clean Slate - Zero Demo Data)
   const [brands, setBrands] = useState<BrandWorkspace[]>([]);
@@ -265,6 +268,22 @@ export function App() {
     return res;
   };
 
+  const handleReject = async (contentId: string, feedback?: string) => {
+    const content = contentItems.find(c => c.id === contentId);
+    const res = await api.submitApproval({
+      contentItemId: contentId,
+      versionNumber: content?.currentVersion || 1,
+      decision: 'rejected',
+      feedback: feedback || 'Submission rejected by brand compliance officer.',
+      reviewerName: currentUser?.displayName || 'Administrator',
+    });
+    setContentItems(prev => prev.map(item => item.id === contentId ? { ...item, status: 'rejected' } : item));
+    const logs = await api.getAuditLogs();
+    setAuditLogs(logs);
+    showToast('Collateral rejected and logged.');
+    return res;
+  };
+
   // Content CRUD Handlers (Scoped to current brand)
   const handleCreateContent = async (params: any) => {
     const created = await api.createContentItem({
@@ -387,12 +406,40 @@ export function App() {
     return true;
   };
 
-  // If user is not logged in and auth finished loading, show LoginPage
-  if (!loading && !currentUser) {
+  // 1. If user is not logged in and not in demo mode
+  if (!loading && !currentUser && !isDemoMode) {
+    if (showLanding) {
+      return (
+        <LandingPage
+          onGetStarted={() => setShowLanding(false)}
+          onSignIn={() => setShowLanding(false)}
+          onExplorePlatform={() => {
+            setIsDemoMode(true);
+            setShowLanding(false);
+          }}
+        />
+      );
+    }
     return (
       <LoginPage 
-        onSuccess={() => {}}
+        onSuccess={() => setShowLanding(false)}
+        onBackToLanding={() => setShowLanding(true)}
+        onExploreDemo={() => {
+          setIsDemoMode(true);
+          setShowLanding(false);
+        }}
         onAddInitialBrand={(newB) => handleCreateBrand(newB)}
+      />
+    );
+  }
+
+  // 2. If user clicks "Public Landing Page" while logged in or in demo mode
+  if (showLanding && (currentUser || isDemoMode)) {
+    return (
+      <LandingPage
+        onGetStarted={() => setShowLanding(false)}
+        onSignIn={() => setShowLanding(false)}
+        onExplorePlatform={() => setShowLanding(false)}
       />
     );
   }
@@ -418,6 +465,7 @@ export function App() {
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         pendingReviewsCount={pendingReviewsCount}
+        onViewLanding={() => setShowLanding(true)}
       />
 
       <div className="flex-1 flex overflow-hidden relative z-10">
@@ -437,6 +485,7 @@ export function App() {
               }}
               onDeleteContent={handleDeleteContent}
               onOpenCreateBrandModal={() => setShowCreateBrandModal(true)}
+              onNavigateTab={(tab) => setCurrentTab(tab)}
             />
           )}
 
@@ -464,6 +513,7 @@ export function App() {
               currentRole={currentRole}
               onApprove={handleApprove}
               onRequestChanges={handleRequestChanges}
+              onReject={handleReject}
               onAddComment={handleAddComment}
               onDeleteComment={handleDeleteComment}
             />
