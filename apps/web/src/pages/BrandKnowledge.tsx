@@ -66,7 +66,21 @@ export const BrandKnowledge: React.FC<Props> = ({
   onAddClaim,
   onDeleteClaim,
 }) => {
-  const [activeTab, setActiveTab] = useState<KnowledgeTab>('guidelines');
+  const [activeTab, setActiveTabState] = useState<KnowledgeTab>(() => {
+    try {
+      const saved = localStorage.getItem('bv_knowledge_tab') as KnowledgeTab;
+      const valid: KnowledgeTab[] = ['guidelines', 'voice', 'facts', 'claims', 'terminology', 'assets'];
+      if (saved && valid.includes(saved)) return saved;
+    } catch {}
+    return 'guidelines';
+  });
+
+  const setActiveTab = (tab: KnowledgeTab) => {
+    setActiveTabState(tab);
+    try {
+      localStorage.setItem('bv_knowledge_tab', tab);
+    } catch {}
+  };
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);

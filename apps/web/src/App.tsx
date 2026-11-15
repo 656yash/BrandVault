@@ -38,13 +38,103 @@ const emptyMetrics: GovernanceMetrics = {
   guidelineAmbiguityList: [],
 };
 
+const VALID_NAV_TABS: NavTab[] = ['dashboard', 'studio', 'reviews', 'knowledge', 'analytics', 'audit'];
+
+function getInitialTab(): NavTab {
+  try {
+    const hash = window.location.hash.replace('#', '') as NavTab;
+    if (VALID_NAV_TABS.includes(hash)) return hash;
+    const saved = localStorage.getItem('bv_current_tab') as NavTab;
+    if (VALID_NAV_TABS.includes(saved)) return saved;
+  } catch {}
+  return 'dashboard';
+}
+
+function getInitialShowLanding(): boolean {
+  try {
+    const saved = localStorage.getItem('bv_show_landing');
+    if (saved !== null) return saved === 'true';
+  } catch {}
+  return true;
+}
+
+function getInitialDemoMode(): boolean {
+  try {
+    return localStorage.getItem('bv_is_demo_mode') === 'true';
+  } catch {}
+  return false;
+}
+
+function getInitialContentId(): string {
+  try {
+    return localStorage.getItem('bv_selected_content_id') || '';
+  } catch {}
+  return '';
+}
+
 export function App() {
   const { currentUser, loading } = useAuth();
-  const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
+  const [currentTab, setCurrentTab] = useState<NavTab>(getInitialTab);
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [showLanding, setShowLanding] = useState<boolean>(true);
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+  const [showLanding, setShowLanding] = useState<boolean>(getInitialShowLanding);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(getInitialDemoMode);
+  const [selectedContentId, setSelectedContentId] = useState<string>(getInitialContentId);
+
+  // Tab persistence handler
+  const handleTabChange = (tab: NavTab) => {
+    setCurrentTab(tab);
+    try {
+      localStorage.setItem('bv_current_tab', tab);
+      window.location.hash = tab;
+    } catch {}
+  };
+
+  const handleShowLandingChange = (show: boolean) => {
+    setShowLanding(show);
+    try {
+      localStorage.setItem('bv_show_landing', String(show));
+    } catch {}
+  };
+
+  const handleDemoModeChange = (demo: boolean) => {
+    setIsDemoMode(demo);
+    try {
+      if (demo) {
+        localStorage.setItem('bv_is_demo_mode', 'true');
+        localStorage.setItem('bv_show_landing', 'false');
+      } else {
+        localStorage.removeItem('bv_is_demo_mode');
+      }
+    } catch {}
+  };
+
+  const handleSelectContentId = (id: string) => {
+    setSelectedContentId(id);
+    try {
+      localStorage.setItem('bv_selected_content_id', id);
+    } catch {}
+  };
+
+  // Sync hash changes (e.g. browser back/forward or manual hash change)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '') as NavTab;
+      if (VALID_NAV_TABS.includes(hash)) {
+        setCurrentTab(hash);
+        localStorage.setItem('bv_current_tab', hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Ensure hash reflects currentTab on load if not set
+  useEffect(() => {
+    if (!window.location.hash && currentTab) {
+      window.location.hash = currentTab;
+    }
+  }, [currentTab]);
 
   // Multi-Brand State (Clean Slate - Zero Demo Data)
   const [brands, setBrands] = useState<BrandWorkspace[]>([]);
@@ -60,7 +150,6 @@ export function App() {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [metrics, setMetrics] = useState<GovernanceMetrics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [selectedContentId, setSelectedContentId] = useState<string>('');
   const [isScanning, setIsScanning] = useState<boolean>(false);
 
   // Initial Data Fetch
@@ -98,7 +187,15 @@ export function App() {
         setAuditLogs(logs || []);
 
         if (items && items.length > 0) {
-          setSelectedContentId(items[0].id);
+          const savedId = localStorage.getItem('bv_selected_content_id');
+          if (savedId && items.some(i => i.id === savedId)) {
+            setSelectedContentId(savedId);
+          } else {
+            setSelectedContentId(items[0].id);
+            try {
+              localStorage.setItem('bv_selected_content_id', items[0].id);
+            } catch {}
+          }
         }
       } catch (err) {
         console.warn('Initial data note:', err);
@@ -136,7 +233,15 @@ export function App() {
       setMetrics(m);
       setAuditLogs(logs);
       if (items.length > 0) {
-        setSelectedContentId(items[0].id);
+        const savedId = localStorage.getItem('bv_selected_content_id');
+        if (savedId && items.some(i => i.id === savedId)) {
+          setSelectedContentId(savedId);
+        } else {
+          setSelectedContentId(items[0].id);
+          try {
+            localStorage.setItem('bv_selected_content_id', items[0].id);
+          } catch {}
+        }
       }
       showToast(`Switched brand workspace to: ${b.name}`);
     } catch (err) {
@@ -233,7 +338,7 @@ export function App() {
     await api.updateContent(id, { status: 'ready_for_review' });
     setContentItems(prev => prev.map(item => item.id === id ? { ...item, status: 'ready_for_review' } : item));
     showToast('Collateral submitted to review queue.');
-    setCurrentTab('reviews');
+    handleTabChange('reviews');
   };
 
   const handleApprove = async (contentId: string, feedback?: string) => {
@@ -411,22 +516,22 @@ export function App() {
     if (showLanding) {
       return (
         <LandingPage
-          onGetStarted={() => setShowLanding(false)}
-          onSignIn={() => setShowLanding(false)}
+          onGetStarted={() => handleShowLandingChange(false)}
+          onSignIn={() => handleShowLandingChange(false)}
           onExplorePlatform={() => {
-            setIsDemoMode(true);
-            setShowLanding(false);
+            handleDemoModeChange(true);
+            handleShowLandingChange(false);
           }}
         />
       );
     }
     return (
       <LoginPage 
-        onSuccess={() => setShowLanding(false)}
-        onBackToLanding={() => setShowLanding(true)}
+        onSuccess={() => handleShowLandingChange(false)}
+        onBackToLanding={() => handleShowLandingChange(true)}
         onExploreDemo={() => {
-          setIsDemoMode(true);
-          setShowLanding(false);
+          handleDemoModeChange(true);
+          handleShowLandingChange(false);
         }}
         onAddInitialBrand={(newB) => handleCreateBrand(newB)}
       />
@@ -437,9 +542,9 @@ export function App() {
   if (showLanding && (currentUser || isDemoMode)) {
     return (
       <LandingPage
-        onGetStarted={() => setShowLanding(false)}
-        onSignIn={() => setShowLanding(false)}
-        onExplorePlatform={() => setShowLanding(false)}
+        onGetStarted={() => handleShowLandingChange(false)}
+        onSignIn={() => handleShowLandingChange(false)}
+        onExplorePlatform={() => handleShowLandingChange(false)}
       />
     );
   }
@@ -463,9 +568,9 @@ export function App() {
         onOpenCreateBrandModal={() => setShowCreateBrandModal(true)}
         onDeleteBrand={handleDeleteBrand}
         currentTab={currentTab}
-        onTabChange={setCurrentTab}
+        onTabChange={handleTabChange}
         pendingReviewsCount={pendingReviewsCount}
-        onViewLanding={() => setShowLanding(true)}
+        onViewLanding={() => handleShowLandingChange(true)}
       />
 
       <div className="flex-1 flex overflow-hidden relative z-10">
@@ -476,16 +581,16 @@ export function App() {
               contentItems={contentItems}
               metrics={metrics || emptyMetrics}
               onOpenContent={(id) => {
-                if (id) setSelectedContentId(id);
-                setCurrentTab('studio');
+                if (id) handleSelectContentId(id);
+                handleTabChange('studio');
               }}
               onNewScan={() => {
                 if (!brand) setShowCreateBrandModal(true);
-                else setCurrentTab('studio');
+                else handleTabChange('studio');
               }}
               onDeleteContent={handleDeleteContent}
               onOpenCreateBrandModal={() => setShowCreateBrandModal(true)}
-              onNavigateTab={(tab) => setCurrentTab(tab)}
+              onNavigateTab={(tab) => handleTabChange(tab)}
             />
           )}
 
@@ -494,7 +599,7 @@ export function App() {
               brand={brand}
               contentItems={contentItems}
               selectedContentId={selectedContentId}
-              onSelectContent={setSelectedContentId}
+              onSelectContent={handleSelectContentId}
               onScanContent={handleScanContent}
               onApplyCorrection={handleApplyCorrection}
               onResolveFinding={handleResolveFinding}

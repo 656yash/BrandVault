@@ -47,9 +47,37 @@ export const ReviewWorkspace: React.FC<Props> = ({
   onAddComment,
   onDeleteComment,
 }) => {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [statusFilter, setStatusFilterState] = useState<StatusFilter>(() => {
+    try {
+      const saved = localStorage.getItem('bv_review_filter') as StatusFilter;
+      const valid: StatusFilter[] = ['all', 'ready_for_review', 'changes_requested', 'approved', 'rejected'];
+      if (saved && valid.includes(saved)) return saved;
+    } catch {}
+    return 'all';
+  });
+
+  const setStatusFilter = (filter: StatusFilter) => {
+    setStatusFilterState(filter);
+    try {
+      localStorage.setItem('bv_review_filter', filter);
+    } catch {}
+  };
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string>(contentItems[0]?.id || '');
+  const [selectedId, setSelectedIdState] = useState<string>(() => {
+    try {
+      return localStorage.getItem('bv_review_selected_id') || contentItems[0]?.id || '';
+    } catch {
+      return contentItems[0]?.id || '';
+    }
+  });
+
+  const setSelectedId = (id: string) => {
+    setSelectedIdState(id);
+    try {
+      localStorage.setItem('bv_review_selected_id', id);
+    } catch {}
+  };
   const [newComment, setNewComment] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

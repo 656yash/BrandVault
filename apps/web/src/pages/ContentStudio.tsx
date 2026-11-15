@@ -76,14 +76,43 @@ export const ContentStudio: React.FC<Props> = ({
   isScanning,
 }) => {
   // Navigation: 1. Library -> 2. Choose Content Type -> 3. Dedicated Content Editor
-  const [studioStep, setStudioStep] = useState<StudioStep>(
-    contentItems.length > 0 ? 'library' : 'choose_type'
-  );
+  const [studioStep, setStudioStepState] = useState<StudioStep>(() => {
+    try {
+      const saved = localStorage.getItem('bv_studio_step') as StudioStep;
+      if (saved && ['library', 'choose_type', 'editor'].includes(saved)) {
+        return saved;
+      }
+    } catch {}
+    return contentItems.length > 0 ? 'library' : 'choose_type';
+  });
+
+  const setStudioStep = (step: StudioStep) => {
+    setStudioStepState(step);
+    try {
+      localStorage.setItem('bv_studio_step', step);
+    } catch {}
+  };
 
   const currentItem = contentItems.find(c => c.id === selectedContentId) || contentItems[0];
 
   // Selected Category & Subtypes
-  const [selectedCategory, setSelectedCategory] = useState<StudioCategory>('social_media');
+  const [selectedCategory, setSelectedCategoryState] = useState<StudioCategory>(() => {
+    try {
+      const saved = localStorage.getItem('bv_studio_category') as StudioCategory;
+      if (saved && ['social_media', 'brand_catalogue', 'documents_to_publish', 'marketing_campaigns'].includes(saved)) {
+        return saved;
+      }
+    } catch {}
+    return 'social_media';
+  });
+
+  const setSelectedCategory = (cat: StudioCategory) => {
+    setSelectedCategoryState(cat);
+    try {
+      localStorage.setItem('bv_studio_category', cat);
+    } catch {}
+  };
+
   const [subType, setSubType] = useState<string>('LinkedIn Post');
 
   // Form Fields (Dynamic based on selected category)
