@@ -90,40 +90,48 @@ export const ContentStudio: React.FC<Props> = ({
   const criticalCount = findings.filter(f => f.severity === 'critical' && f.status === 'open').length;
 
   const handleScan = async () => {
-    if (!currentItem) return;
-    await onScanContent(currentItem.id, editorText);
+    let targetId = currentItem?.id;
+    if (!targetId) {
+      if (!editorText.trim()) return;
+      const created = await onCreateContent({
+        title: `${brand?.name || 'Brand'} Marketing Collateral`,
+        contentType: 'social_ad',
+        targetAudience: 'General Audience',
+        targetChannel: 'Digital Media',
+        rawContent: editorText,
+      });
+      targetId = created.id;
+    }
+    await onScanContent(targetId, editorText);
     setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
   };
 
-  const handleInjectTestViolations = () => {
-    let violationCopy = '';
-    const activeBrand = brand?.id || currentItem?.brandId;
-    if (activeBrand === 'brand_easya1') {
-      violationCopy = "Planning to study abroad? Easy-A1 is India's No. 1 agency with 100% visa guarantee! Avoid competitor X who is obsolete and try our cheap package with revolutionary magic.";
-    } else if (activeBrand === 'brand_assetsgenius') {
-      violationCopy = "Assets Genius Escrow provides risk-free escrow for high-value transactions! We are India's No. 1 custody vault, proving competitor X is obsolete with our cheap settlement rates and revolutionary magic.";
-    } else if (activeBrand === 'brand_shotnest') {
-      violationCopy = "ShotNest Media produces the world's best cinematography! We guarantee 100% flawless results, proving competitor X is obsolete with our cheap production packages and revolutionary magic.";
-    } else if (activeBrand === 'brand_flkdesigns') {
-      violationCopy = "FLK Designs is the world's best design agency with 100% satisfaction guarantee! Competitor X is obsolete and our cheap brand identity package works like magic.";
-    } else {
-      violationCopy = `${brand?.name || currentItem?.title || 'Our platform'} is officially India's No. 1 generative platform! It guarantees 100% uptime without failure, proving competitor X is obsolete. Switch today to our cheap starter tier and unleash revolutionary magic for every end-user.`;
-    }
+  const handleInjectTestViolations = async () => {
+    const violationCopy = `${brand?.name || 'Our platform'} is officially India's No. 1 platform with 100% guarantee! Competitor X is obsolete and our cheap package works like revolutionary magic.`;
     setEditorText(violationCopy);
-    // Also trigger scan automatically so the user immediately sees the multi-agent findings!
-    if (currentItem) {
-      onScanContent(currentItem.id, violationCopy).then(() => {
-        setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    let targetId = currentItem?.id;
+    if (!targetId) {
+      const created = await onCreateContent({
+        title: `${brand?.name || 'Brand'} Test Collateral`,
+        contentType: 'social_ad',
+        targetAudience: 'General Audience',
+        targetChannel: 'Digital Media',
+        rawContent: violationCopy,
       });
+      targetId = created.id;
     }
+    await onScanContent(targetId, violationCopy);
+    setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
   };
 
   const handleResetCleanCopy = () => {
-    if (currentItem) {
+    if (currentItem?.rawContent) {
       setEditorText(currentItem.rawContent);
       onScanContent(currentItem.id, currentItem.rawContent).then(() => {
         setLastScannedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       });
+    } else {
+      setEditorText('');
     }
   };
 
@@ -179,17 +187,23 @@ export const ContentStudio: React.FC<Props> = ({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <select
-              value={currentItem?.id}
-              onChange={(e) => onSelectContent(e.target.value)}
-              className="bg-white/70 border border-white rounded-2xl px-4 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft shadow-sm"
-            >
-              {contentItems.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.title} ({c.contentType.replace('_', ' ')})
-                </option>
-              ))}
-            </select>
+            {contentItems.length > 0 ? (
+              <select
+                value={currentItem?.id}
+                onChange={(e) => onSelectContent(e.target.value)}
+                className="bg-white/70 border border-white rounded-2xl px-4 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-soft shadow-sm"
+              >
+                {contentItems.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.title} ({c.contentType.replace('_', ' ')})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="text-xs font-bold text-slate-700 bg-white/70 px-4 py-2 rounded-2xl border border-white shadow-sm font-mono">
+                Drafting Workbench
+              </span>
+            )}
 
             <span className="text-[11px] px-3 py-1.5 rounded-xl bg-white/70 text-slate-800 font-mono border border-white font-bold shadow-sm">
               V{currentItem?.currentVersion || 1}
@@ -230,14 +244,14 @@ export const ContentStudio: React.FC<Props> = ({
           </button>
 
           <button
-            onClick={() => onSubmitForReview(currentItem.id)}
-            disabled={criticalCount > 0}
+            onClick={() => currentItem && onSubmitForReview(currentItem.id)}
+            disabled={!currentItem || criticalCount > 0}
             className={`flex items-center gap-2 px-5 py-3 rounded-full text-xs font-bold transition-all cursor-pointer shadow-sm ${
-              criticalCount > 0
+              !currentItem || criticalCount > 0
                 ? 'bg-white/40 text-slate-400 cursor-not-allowed border border-white/40'
                 : 'bg-white text-slate-800 hover:bg-white/90 border border-white'
             }`}
-            title={criticalCount > 0 ? 'Resolve critical violations before submitting' : 'Submit for review'}
+            title={!currentItem ? 'Inspect collateral before submitting' : criticalCount > 0 ? 'Resolve critical violations before submitting' : 'Submit for review'}
           >
             <Send className="w-3.5 h-3.5 text-blue-600" />
             <span>Submit for Review</span>

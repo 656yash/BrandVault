@@ -81,17 +81,17 @@ export const Navbar: React.FC<Props> = ({
                 className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-xs"
                 style={{ backgroundColor: brand?.primaryColor || '#4F46E5' }}
               >
-                {brand?.name?.charAt(0) || 'B'}
+                {brand?.name?.charAt(0) || '+'}
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-xs tracking-tight text-slate-800">
-                    {brand?.name || 'Nexus Enterprise AI'}
+                    {brand?.name || (brands.length === 0 ? 'Create Brand' : 'Select Brand')}
                   </span>
                   <ChevronDown className="w-3 h-3 text-slate-500" />
                 </div>
                 <span className="text-[10px] text-slate-500 font-medium">
-                  {brands.length} Workspaces Active
+                  {brands.length} Workspace{brands.length === 1 ? '' : 's'} Active
                 </span>
               </div>
             </button>
@@ -109,7 +109,12 @@ export const Navbar: React.FC<Props> = ({
                 </div>
 
                 <div className="max-h-60 overflow-y-auto py-1 space-y-1">
-                  {brands.map((b) => {
+                  {brands.length === 0 ? (
+                    <div className="p-4 text-center text-xs text-slate-500 font-medium">
+                      No brand workspaces created yet.
+                    </div>
+                  ) : (
+                    brands.map((b) => {
                     const isSelected = brand?.id === b.id;
                     return (
                       <div
@@ -156,7 +161,7 @@ export const Navbar: React.FC<Props> = ({
                         </div>
                       </div>
                     );
-                  })}
+                  }))}
                 </div>
 
                 <div className="pt-2 border-t border-slate-200">

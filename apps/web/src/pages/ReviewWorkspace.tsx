@@ -85,6 +85,32 @@ export const ReviewWorkspace: React.FC<Props> = ({
     setNewComment('');
   };
 
+  if (contentItems.length === 0) {
+    return (
+      <div className="relative space-y-8 pb-16">
+        <div className="flex items-center gap-3 pt-2">
+          <ChromeAvatar className="w-8 h-8 filter drop-shadow-[0_4px_10px_rgba(205,180,219,0.5)]" />
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight font-sans">
+              Authorised Sign-Off &amp; Approvals
+            </h1>
+            <p className="text-xs text-slate-600 font-medium">
+              Human-in-the-loop review queue for <strong className="text-slate-800">{brand?.name || 'Active Brand'}</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div className="glass-panel p-12 text-center space-y-4 shadow-xl border border-white max-w-xl mx-auto mt-8">
+          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
+          <h3 className="text-lg font-bold text-slate-800">Review Queue Empty</h3>
+          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+            There are currently no marketing collaterals or creative assets awaiting approval for {brand?.name || 'this brand'}. Once collaterals are submitted from Content Studio, they will appear here for authorized sign-off.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative space-y-8 pb-16">
       {/* Header */}

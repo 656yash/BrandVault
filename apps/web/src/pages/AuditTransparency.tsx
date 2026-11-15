@@ -92,24 +92,32 @@ export const AuditTransparency: React.FC<Props> = ({ brand, auditLogs }) => {
               </tr>
             </thead>
             <tbody>
-              {auditLogs.map((log) => (
-                <tr key={log.id} className="border-b border-white/20 hover:bg-white/40 transition-colors">
-                  <td className="p-4 font-mono font-medium text-slate-600">
-                    {new Date(log.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                  </td>
-                  <td className="p-4 font-bold text-slate-800">
-                    {log.actorName}
-                  </td>
-                  <td className="p-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/70 text-slate-800 border border-white font-bold shadow-sm">
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="p-4 font-mono text-[11px] text-slate-600 max-w-md truncate font-medium">
-                    {JSON.stringify(log.details)}
+              {auditLogs.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-slate-500 font-medium">
+                    No audit events recorded yet for this workspace. Pre-flight scans, guideline additions, and approval seals will be immutably tracked here.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                auditLogs.map((log) => (
+                  <tr key={log.id} className="border-b border-white/20 hover:bg-white/40 transition-colors">
+                    <td className="p-4 font-mono font-medium text-slate-600">
+                      {new Date(log.timestamp).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                    </td>
+                    <td className="p-4 font-bold text-slate-800">
+                      {log.actorName}
+                    </td>
+                    <td className="p-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white/70 text-slate-800 border border-white font-bold shadow-sm">
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="p-4 font-mono text-[11px] text-slate-600 max-w-md truncate font-medium">
+                      {JSON.stringify(log.details)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

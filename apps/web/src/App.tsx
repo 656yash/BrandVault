@@ -25,15 +25,27 @@ import { LoginPage } from './pages/LoginPage';
 import { CreateBrandModal } from './components/CreateBrandModal';
 import { useAuth } from './contexts/AuthContext';
 
+const emptyMetrics: GovernanceMetrics = {
+  totalScanned: 0,
+  approvedCount: 0,
+  changesRequestedCount: 0,
+  overallComplianceHealth: 100,
+  avgResolutionTimeHours: 0,
+  topViolations: [],
+  departmentScores: [],
+  frequentTerminologyMisses: [],
+  guidelineAmbiguityList: [],
+};
+
 export function App() {
   const { currentUser, loading } = useAuth();
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Multi-Brand State
-  const [brands, setBrands] = useState<BrandWorkspace[]>(initialBrands);
-  const [brand, setBrand] = useState<BrandWorkspace | null>(initialBrands[0]);
+  // Multi-Brand State (Clean Slate - Zero Demo Data)
+  const [brands, setBrands] = useState<BrandWorkspace[]>([]);
+  const [brand, setBrand] = useState<BrandWorkspace | null>(null);
   const [showCreateBrandModal, setShowCreateBrandModal] = useState(false);
 
   // Core Data State (Scoped to active brand)
@@ -45,7 +57,7 @@ export function App() {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [metrics, setMetrics] = useState<GovernanceMetrics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [selectedContentId, setSelectedContentId] = useState<string>('cnt_03');
+  const [selectedContentId, setSelectedContentId] = useState<string>('');
   const [isScanning, setIsScanning] = useState<boolean>(false);
 
   // Initial Data Fetch
@@ -67,23 +79,23 @@ export function App() {
 
         if (brandList && brandList.length > 0) {
           setBrands(brandList);
+          setBrand(b || brandList[0]);
+        } else {
+          setBrands([]);
+          setBrand(null);
         }
-        setBrand(b);
-        setGuidelines(g);
-        setFacts(f);
-        setTerminology(t);
-        setClaims(c);
-        setAssets(a);
-        setContentItems(items);
-        setMetrics(m);
-        setAuditLogs(logs);
 
-        if (items.length > 0) {
+        setGuidelines(g || []);
+        setFacts(f || []);
+        setTerminology(t || []);
+        setClaims(c || []);
+        setAssets(a || []);
+        setContentItems(items || []);
+        setMetrics(m || emptyMetrics);
+        setAuditLogs(logs || []);
+
+        if (items && items.length > 0) {
           setSelectedContentId(items[0].id);
-          const detailed = await api.getContentItem(items[0].id);
-          if (detailed) {
-            setContentItems(prev => prev.map(item => item.id === detailed.id ? detailed : item));
-          }
         }
       } catch (err) {
         console.warn('Initial data note:', err);
@@ -138,10 +150,6 @@ export function App() {
   };
 
   const handleDeleteBrand = async (brandId: string) => {
-    if (brands.length <= 1) {
-      showToast('Cannot delete the only remaining workspace.');
-      return;
-    }
     const targetBrand = brands.find(b => b.id === brandId);
     const confirmed = window.confirm(`Are you sure you want to delete "${targetBrand?.name || 'this brand'}" workspace?`);
     if (!confirmed) return;
@@ -149,7 +157,17 @@ export function App() {
     await api.deleteBrand(brandId);
     const remaining = brands.filter(b => b.id !== brandId);
     setBrands(remaining);
-    await handleSelectBrand(remaining[0].id);
+    if (remaining.length > 0) {
+      await handleSelectBrand(remaining[0].id);
+    } else {
+      setBrand(null);
+      setGuidelines([]);
+      setFacts([]);
+      setTerminology([]);
+      setClaims([]);
+      setAssets([]);
+      setContentItems([]);
+    }
     showToast(`Brand workspace "${targetBrand?.name}" removed.`);
   };
 
@@ -404,16 +422,21 @@ export function App() {
 
       <div className="flex-1 flex overflow-hidden relative z-10">
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-          {currentTab === 'dashboard' && metrics && (
+          {currentTab === 'dashboard' && (
             <Dashboard
               brand={brand}
               contentItems={contentItems}
-              metrics={metrics}
+              metrics={metrics || emptyMetrics}
               onOpenContent={(id) => {
-                setSelectedContentId(id);
+                if (id) setSelectedContentId(id);
                 setCurrentTab('studio');
               }}
-              onNewScan={() => setCurrentTab('studio')}
+              onNewScan={() => {
+                if (!brand) setShowCreateBrandModal(true);
+                else setCurrentTab('studio');
+              }}
+              onDeleteContent={handleDeleteContent}
+              onOpenCreateBrandModal={() => setShowCreateBrandModal(true)}
             />
           )}
 
@@ -465,8 +488,8 @@ export function App() {
             />
           )}
 
-          {currentTab === 'analytics' && metrics && (
-            <GovernanceAnalytics brand={brand} metrics={metrics} />
+          {currentTab === 'analytics' && (
+            <GovernanceAnalytics brand={brand} metrics={metrics || emptyMetrics} />
           )}
 
           {currentTab === 'audit' && (

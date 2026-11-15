@@ -5,6 +5,7 @@ import {
   SpellCheck, 
   Plus, 
   Check, 
+  CheckCircle2,
   Palette, 
   ShieldCheck,
   Trash2,
@@ -248,52 +249,72 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Tab 1: Guidelines List in Adwise Glass Panels */}
       {activeTab === 'guidelines' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {guidelines.map((g, idx) => (
-            <div
-              key={g.id}
-              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 hover:scale-[1.01] transition-transform duration-300 shadow-md group`}
+        guidelines.length === 0 ? (
+          <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
+            <div className="w-14 h-14 mx-auto rounded-3xl bg-pink-soft/30 border border-white flex items-center justify-center text-pink-600 shadow-sm">
+              <BookOpen className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-800">No Brand Guidelines Configured</h3>
+              <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
+                Add your brand voice, tone, positioning, and visual guidelines using the "+ Add Rule" button above.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="glass-button px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-all cursor-pointer"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-purple-100 text-purple-700 font-bold border border-purple-200">
-                    {g.category}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-slate-500 font-bold">V{g.version}</span>
-                    <button
-                      onClick={() => onDeleteGuideline(g.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
-                      title="Delete Guideline"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+              + Add First Guideline
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {guidelines.map((g, idx) => (
+              <div
+                key={g.id}
+                className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 hover:scale-[1.01] transition-transform duration-300 shadow-md group`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-purple-100 text-purple-700 font-bold border border-purple-200">
+                      {g.category}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-slate-500 font-bold">V{g.version}</span>
+                      <button
+                        onClick={() => onDeleteGuideline(g.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
+                        title="Delete Guideline"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3 className="text-base font-bold text-slate-800 tracking-tight">{g.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{g.description}</p>
+
+                  <div className="pt-2 border-t border-white/50 space-y-1.5">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Rules:</span>
+                    <ul className="space-y-1">
+                      {g.rules.map((rule, rIdx) => (
+                        <li key={rIdx} className="text-[11px] text-slate-700 flex items-start gap-2 font-medium">
+                          <span className="text-pink-500 mt-1 font-bold">•</span>
+                          <span>{rule}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-slate-800 tracking-tight">{g.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{g.description}</p>
-
-                <div className="pt-2 border-t border-white/50 space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Rules:</span>
-                  <ul className="space-y-1">
-                    {g.rules.map((rule, rIdx) => (
-                      <li key={rIdx} className="text-[11px] text-slate-700 flex items-start gap-2 font-medium">
-                        <span className="text-pink-500 mt-1 font-bold">•</span>
-                        <span>{rule}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
+                  <span>Effective: {g.effectiveDate}</span>
+                  <span className="text-emerald-700 uppercase font-bold tracking-wider">{g.status}</span>
                 </div>
               </div>
-
-              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
-                <span>Effective: {g.effectiveDate}</span>
-                <span className="text-emerald-700 uppercase font-bold tracking-wider">{g.status}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Tab 2: Terminology Rules Table (Adwise Table style) */}
@@ -319,37 +340,45 @@ export const BrandKnowledge: React.FC<Props> = ({
                 </tr>
               </thead>
               <tbody>
-                {terminology.map((t) => (
-                  <tr key={t.id} className="border-b border-white/20 hover:bg-white/40 transition-colors group">
-                    <td className="p-4 font-mono font-bold text-rose-700">
-                      "{t.prohibitedTerm}"
-                    </td>
-                    <td className="p-4 font-semibold text-emerald-800">
-                      "{t.preferredTerm}"
-                    </td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
-                        t.severity === 'critical' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
-                        t.severity === 'warning' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
-                        'bg-blue-100 text-blue-700 border border-blue-300'
-                      }`}>
-                        {t.severity}
-                      </span>
-                    </td>
-                    <td className="p-4 text-slate-600 text-xs max-w-md font-medium">
-                      {t.reason}
-                    </td>
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => onDeleteTerminology(t.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
-                        title="Delete Rule"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                {terminology.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 font-medium">
+                      No prohibited terminology rules added yet. Click "+ Add Rule" to enforce approved brand vocabulary.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  terminology.map((t) => (
+                    <tr key={t.id} className="border-b border-white/20 hover:bg-white/40 transition-colors group">
+                      <td className="p-4 font-mono font-bold text-rose-700">
+                        "{t.prohibitedTerm}"
+                      </td>
+                      <td className="p-4 font-semibold text-emerald-800">
+                        "{t.preferredTerm}"
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold ${
+                          t.severity === 'critical' ? 'bg-rose-100 text-rose-700 border border-rose-300' :
+                          t.severity === 'warning' ? 'bg-purple-100 text-purple-700 border border-purple-300' :
+                          'bg-blue-100 text-blue-700 border border-blue-300'
+                        }`}>
+                          {t.severity}
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate-600 text-xs max-w-md font-medium">
+                        {t.reason}
+                      </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => onDeleteTerminology(t.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
+                          title="Delete Rule"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -358,115 +387,169 @@ export const BrandKnowledge: React.FC<Props> = ({
 
       {/* Tab 3: Corporate Facts */}
       {activeTab === 'facts' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {facts.map((f, idx) => (
-            <div
-              key={f.id}
-              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-blue-100 text-blue-700 font-bold border border-blue-200">
-                    {f.category}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-slate-500 font-bold">{f.factKey}</span>
-                    <button
-                      onClick={() => onDeleteFact(f.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
-                      title="Delete Fact"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                <p className="text-sm font-bold text-slate-800 leading-relaxed">
-                  "{f.statement}"
-                </p>
-
-                <div className="pt-2 border-t border-white/50 space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Verified Source:</span>
-                  <div className="text-xs text-slate-700 font-mono bg-white/60 p-2.5 rounded-xl border border-white font-medium">
-                    {f.verifiedSource}
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
-                <span>Verified: {f.verifiedDate}</span>
-                <span className="text-emerald-700 font-bold">SOC 2 Grounded</span>
-              </div>
+        facts.length === 0 ? (
+          <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
+            <div className="w-14 h-14 mx-auto rounded-3xl bg-blue-soft/30 border border-white flex items-center justify-center text-blue-600 shadow-sm">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
-          ))}
-        </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-800">No Corporate Facts Registered</h3>
+              <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
+                Register audited enterprise facts (e.g. employee count, uptime SLA, certifications) to verify marketing copy automatically.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="glass-button px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-all cursor-pointer"
+            >
+              + Register First Fact
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {facts.map((f, idx) => (
+              <div
+                key={f.id}
+                className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-blue-100 text-blue-700 font-bold border border-blue-200">
+                      {f.category}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-slate-500 font-bold">{f.factKey}</span>
+                      <button
+                        onClick={() => onDeleteFact(f.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
+                        title="Delete Fact"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-sm font-bold text-slate-800 leading-relaxed">
+                    "{f.statement}"
+                  </p>
+
+                  <div className="pt-2 border-t border-white/50 space-y-1">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Verified Source:</span>
+                    <div className="text-xs text-slate-700 font-mono bg-white/60 p-2.5 rounded-xl border border-white font-medium">
+                      {f.verifiedSource}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
+                  <span>Verified: {f.verifiedDate}</span>
+                  <span className="text-emerald-700 font-bold">SOC 2 Grounded</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Tab 4: Approved Claims */}
       {activeTab === 'claims' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {claims.map((c, idx) => (
-            <div
-              key={c.id}
-              className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-pink-100 text-pink-700 font-bold border border-pink-200">
-                    Substantiated Claim
-                  </span>
-                  <button
-                    onClick={() => onDeleteClaim(c.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
-                    title="Delete Claim"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                <p className="text-base font-bold text-slate-800 leading-relaxed">
-                  "{c.claimText}"
-                </p>
-
-                <div className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Documented Evidence:</span>
-                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                    {c.substantiationEvidence}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
-                <span>Approved By: {c.approvedBy}</span>
-                <span>Expires: {c.expiresAt}</span>
-              </div>
+        claims.length === 0 ? (
+          <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
+            <div className="w-14 h-14 mx-auto rounded-3xl bg-pink-soft/30 border border-white flex items-center justify-center text-pink-600 shadow-sm">
+              <ShieldCheck className="w-7 h-7" />
             </div>
-          ))}
-        </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-800">No Approved Claims Registered</h3>
+              <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
+                Register substantiated legal marketing claims with authorized documentation to protect your brand from advertising liability.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="glass-button px-6 py-2.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-all cursor-pointer"
+            >
+              + Register Approved Claim
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {claims.map((c, idx) => (
+              <div
+                key={c.id}
+                className={`${idx % 2 === 0 ? 'glass-panel' : 'glass-panel-alt'} p-6 flex flex-col justify-between space-y-4 shadow-md hover:scale-[1.01] transition-transform duration-300 group`}
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-pink-100 text-pink-700 font-bold border border-pink-200">
+                      Substantiated Claim
+                    </span>
+                    <button
+                      onClick={() => onDeleteClaim(c.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white/60 transition-all cursor-pointer"
+                      title="Delete Claim"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <p className="text-base font-bold text-slate-800 leading-relaxed">
+                    "{c.claimText}"
+                  </p>
+
+                  <div className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">Documented Evidence:</span>
+                    <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                      {c.substantiationEvidence}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/50 flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
+                  <span>Approved By: {c.approvedBy}</span>
+                  <span>Expires: {c.expiresAt}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Tab 5: Brand Assets */}
       {activeTab === 'assets' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {assets.map((a) => (
-            <div
-              key={a.id}
-              className="glass-panel p-6 space-y-4 shadow-md"
-            >
-              <div className="h-40 rounded-2xl bg-white/70 border border-white flex items-center justify-center p-4 shadow-inner">
-                <ChromeShield className="w-20 h-20 filter drop-shadow-[0_4px_12px_rgba(205,180,219,0.5)]" />
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs font-mono uppercase tracking-wider text-purple-700 font-bold">{a.type}</div>
-                <h3 className="text-sm font-bold text-slate-800">{a.name}</h3>
-              </div>
-              <div className="pt-2 border-t border-white/50 text-[11px] text-slate-600 space-y-1 font-mono font-semibold">
-                <div>Clear space requirement: <span className="text-slate-800">{a.metadata?.minimumClearSpacePx}px</span></div>
-                <div>Format: <span className="text-slate-800">{a.metadata?.mimeType}</span></div>
-              </div>
+        assets.length === 0 ? (
+          <div className="glass-panel p-12 text-center space-y-4 shadow-lg">
+            <div className="w-14 h-14 mx-auto rounded-3xl bg-pink-soft/30 border border-white flex items-center justify-center text-pink-600 shadow-sm">
+              <Palette className="w-7 h-7" />
             </div>
-          ))}
-        </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-800">No Design Assets Uploaded</h3>
+              <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
+                Store approved vector logos, clear-space specifications, and brand marks for automated visual compliance checks.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {assets.map((a) => (
+              <div
+                key={a.id}
+                className="glass-panel p-6 space-y-4 shadow-md"
+              >
+                <div className="h-40 rounded-2xl bg-white/70 border border-white flex items-center justify-center p-4 shadow-inner">
+                  <ChromeShield className="w-20 h-20 filter drop-shadow-[0_4px_12px_rgba(205,180,219,0.5)]" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs font-mono uppercase tracking-wider text-purple-700 font-bold">{a.type}</div>
+                  <h3 className="text-sm font-bold text-slate-800">{a.name}</h3>
+                </div>
+                <div className="pt-2 border-t border-white/50 text-[11px] text-slate-600 space-y-1 font-mono font-semibold">
+                  <div>Clear space requirement: <span className="text-slate-800">{a.metadata?.minimumClearSpacePx}px</span></div>
+                  <div>Format: <span className="text-slate-800">{a.metadata?.mimeType}</span></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* Add Modal */}

@@ -35,6 +35,7 @@ interface Props {
   onOpenContent: (contentId: string) => void;
   onNewScan: () => void;
   onDeleteContent?: (contentId: string) => void;
+  onOpenCreateBrandModal?: () => void;
 }
 
 export const Dashboard: React.FC<Props> = ({ 
@@ -43,10 +44,36 @@ export const Dashboard: React.FC<Props> = ({
   metrics, 
   onOpenContent, 
   onNewScan,
-  onDeleteContent
+  onDeleteContent,
+  onOpenCreateBrandModal
 }) => {
   return (
     <div className="relative space-y-8 pb-16">
+      {/* If No Brand Workspace Created Yet */}
+      {!brand && (
+        <div className="glass-panel p-6 bg-gradient-to-r from-pink-soft/30 via-white/50 to-blue-sky/30 border border-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg animate-in fade-in duration-200">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/80 flex items-center justify-center text-pink-600 shadow-sm shrink-0">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800 tracking-tight">No Brand Workspace Active</h3>
+              <p className="text-xs text-slate-600 font-medium">
+                Create a brand workspace to begin registering custom voice guidelines, terminology dictionaries, and inspecting assets.
+              </p>
+            </div>
+          </div>
+          {onOpenCreateBrandModal && (
+            <button
+              onClick={onOpenCreateBrandModal}
+              className="glass-button px-5 py-2.5 rounded-full text-xs font-bold text-slate-900 shadow-md hover:scale-105 transition-all whitespace-nowrap cursor-pointer"
+            >
+              + Create First Brand Workspace
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Hero Header with Adwise Real-time Status Pills */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
         <div className="space-y-1">

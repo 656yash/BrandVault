@@ -111,26 +111,32 @@ export const GovernanceAnalytics: React.FC<Props> = ({ brand, metrics }) => {
           </div>
 
           <div className="space-y-3 pt-2">
-            {metrics.departmentScores.map((dept) => (
-              <div key={dept.department} className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-800">{dept.department}</span>
-                  <span className="font-mono font-black text-slate-800">{dept.score}/100</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-white/70 overflow-hidden shadow-inner">
-                  <div 
-                    className="h-full rounded-full bg-gradient-to-r from-[#FFAFCC] to-[#A2D2FF] transition-all duration-500" 
-                    style={{ width: `${dept.score}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
-                  <span>{dept.contentVolume} assets produced</span>
-                  <span className={dept.score >= 90 ? 'text-emerald-700' : 'text-blue-700'}>
-                    {dept.score >= 90 ? 'High Adherence' : 'Active Optimization'}
-                  </span>
-                </div>
+            {metrics.departmentScores.length === 0 ? (
+              <div className="p-5 rounded-2xl bg-white/50 border border-white text-center text-xs text-slate-500 font-medium">
+                No departmental compliance data recorded yet. As content is scanned, departmental metrics will populate here.
               </div>
-            ))}
+            ) : (
+              metrics.departmentScores.map((dept) => (
+                <div key={dept.department} className="p-3.5 rounded-2xl bg-white/60 border border-white space-y-1.5 shadow-sm">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-800">{dept.department}</span>
+                    <span className="font-mono font-black text-slate-800">{dept.score}/100</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/70 overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full rounded-full bg-gradient-to-r from-[#FFAFCC] to-[#A2D2FF] transition-all duration-500" 
+                      style={{ width: `${dept.score}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono font-semibold">
+                    <span>{dept.contentVolume} assets produced</span>
+                    <span className={dept.score >= 90 ? 'text-emerald-700' : 'text-blue-700'}>
+                      {dept.score >= 90 ? 'High Adherence' : 'Active Optimization'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -150,18 +156,24 @@ export const GovernanceAnalytics: React.FC<Props> = ({ brand, metrics }) => {
           </div>
 
           <div className="space-y-2.5">
-            {metrics.frequentTerminologyMisses.map((miss, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-white/60 border border-white flex items-center justify-between text-xs shadow-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-rose-700 font-mono font-bold">"{miss.prohibited}"</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="text-emerald-800 font-mono font-bold">"{miss.preferred}"</span>
-                </div>
-                <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold border border-purple-200">
-                  {miss.count} occurrences
-                </span>
+            {metrics.frequentTerminologyMisses.length === 0 ? (
+              <div className="p-5 rounded-2xl bg-white/50 border border-white text-center text-xs text-slate-500 font-medium">
+                No recurring terminology drift detected. Creators are adhering strictly to dictionary rules.
               </div>
-            ))}
+            ) : (
+              metrics.frequentTerminologyMisses.map((miss, idx) => (
+                <div key={idx} className="p-3 rounded-2xl bg-white/60 border border-white flex items-center justify-between text-xs shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-rose-700 font-mono font-bold">"{miss.prohibited}"</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-emerald-800 font-mono font-bold">"{miss.preferred}"</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold border border-purple-200">
+                    {miss.count} occurrences
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -178,23 +190,29 @@ export const GovernanceAnalytics: React.FC<Props> = ({ brand, metrics }) => {
           </div>
 
           <div className="space-y-3">
-            {metrics.guidelineAmbiguityList.map((item, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-white/60 border border-white space-y-2 shadow-sm">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-800">{item.guidelineTitle}</span>
-                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">
-                    {item.disputeRate}% Dispute Rate
-                  </span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  {item.feedback}
-                </p>
-                <div className="text-[10px] text-purple-700 font-bold flex items-center gap-1.5 pt-1">
-                  <FileEdit className="w-3.5 h-3.5" />
-                  <span>Recommendation: Update policy wording with specific threshold examples.</span>
-                </div>
+            {metrics.guidelineAmbiguityList.length === 0 ? (
+              <div className="p-5 rounded-2xl bg-white/50 border border-white text-center text-xs text-slate-500 font-medium">
+                Zero contested policies. All guidelines are operating with high consensus across creators and reviewers.
               </div>
-            ))}
+            ) : (
+              metrics.guidelineAmbiguityList.map((item, idx) => (
+                <div key={idx} className="p-4 rounded-2xl bg-white/60 border border-white space-y-2 shadow-sm">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-800">{item.guidelineTitle}</span>
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-bold border border-pink-200">
+                      {item.disputeRate}% Dispute Rate
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                    {item.feedback}
+                  </p>
+                  <div className="text-[10px] text-purple-700 font-bold flex items-center gap-1.5 pt-1">
+                    <FileEdit className="w-3.5 h-3.5" />
+                    <span>Recommendation: Update policy wording with specific threshold examples.</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
