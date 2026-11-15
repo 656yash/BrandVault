@@ -218,6 +218,78 @@ export function runClientInspection(
       confidence: 0.95,
     },
     {
+      term: 'stop wasting money on',
+      agentType: 'tone',
+      issue: 'Aggressive Urgency & Negative Framing',
+      category: 'Tone & Voice Violation',
+      severity: 'critical',
+      guidelineReference: 'Brand Voice & Tone Standards',
+      evidence: 'Direct negative urgency and commanding hostility undermine brand prestige.',
+      suggestedCorrection: 'Explore the authentic quality of',
+      requiresHumanReview: true,
+      confidence: 0.96,
+    },
+    {
+      term: 'completely obsolete',
+      agentType: 'claim',
+      issue: 'Competitor Obsolescence Disparagement',
+      category: 'Competitor Disparagement',
+      severity: 'critical',
+      guidelineReference: 'Fair Competition & Ethics Policy',
+      evidence: 'Directly claiming a rival service or product is obsolete violates comparative advertising regulations.',
+      suggestedCorrection: 'traditional alternatives face limitations',
+      requiresHumanReview: true,
+      confidence: 0.95,
+    },
+    {
+      term: 'outdated service',
+      agentType: 'terminology',
+      issue: 'Derogatory Competitor Claim',
+      category: 'Competitor Disparagement',
+      severity: 'warning',
+      guidelineReference: 'Fair Advertising & Brand Protection Policy',
+      evidence: 'Unsubstantiated disparagement of competitor services creates regulatory advertising risk.',
+      suggestedCorrection: 'established industry alternatives',
+      requiresHumanReview: true,
+      confidence: 0.93,
+    },
+    {
+      term: 'revolutionary formula',
+      agentType: 'claim',
+      issue: 'Hyperbolic Marketing Puffery',
+      category: 'claims',
+      severity: 'warning',
+      guidelineReference: 'Advertising Substantiation Policy',
+      evidence: 'Claiming a "revolutionary formula" without verified third-party laboratory or benchmark certification constitutes puffery.',
+      suggestedCorrection: 'our authentic traditional recipe',
+      requiresHumanReview: false,
+      confidence: 0.94,
+    },
+    {
+      term: 'revolutionary',
+      agentType: 'tone',
+      issue: 'Superlative Marketing Buzzword',
+      category: 'brand_voice',
+      severity: 'suggestion',
+      guidelineReference: 'Brand Voice & Tone Standards',
+      evidence: 'Overused buzzwords like "revolutionary" reduce credibility with discerning consumers.',
+      suggestedCorrection: 'authentic signature',
+      requiresHumanReview: false,
+      confidence: 0.88,
+    },
+    {
+      term: 'laddu Misal',
+      agentType: 'terminology',
+      issue: 'Direct Competitor Mention & Disparagement',
+      category: 'Competitor Disparagement',
+      severity: 'critical',
+      guidelineReference: 'Fair Competition & Brand Protection Policy',
+      evidence: 'Directly naming competitors in promotional copy is strictly prohibited.',
+      suggestedCorrection: 'alternative market offerings',
+      requiresHumanReview: true,
+      confidence: 0.97,
+    },
+    {
       term: '99.999% uptime',
       agentType: 'fact',
       issue: 'Ungrounded Availability Fact',
@@ -324,6 +396,227 @@ export function runClientInspection(
     aiDisclosure: {
       provider: 'BrandVault AI via Groq',
       model: 'openai/gpt-oss-120b',
+      zeroRetentionCompliant: true,
+      dataLogged: false,
+    },
+    createdAt: new Date().toISOString(),
+  };
+
+  localFindingsMap[contentId] = findings;
+  return report;
+}
+
+// Real-Time Groq AI Multi-Agent Compliance Evaluator
+async function callGroqMultiAgentAI(
+  content: string,
+  brandName: string,
+  toneKeywords: string[],
+  restrictedTopics: string[],
+  guidelines: Guideline[],
+  facts: ApprovedFact[],
+  claims: ApprovedClaim[]
+): Promise<{ parsed: any; modelUsed: string; durationMs: number } | null> {
+  const apiKey = (import.meta as any).env?.VITE_GROQ_API_KEY || '';
+  if (!apiKey) return null;
+
+  const startTime = Date.now();
+  const tryCall = async (model: string) => {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: `You are BrandVault AI, an elite enterprise Brand Compliance & Governance Intelligence Engine.
+Rigorously inspect the content and detect brand, tone, competitor, and legal compliance risks before publication.
+
+Crucially inspect for:
+1. Competitor & Legal Disparagement: Detect ANY competitor or rival brand naming (especially in contrast to "${brandName}"), negative competitor comparisons, claims that a rival's service or product is outdated, obsolete, inferior, or asking users to stop wasting money on competitors.
+2. Tone Agent: Detect commanding urgency, negative framing (e.g. "Stop wasting money..."), aggression, or voice not matching [${toneKeywords.join(', ')}].
+3. Claim Agent: Detect unsubstantiated promotional claims, puffery, or superlatives (e.g. "revolutionary formula", "100% guarantee", "world's best").
+4. Fact & Terminology Agent: Detect contradictions with corporate facts or prohibited terms.
+
+CRITICAL:
+- You must return valid JSON strictly conforming to:
+{
+  "overallScore": number (0-100),
+  "toneScore": number (0-100),
+  "terminologyScore": number (0-100),
+  "factualAccuracyScore": number (0-100),
+  "claimsLegalityScore": number (0-100),
+  "summary": "Clear executive summary of findings",
+  "aiFindings": [
+    {
+      "agentType": "tone" | "terminology" | "claim" | "fact",
+      "issue": "Short descriptive issue headline",
+      "category": "Category name",
+      "severity": "critical" | "warning" | "suggestion",
+      "contentExcerpt": "Exact snippet of text directly from the input text that triggered this finding",
+      "guidelineReference": "Specific brand guideline or ethics standard violated",
+      "evidence": "Factual explanation of why this was flagged and the risk it introduces",
+      "confidence": number between 0.85 and 0.99,
+      "suggestedCorrection": "Actionable, context-preserving correction that replaces the excerpt cleanly",
+      "requiresHumanReview": boolean
+    }
+  ]
+}
+Preserve creator intent in corrections. Only flag real issues. Every contentExcerpt MUST be an exact substring of the user content.`
+          },
+          {
+            role: 'user',
+            content: JSON.stringify({
+              brandName,
+              toneKeywords,
+              restrictedTopics,
+              guidelines: guidelines.map(g => ({ title: g.title, category: g.category })),
+              approvedFacts: facts.map(f => ({ statement: f.statement, verifiedSource: f.verifiedSource })),
+              approvedClaims: claims.map(c => ({ claim: c.claimText })),
+              contentToInspect: content,
+            })
+          }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Groq status ${res.status}`);
+    }
+    const data = await res.json();
+    const parsed = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+    return {
+      parsed,
+      modelUsed: model,
+      durationMs: Date.now() - startTime,
+    };
+  };
+
+  try {
+    return await tryCall('openai/gpt-oss-120b');
+  } catch (err) {
+    try {
+      return await tryCall('qwen/qwen3.8-27b');
+    } catch (e) {
+      console.warn('Groq models unavailable:', e);
+      return null;
+    }
+  }
+}
+
+export async function runMultiAgentInspection(
+  contentId: string,
+  version: number,
+  text: string,
+  currentBrandId?: string
+): Promise<AnalysisReport> {
+  const brandId = currentBrandId || activeBrandId;
+  const brand = memoryBrands.find(b => b.id === brandId);
+  const brandName = brand?.name || 'Active Brand';
+  const toneKeywords = brand?.toneKeywords || ['authentic', 'traditional', 'respectful', 'welcoming'];
+  const restrictedTopics = brand?.restrictedTopics || ['unsubstantiated claims', 'competitor disparagement', 'aggressive sales tactics'];
+  const activeGuidelines = memoryGuidelines.filter(g => !g.brandId || g.brandId === brandId);
+  const activeFacts = memoryFacts.filter(f => !f.brandId || f.brandId === brandId);
+  const activeClaims = memoryClaims.filter(c => !c.brandId || c.brandId === brandId);
+
+  // 1. Run deterministic baseline rule evaluation
+  const baselineReport = runClientInspection(contentId, version, text, brandId);
+  const findings: ComplianceFinding[] = [...baselineReport.findings];
+
+  let aiModelUsed = 'Groq (openai/gpt-oss-120b)';
+  let executionDurationMs = baselineReport.executionDurationMs;
+
+  // 2. Call Groq AI for deep multi-agent evaluation
+  try {
+    const groqRes = await callGroqMultiAgentAI(
+      text,
+      brandName,
+      toneKeywords,
+      restrictedTopics,
+      activeGuidelines,
+      activeFacts,
+      activeClaims
+    );
+
+    if (groqRes?.parsed?.aiFindings && Array.isArray(groqRes.parsed.aiFindings)) {
+      aiModelUsed = `Groq (${groqRes.modelUsed})`;
+      executionDurationMs = groqRes.durationMs;
+
+      for (const item of groqRes.parsed.aiFindings) {
+        if (!item.contentExcerpt || typeof item.contentExcerpt !== 'string') continue;
+
+        const matchIndex = text.toLowerCase().indexOf(item.contentExcerpt.toLowerCase());
+        if (matchIndex === -1) continue;
+
+        const exactSnippet = text.substring(matchIndex, matchIndex + item.contentExcerpt.length);
+
+        // Deduplicate against baseline findings
+        const isDuplicate = findings.some(f => 
+          f.contentExcerpt.toLowerCase() === exactSnippet.toLowerCase() ||
+          (f.position && Math.abs(f.position.start - matchIndex) < 5)
+        );
+
+        if (!isDuplicate) {
+          findings.push({
+            id: `fnd_groq_${Date.now()}_${findings.length}`,
+            contentItemId: contentId,
+            versionNumber: version,
+            agentType: item.agentType || 'terminology',
+            severity: item.severity || 'warning',
+            issue: item.issue || 'Brand Compliance Violation',
+            category: item.category || 'General',
+            evidence: item.evidence || `Detected "${exactSnippet}". Violates brand guidelines.`,
+            guidelineReference: item.guidelineReference || 'Brand Standards Manual',
+            position: {
+              start: matchIndex,
+              end: matchIndex + exactSnippet.length,
+            },
+            contentExcerpt: exactSnippet,
+            suggestedCorrection: item.suggestedCorrection || 'Revise to align with brand standards',
+            requiresHumanReview: item.severity === 'critical',
+            confidence: typeof item.confidence === 'number' ? item.confidence : 0.95,
+            status: 'open',
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Groq deep inspection fallback to deterministic rules:', err);
+  }
+
+  // Recalculate score
+  let score = 100;
+  for (const f of findings) {
+    if (f.severity === 'critical') score -= 25;
+    else if (f.severity === 'warning') score -= 12;
+    else score -= 5;
+  }
+  score = Math.max(15, Math.min(100, score));
+
+  const report: AnalysisReport = {
+    id: `rpt_${Date.now()}`,
+    contentItemId: contentId,
+    versionNumber: version,
+    overallScore: score,
+    toneScore: findings.some(f => f.agentType === 'tone') ? 45 : 98,
+    terminologyScore: findings.some(f => f.agentType === 'terminology') ? 40 : 100,
+    factualAccuracyScore: findings.some(f => f.agentType === 'fact') ? 50 : 100,
+    claimsLegalityScore: findings.some(f => f.agentType === 'claim') ? 40 : 98,
+    visualA11yScore: 96,
+    summary: findings.length === 0
+      ? '100% Brand Compliant. Adheres strictly to corporate guidelines.'
+      : `Identified ${findings.length} findings across multi-agent diagnostics. Immediate revision recommended.`,
+    findings,
+    aiModelUsed,
+    executionDurationMs,
+    aiDisclosure: {
+      provider: 'BrandVault AI via Groq',
+      model: aiModelUsed,
       zeroRetentionCompliant: true,
       dataLogged: false,
     },
@@ -599,7 +892,7 @@ export const api = {
   async scanContent(params: { contentItemId: string; contentOverride?: string }): Promise<AnalysisReport> {
     const item = memoryContentItems.find(c => c.id === params.contentItemId);
     const textToScan = params.contentOverride ?? (item?.rawContent || '');
-    const report = runClientInspection(params.contentItemId, item?.currentVersion || 1, textToScan, item?.brandId);
+    const report = await runMultiAgentInspection(params.contentItemId, item?.currentVersion || 1, textToScan, item?.brandId);
 
     if (item) {
       item.findings = report.findings;
