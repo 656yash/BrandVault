@@ -160,7 +160,7 @@ export const ContentStudio: React.FC<Props> = ({
   const warningCount = openFindings.filter(f => f.severity === 'warning').length;
   const suggestionCount = openFindings.filter(f => f.severity === 'suggestion').length;
 
-  const filteredFindings = findings.filter(f => {
+  const filteredFindings = openFindings.filter(f => {
     if (activeFindingFilter === 'all') return true;
     if (activeFindingFilter === 'passed') return false;
     return f.severity === activeFindingFilter;

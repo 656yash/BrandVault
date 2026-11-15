@@ -468,14 +468,14 @@ export const ReviewWorkspace: React.FC<Props> = ({
                 </div>
               </div>
 
-              {/* AI Findings List if any */}
-              {findings.length > 0 && (
+              {/* AI Findings List if any open issues */}
+              {openFindings.length > 0 && (
                 <div className="space-y-2 pt-1">
                   <span className="text-xs font-bold text-slate-700 block uppercase tracking-wider font-mono">
-                    AI Inspection Diagnostics ({findings.length})
+                    Open Compliance Issues ({openFindings.length})
                   </span>
                   <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {findings.map((f) => (
+                    {openFindings.map((f) => (
                       <div key={f.id} className="p-3 rounded-xl bg-white/70 border border-white text-xs space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-slate-900">{f.issue}</span>

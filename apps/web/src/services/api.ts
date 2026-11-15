@@ -619,12 +619,73 @@ export const api = {
   },
 
   async resolveFinding(findingId: string, decision: 'accepted' | 'rejected'): Promise<boolean> {
+    // 1. Update localFindingsMap
     for (const key of Object.keys(localFindingsMap)) {
       const idx = localFindingsMap[key].findIndex(f => f.id === findingId);
       if (idx !== -1) {
         localFindingsMap[key][idx].status = decision === 'accepted' ? 'resolved' : 'rejected';
-        return true;
       }
+    }
+
+    // 2. Update memoryContentItems and persist to localStorage
+    let updatedAny = false;
+    for (const item of memoryContentItems) {
+      if (item.findings && item.findings.length > 0) {
+        const fIdx = item.findings.findIndex(f => f.id === findingId);
+        if (fIdx !== -1) {
+          item.findings[fIdx].status = decision === 'accepted' ? 'resolved' : 'rejected';
+          const remainingOpen = item.findings.filter(f => f.status === 'open');
+          item.complianceScore = remainingOpen.length === 0 ? 100 : Math.max(70, 100 - remainingOpen.length * 8);
+          if (item.complianceScore >= 90 && item.status === 'draft') {
+            item.status = 'ready_for_review';
+          }
+          item.updatedAt = new Date().toISOString();
+          updatedAny = true;
+        }
+      }
+    }
+
+    if (updatedAny) {
+      saveItem('bv_content_items', memoryContentItems);
+    }
+    return true;
+  },
+
+  async applyFindingCorrection(findingId: string, correctedContent?: string): Promise<boolean> {
+    // 1. Update in localFindingsMap
+    for (const key of Object.keys(localFindingsMap)) {
+      const idx = localFindingsMap[key].findIndex(f => f.id === findingId);
+      if (idx !== -1) {
+        localFindingsMap[key][idx].status = 'resolved';
+      }
+    }
+
+    // 2. Update memoryContentItems with replaced text and resolved status
+    let updatedAny = false;
+    for (const item of memoryContentItems) {
+      if (item.findings && item.findings.length > 0) {
+        const fIdx = item.findings.findIndex(f => f.id === findingId);
+        if (fIdx !== -1) {
+          const finding = item.findings[fIdx];
+          finding.status = 'resolved';
+          if (correctedContent) {
+            item.rawContent = correctedContent;
+          } else if (item.rawContent.includes(finding.contentExcerpt)) {
+            item.rawContent = item.rawContent.replace(finding.contentExcerpt, finding.suggestedCorrection);
+          }
+          const remainingOpen = item.findings.filter(f => f.status === 'open');
+          item.complianceScore = remainingOpen.length === 0 ? 100 : Math.max(70, 100 - remainingOpen.length * 8);
+          if (item.complianceScore >= 90 && item.status === 'draft') {
+            item.status = 'ready_for_review';
+          }
+          item.updatedAt = new Date().toISOString();
+          updatedAny = true;
+        }
+      }
+    }
+
+    if (updatedAny) {
+      saveItem('bv_content_items', memoryContentItems);
     }
     return true;
   },

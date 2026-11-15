@@ -312,11 +312,28 @@ export function App() {
     }
   };
 
-  const handleApplyCorrection = (finding: ComplianceFinding) => {
+  const handleApplyCorrection = async (finding: ComplianceFinding) => {
+    // Persist change to storage & in-memory store
+    await api.applyFindingCorrection(finding.id);
+
     setContentItems(prev => prev.map(item => {
-      if (item.id === finding.contentItemId && item.rawContent.includes(finding.contentExcerpt)) {
-        const updatedContent = item.rawContent.replace(finding.contentExcerpt, finding.suggestedCorrection);
-        return { ...item, rawContent: updatedContent };
+      if (item.id === finding.contentItemId || (item.findings && item.findings.some(f => f.id === finding.id))) {
+        const updatedContent = item.rawContent.includes(finding.contentExcerpt)
+          ? item.rawContent.replace(finding.contentExcerpt, finding.suggestedCorrection)
+          : item.rawContent;
+        const updatedFindings = item.findings?.map(f => 
+          f.id === finding.id ? { ...f, status: 'resolved' as const } : f
+        );
+        const remainingOpen = (updatedFindings || []).filter(f => f.status === 'open');
+        const newScore = remainingOpen.length === 0 ? 100 : Math.max(70, 100 - remainingOpen.length * 8);
+
+        return { 
+          ...item, 
+          rawContent: updatedContent,
+          findings: updatedFindings,
+          complianceScore: newScore,
+          status: newScore >= 90 ? 'ready_for_review' : item.status
+        };
       }
       return item;
     }));
@@ -326,12 +343,21 @@ export function App() {
     await api.resolveFinding(findingId, decision);
     setContentItems(prev => prev.map(item => {
       if (item.findings) {
-        const updatedFindings = item.findings.map(f => f.id === findingId ? { ...f, status: decision } : f);
-        return { ...item, findings: updatedFindings };
+        const updatedFindings = item.findings.map(f => 
+          f.id === findingId ? { ...f, status: decision === 'accepted' ? ('resolved' as const) : ('rejected' as const) } : f
+        );
+        const remainingOpen = updatedFindings.filter(f => f.status === 'open');
+        const newScore = remainingOpen.length === 0 ? 100 : Math.max(70, 100 - remainingOpen.length * 8);
+        return { 
+          ...item, 
+          findings: updatedFindings,
+          complianceScore: newScore,
+          status: newScore >= 90 ? 'ready_for_review' : item.status
+        };
       }
       return item;
     }));
-    showToast(`Finding marked as ${decision}`);
+    showToast(`Finding ${decision === 'accepted' ? 'applied & resolved' : 'dismissed'}`);
   };
 
   const handleSubmitForReview = async (id: string) => {
